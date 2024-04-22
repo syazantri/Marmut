@@ -52,6 +52,13 @@ Icon
 .VolumeIcon.icns
 .com.apple.timemachine.donotpresent
 
+# TK SQL file
+TK3_SQL_A_A5.sql
+
+# Script menginput values tabel
+utils/insert-table-scripts.js
+utils/insert_tabel.py
+
 # Directories potentially created on remote AFP share
 .AppleDB
 .AppleDesktop

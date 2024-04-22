@@ -38,6 +38,20 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'tailwind',
+    'authentication',
+    'marmut',
+    'kelola_podcast',
+    'kelola_album_song',
+    'downloaded_songs',
+    'dashboard',
+    'chart',
+    'cek_royalti',
+    'search_bar_detail'
+]
+
+INTERNAL_IPS = [
+    "127.0.0.1",
 ]
 
 MIDDLEWARE = [
