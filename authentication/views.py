@@ -8,5 +8,14 @@ import json
 def login(request):
     return render(request, 'login.html')
 
+def register_label(request):
+    return render(request, 'register_label.html')
+
 def register(request):
-    return render(request, 'register.html')
+    return render(request, 'register_biasa.html')
+
+def main_register(request):
+    return render(request, 'main_register.html')
+
+def main_auth(request):
+    return render(request, 'main_auth.html')

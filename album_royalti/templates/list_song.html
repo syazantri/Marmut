@@ -1,0 +1,69 @@
+{% extends 'base_artist_songwriter.html' %} 
+{% load static %}
+
+{% block meta %}
+<head>
+    <title>Daftar Lagu Album Fruitcake</title>
+</head>
+{% endblock meta %}
+
+{% block content %}
+<body class="h-screen flex justify-center bg-[#151829] text-white">
+
+    <div class="py-10 bg-[#151829]">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-4xl font-bold mb-5 text-white font-serif">Daftar Lagu - Album Fruitcake</h2>
+            <div class="-mx-4">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-[#151829] rounded-lg overflow-hidden">
+                        <thead class="bg-[#9e60d1] text-white">
+                            <tr>
+                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Judul</th>
+                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Durasi</th>
+                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Total Play</th>
+                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Total Download</th>
+                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-400 bg-[#382e47]">
+                            <tr class="text-white">
+                                <td class="py-3 px-4">Santa doesnt know you like i do</td>
+                                <td class="py-3 px-4">3</td>
+                                <td class="py-3 px-4">100</td>
+                                <td class="py-3 px-4">55</td>
+                                <td class="py-3 px-4">
+                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Detail</button>
+                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9] ml-2">Hapus</button>
+                                </td>
+                            </tr>
+                            <tr class="text-white">
+                                <td class="py-3 px-4">exile</td>
+                                <td class="py-3 px-4">4</td>
+                                <td class="py-3 px-4">12</td>
+                                <td class="py-3 px-4">61</td>
+                                <td class="py-3 px-4">
+                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Detail</button>
+                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9] ml-2">Hapus</button>
+                                </td>
+                            </tr>
+                            <tr class="text-white">
+                                <td class="py-3 px-4">...</td>
+                                <td class="py-3 px-4">...</td>
+                                <td class="py-3 px-4">...</td>
+                                <td class="py-3 px-4">...</td>
+                                <td class="py-3 px-4">
+                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Detail</button>
+                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9] ml-2">Hapus</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
+
+{% endblock content %}

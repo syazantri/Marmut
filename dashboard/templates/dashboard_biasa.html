@@ -1,0 +1,85 @@
+{% extends 'base_biasa.html' %}
+{% load static %}
+
+{% block meta %}
+<head>
+    <title>Dashboard - Marmut</title>
+</head>
+{% endblock meta %}
+
+{% block content %}
+<body class="h-screen flex justify-center bg-[#151829] text-white">
+    <div class="max-w-4xl mx-auto mt-8 px-4">
+        <h2 class="text-3xl font-semibold mb-4 font-serif text-white">Dashboard</h2>
+        <div class="bg-gray-800 rounded-lg p-6">
+            <div class="grid grid-cols-2 gap-4 text-white">
+                <div>
+                    <p class="text-lg text-gray-400">Nama:</p>
+                    <p class="text-xl font-semibold">Sasa</p>
+                </div>
+                <div>
+                    <p class="text-lg text-gray-400">Email:</p>
+                    <p class="text-xl font-semibold">syazantri@gmail.com</p>
+                </div>
+                <div>
+                    <p class="text-lg text-gray-400">Kota Asal:</p>
+                    <p class="text-xl font-semibold">Jakarta</p>
+                </div>
+                <div>
+                    <p class="text-lg text-gray-400">Gender:</p>
+                    <p class="text-xl font-semibold">Perempuan</p>
+                </div>
+                <div>
+                    <p class="text-lg text-gray-400">Tempat Lahir:</p>
+                    <p class="text-xl font-semibold">Jakarta</p>
+                </div>
+                <div>
+                    <p class="text-lg text-gray-400">Tanggal Lahir:</p>
+                    <p class="text-xl font-semibold">08 Oktober 2004</p>
+                </div>
+                <div>
+                    <p class="text-lg text-gray-400">Role:</p>
+                    <p class="text-xl font-semibold">Regular</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="max-w-4xl mx-auto mt-8 px-4">
+        <h2 class="text-3xl font-semibold mb-4 text-white font-serif">List Playlist</h2>
+        <div class="rounded-lg p-6">
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-[#151829] rounded-lg overflow-hidden">
+                    <thead class="bg-[#9e60d1] text-white">
+                        <tr>
+                            <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Judul</th>
+                            <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Jumlah Lagu</th>
+                            <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Tanggal Dibuat</th>
+                            <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Total Durasi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-400 bg-[#382e47]">
+                        <tr class="text-white">
+                            <td class="py-3 px-4">Sasa cantik</td>
+                            <td class="py-3 px-4">15</td>
+                            <td class="py-3 px-4">08 Oktober 2020</td>
+                            <td class="py-3 px-4">41</td>
+                        </tr>
+                        <tr class="text-white">
+                            <td class="py-3 px-4">Sasa keren</td>
+                            <td class="py-3 px-4">14</td>
+                            <td class="py-3 px-4">01 Oktober 2020</td>
+                            <td class="py-3 px-4">25</td>
+                        </tr>
+                        <tr class="text-white">
+                            <td class="py-3 px-4">...</td>
+                            <td class="py-3 px-4">...</td>
+                            <td class="py-3 px-4">...</td>
+                            <td class="py-3 px-4">...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock content %}

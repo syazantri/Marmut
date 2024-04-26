@@ -3,7 +3,7 @@
 {% block content %}
 <div class="flex flex-col items-center justify-center font-sans">
     <div class="bg-gray-900 rounded-lg p-8">
-        <h2 class="text-3xl font-semibold text-white mb-4 text-center">Register</h2>
+        <h2 class="text-3xl font-semibold text-white mb-4 text-center font-serif">Register</h2>
         <form class="space-y-4">
             <div>
                 <label for="email" class="text-white">Email</label>
@@ -14,14 +14,12 @@
                 <input type="password" id="password" name="password" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
             </div>
             <div>
-                <label for="role" class="text-white">Role</label>
-                <select id="role" name="role" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]">
-                    <option value="regular">Regular</option>
-                    <option value="label">Label</option>
-                    <option value="artist">Artist</option>
-                    <option value="songwriter">Songwriter</option>
-                    <option value="producer">Podcaster</option>
-                </select>
+                <label for="password" class="text-white">Nama</label>
+                <input type="password" id="password" name="nama" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
+            </div>
+            <div>
+                <label for="password" class="text-white">Kontak</label>
+                <input type="password" id="password" name="kontak" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
             </div>
             <div>
                 <button type="submit" class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold">Register</button>

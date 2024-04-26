@@ -19,4 +19,5 @@ from django.urls import path, include
 urlpatterns = [
     path('auth/', include('authentication.urls')),
     path('', include('dashboard.urls')),
+    path('', include('album_royalti.urls')),
 ]

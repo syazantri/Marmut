@@ -1,0 +1,72 @@
+{% extends 'base_artist_songwriter.html' %}
+{% block meta %}
+<title>Create Song</title>
+{% endblock meta%}
+{% block content %}
+<div class="flex flex-col items-center justify-center font-sans">
+    <div class="bg-gray-900 rounded-lg p-8">
+        <h2 class="text-3xl font-semibold text-white mb-4 text-center font-serif">Create Lagu</h2>
+        <form class="space-y-4">
+            <div>
+                <label for="email" class="text-white">Album</label>
+                <input type="email" id="email" name="email" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
+            </div>
+            <div>
+                <label for="email" class="text-white">Judul</label>
+                <input type="email" id="email" name="email" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
+            </div>
+            <div>
+                <label for="email" class="text-white">Artist</label>
+                <input type="email" id="email" name="email" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
+            </div>
+            <div>
+                <label for="email" class="text-white">Songwriter</label>
+              
+            </div>
+            <label class="text-white">
+                <input type="checkbox" name="songwriters[]" value="Sasa" class="mr-2">Sasa
+            </label>
+            <label class="text-white">
+                <input type="checkbox" name="songwriters[]" value="Dova" class="mr-2">Dova
+            </label>
+            <label class="text-white">
+                <input type="checkbox" name="songwriters[]" value="Lilac" class="mr-2">Lilac
+            </label>
+            <label class="text-white">
+                <input type="checkbox" name="songwriters[]" value="Moi" class="mr-2">Moi
+            </label>
+            <label class="text-white">
+                <input type="checkbox" name="songwriters[]" value="Basdat why kuis sabtu sore" class="mr-2">Basdat why kuis sabtu sore
+            </label>
+            <div>
+                <label class="text-white">Genre</label>
+                    <div class="flex flex-col gap-2">
+                    <label class="text-white">
+                        <input type="checkbox" name="genre[]" value="Jazz" class="mr-2">Jazz
+                    </label>
+                    <label class="text-white">
+                        <input type="checkbox" name="genre[]" value="Pop" class="mr-2">Pop
+                    </label>
+                    <label class="text-white">
+                        <input type="checkbox" name="genre[]" value="Pop rock" class="mr-2">Pop rock
+                    </label>
+                    <label class="text-white">
+                        <input type="checkbox" name="genre[]" value="HipHop/Rap" class="mr-2">HipHop/Rap
+                    </label>
+                    <label class="text-white">
+                        <input type="checkbox" name="genre[]" value="RnB/Soul" class="mr-2">RnB/Soul
+                </label>
+            </div>
+            </div>
+            <div>
+                <label for="password" class="text-white">Durasi</label>
+                <input type="password" id="password" name="password" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
+            </div>
+            
+            <div>
+                <button type="submit" class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}
