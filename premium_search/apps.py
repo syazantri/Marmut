@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class DownloadedSongsConfig(AppConfig):
+class PremiumSearchConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'downloaded_songs'
+    name = 'premium_search'

@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class ChartConfig(AppConfig):
+class PlaylistPlayerConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'chart'
+    name = 'playlist_player'

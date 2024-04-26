@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class KelolaPodcastConfig(AppConfig):
+class PodcastChartConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'kelola_podcast'
+    name = 'podcast_chart'
