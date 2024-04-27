@@ -1,7 +1,7 @@
 {% extends 'base_artist_songwriter.html' %}
 {% block meta %}
 <title>Create Song</title>
-{% endblock meta%}
+{% endblock meta %}
 {% block content %}
 <div class="flex flex-col items-center justify-center font-sans">
     <div class="bg-gray-900 rounded-lg p-8">
@@ -16,57 +16,83 @@
                 <input type="email" id="email" name="email" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
             </div>
             <div>
-                <label for="email" class="text-white">Artist</label>
-                <input type="email" id="email" name="email" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
+                <label for="artist" class="text-white">Artist</label>
+                <select id="artist" name="artist[]" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
+                    <option value="Sasa">Sasaa</option>
+                    <option value="Dova">Dovaa</option>
+                    <option value="Lilac">Lilacc</option>
+                    <option value="Moi">Moii</option>
+                    <option value="Basdat why kuis sabtu sore">Basdat why kuis sabtu soree</option>
+                </select>
             </div>
             <div>
-                <label for="email" class="text-white">Songwriter</label>
-              
+                <label for="songwriters" class="text-white">Songwriter</label>
+                <select id="songwriters" name="songwriters[]" multiple class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
+                    <option value="Sasa">Sasa</option>
+                    <option value="Dova">Dova</option>
+                    <option value="Lilac">Lilac</option>
+                    <option value="Moi">Moi</option>
+                    <option value="Basdat why kuis sabtu sore">Basdat why kuis sabtu sore</option>
+                </select>
             </div>
-            <label class="text-white">
-                <input type="checkbox" name="songwriters[]" value="Sasa" class="mr-2">Sasa
-            </label>
-            <label class="text-white">
-                <input type="checkbox" name="songwriters[]" value="Dova" class="mr-2">Dova
-            </label>
-            <label class="text-white">
-                <input type="checkbox" name="songwriters[]" value="Lilac" class="mr-2">Lilac
-            </label>
-            <label class="text-white">
-                <input type="checkbox" name="songwriters[]" value="Moi" class="mr-2">Moi
-            </label>
-            <label class="text-white">
-                <input type="checkbox" name="songwriters[]" value="Basdat why kuis sabtu sore" class="mr-2">Basdat why kuis sabtu sore
-            </label>
             <div>
-                <label class="text-white">Genre</label>
-                    <div class="flex flex-col gap-2">
-                    <label class="text-white">
-                        <input type="checkbox" name="genre[]" value="Jazz" class="mr-2">Jazz
-                    </label>
-                    <label class="text-white">
-                        <input type="checkbox" name="genre[]" value="Pop" class="mr-2">Pop
-                    </label>
-                    <label class="text-white">
-                        <input type="checkbox" name="genre[]" value="Pop rock" class="mr-2">Pop rock
-                    </label>
-                    <label class="text-white">
-                        <input type="checkbox" name="genre[]" value="HipHop/Rap" class="mr-2">HipHop/Rap
-                    </label>
-                    <label class="text-white">
-                        <input type="checkbox" name="genre[]" value="RnB/Soul" class="mr-2">RnB/Soul
-                </label>
-            </div>
+                <label for="genre" class="text-white">Genre</label>
+                <select id="genre" name="genre[]" multiple class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
+                    <option value="Jazz">Jazz</option>
+                    <option value="Pop">Pop</option>
+                    <option value="Pop rock">Pop rock</option>
+                    <option value="HipHop/Rap">HipHop/Rap</option>
+                    <option value="RnB/Soul">RnB/Soul</option>
+                </select>
             </div>
             <div>
                 <label for="password" class="text-white">Durasi</label>
                 <input type="password" id="password" name="password" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
             </div>
-            
             <div>
                 <button type="submit" class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold">Submit</button>
             </div>
         </form>
     </div>
 </div>
+
+<script>
+    var isMouseDown = false;
+
+    document.getElementById("songwriters").addEventListener("mousedown", function (e) {
+        isMouseDown = true;
+        e.target.selected = !e.target.selected;
+        e.preventDefault();
+    });
+
+    document.addEventListener("mouseup", function () {
+        isMouseDown = false;
+    });
+
+    document.getElementById("songwriters").addEventListener("mousemove", function (e) {
+        if (isMouseDown) {
+            e.target.selected = !e.target.selected;
+            e.preventDefault();
+        }
+    });
+
+    var isMouseDownGenre = false;
+
+    document.getElementById("genre").addEventListener("mousedown", function (e) {
+        isMouseDownGenre = true;
+        e.target.selected = !e.target.selected;
+        e.preventDefault();
+    });
+
+    document.addEventListener("mouseup", function () {
+        isMouseDownGenre = false;
+    });
+
+    document.getElementById("genre").addEventListener("mousemove", function (e) {
+        if (isMouseDownGenre) {
+            e.target.selected = !e.target.selected;
+            e.preventDefault();
+        }
+    });
+</script>
 {% endblock content %}
