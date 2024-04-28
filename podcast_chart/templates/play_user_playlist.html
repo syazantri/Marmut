@@ -1,0 +1,85 @@
+{% extends 'base_biasa.html' %} 
+{% load static %}
+
+{% block meta %}
+<head>
+    <title>Play User Playlist - Marmut</title>
+</head>
+{% endblock meta %}
+
+{% block content %}
+<body class="h-screen flex justify-center bg-[#151829] text-white">
+
+    <div class="py-10 bg-[#151829]">
+        <div class="max-w-4xl mx-auto">
+            <center><h2 class="text-4xl font-bold mb-5 text-white font-serif">User Playlist Detail</h2></center>
+            <div class="text-white" style="padding-bottom: 10px; font-size: 18px;">
+                <span><strong>Judul:</strong> Juicy Luicy</span><br>
+                <span><strong>Pembuat:</strong> Juicy Luicy</span><br>
+                <span><strong>Jumlah Lagu:</strong> 10</span><br>
+                <span><strong>Total Durasi:</strong> 40 menit</span><br>
+                <span><strong>Tanggal Dibuat:</strong> 01/04/2024</span><br>
+                <span><strong>Deskripsi:</strong> Lagu-lagu orang galau</span><br>
+            </div>   
+            
+            <center>
+                <table cellpadding="20">
+                    <tr>
+                        <td>
+                            <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Shuffle Play</button>
+                            <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9] ml-2">Kembali</button>
+                        </td>
+                    </tr>
+                </table>
+            </center>
+            
+            <div class="-mx-4">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-[#151829] rounded-lg overflow-hidden">
+                        <thead class="bg-[#b17bc9] text-white">
+                            <tr bgcolor="#9e60d1" class="text-white">
+                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm" colspan="4"><center>DAFTAR LAGU</center></th>
+                            </tr>                                                      
+                            <tr>
+                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Judul Lagu</th>
+                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Oleh</th>
+                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Durasi</th>
+                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-400 bg-[#382e47]">
+                            <tr class="text-white">
+                                <td class="py-3 px-4">Lantas</td>
+                                <td class="py-3 px-4">Juicy Luicy</td>
+                                <td class="py-3 px-4">4 menit</td>
+                                <td class="py-3 px-4">
+                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Lihat</button>
+                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9] ml-2">Play</button>
+                                </td>
+                            </tr>
+                            <tr class="text-white">
+                                <td class="py-3 px-4">HAHAHA</td>
+                                <td class="py-3 px-4">Juicy Luicy</td>
+                                <td class="py-3 px-4">3 menit</td>
+                                <td class="py-3 px-4">
+                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Lihat</button>
+                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9] ml-2">Play</button>
+                                </td>
+                            </tr>
+                            <tr class="text-white">
+                                <td class="py-3 px-4">...</td>
+                                <td class="py-3 px-4">...</td>
+                                <td class="py-3 px-4">...</td>
+                                <td class="py-3 px-4">...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
+
+{% endblock content %}
