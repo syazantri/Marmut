@@ -1,0 +1,57 @@
+{% extends 'base_podcaster.html' %} 
+{% block meta %}
+<title>Create Podcast</title>
+{% endblock meta %}
+{% block content %}
+<div class="flex flex-col items-center justify-center font-sans">
+    <div class="bg-gray-900 rounded-lg p-8">
+        <h2 class="text-3xl font-semibold text-white mb-4 text-center font-serif">Create Podcast</h2>
+        <form class="space-y-4">
+            <div>
+                <label for="email" class="text-white">Judul</label>
+                <input type="email" id="email" name="email" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
+            </div>
+            <div>
+                <label for="genre" class="text-white">Genre</label>
+                <select id="genre" name="genre[]" multiple class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
+                    <option value="Jazz">Romance</option>
+                    <option value="Pop">Horor</option>
+                    <option value="Pop rock">Motivasi</option>
+                    <option value="HipHop/Rap">Komedi</option>
+                    <option value="RnB/Soul">Bisnis</option>
+                </select>
+            </div>
+            <div>
+                <label for="email" class="text-white">Durasi</label>
+                <input type="email" id="email" name="email" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
+            </div>
+            <div>
+                <button type="submit" class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    var isMouseDown = false;
+
+    var isMouseDownGenre = false;
+
+    document.getElementById("genre").addEventListener("mousedown", function (e) {
+        isMouseDownGenre = true;
+        e.target.selected = !e.target.selected;
+        e.preventDefault();
+    });
+
+    document.addEventListener("mouseup", function () {
+        isMouseDownGenre = false;
+    });
+
+    document.getElementById("genre").addEventListener("mousemove", function (e) {
+        if (isMouseDownGenre) {
+            e.target.selected = !e.target.selected;
+            e.preventDefault();
+        }
+    });
+</script>
+{% endblock content %}

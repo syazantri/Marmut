@@ -1,0 +1,64 @@
+{% extends 'base_podcaster.html' %} 
+{% load static %}
+
+{% block meta %}
+<head>
+    <title>List Episode - Marmut</title>
+</head>
+{% endblock meta %}
+
+{% block content %}
+<body class="h-screen flex justify-center bg-[#151829] text-white">
+
+    <div class="py-10 bg-[#151829]">
+        <div class="max-w-4xl mx-auto">
+            <center><h2 class="text-4xl font-bold mb-5 text-white font-serif">Daftar Episode Rintik Sendu</h2></center> 
+            <div class="-mx-4">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-[#151829] rounded-lg overflow-hidden">
+                        <thead class="bg-[#9e60d1] text-white">
+                            <tr>
+                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Judul</th>
+                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Deskripsi</th>
+                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Durasi</th>
+                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Tanggal</th>
+                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-400 bg-[#382e47]">
+                            <tr class="text-white">
+                                <td class="py-3 px-4">Tinggal Kenangan</td>
+                                <td class="py-3 px-4">Ku kira kamu rumah, ternyata orang</td>
+                                <td class="py-3 px-4">10 menit</td>
+                                <td class="py-3 px-4">28/04/2024</td>
+                                <td class="py-3 px-4">
+                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Hapus</button>
+                                </td>
+                            </tr>
+                            <tr class="text-white">
+                                <td class="py-3 px-4">Ya begitulah DIA</td>
+                                <td class="py-3 px-4">Awalnya shock, sisanya shick shack shock</td>
+                                <td class="py-3 px-4">15 menit</td>
+                                <td class="py-3 px-4">29/04/2024</td>
+                                <td class="py-3 px-4">
+                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Hapus</button>
+                                </td>
+                            </tr>
+                            <tr class="text-white">
+                                <td class="py-3 px-4">...</td>
+                                <td class="py-3 px-4">...</td>
+                                <td class="py-3 px-4">...</td>
+                                <td class="py-3 px-4">...</td>
+                                <td class="py-3 px-4">...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
+
+{% endblock content %}
