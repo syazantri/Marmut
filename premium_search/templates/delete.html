@@ -1,0 +1,81 @@
+{% extends 'base_premium.html' %}
+
+{% block meta %}
+    <title>Delete</title>
+{% endblock meta %}
+
+{% block content %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f0f0f0;
+    }
+
+    .card {
+        width: 400px;
+        margin: 125px auto;
+        padding: 30px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .notification {
+        border-top: 2px solid #9E60D1;
+        padding-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .notification h2 {
+        color: #333;
+        font-size: 20px;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .notification p {
+        color: #666;
+        font-size: 16px;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .btn-container {
+        text-align: center;
+    }
+
+    .btn {
+        background-color: #9E60D1;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+        background-color: #B17BC9;
+    }
+</style>
+</head>
+<body>
+<div class="card">
+    <div class="notification">
+        <h2>Berhasil menghapus Lagu dengan judul 'Still Waiting' dari daftar unduhan!</h2>
+    </div>
+    <div class="btn-container">
+        <a href="#" class="btn">KEMBALI</a>
+    </div>
+</div>
+</body>
+</html>
+
+{% endblock content %}

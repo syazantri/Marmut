@@ -22,4 +22,5 @@ urlpatterns = [
     path('', include('album_royalti.urls')),
     path('', include('playlist_player.urls')),
     path('', include('podcast_chart.urls')),
+    path('',  include('premium_search.urls')),
 ]
