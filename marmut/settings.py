@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-7wbzjp8s6cj#odo+oq0j(w1huh-m#5ez+yrq+m=aa36+e(7ro-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [tk-marmut.onrender.com]
+ALLOWED_HOSTS = ['tk-marmut.onrender.com']
 
 
 # Application definition
