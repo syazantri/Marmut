@@ -1,4 +1,5 @@
-{% extends 'base_artist_songwriter.html' %} 
+{% extends 'base_biasa.html' %} 
+
 {% load static %}
 
 {% block meta %}
@@ -12,8 +13,10 @@
 
     <div class="py-10 bg-[#151829]">
         <div class="max-w-4xl mx-auto">
+            {% if role == "label" %}
             <h2 class="text-4xl font-bold mb-5 text-white font-serif">List Royalti</h2>
             <div class="-mx-4">
+                {% if records_royalti_label %}
                 <div class="overflow-x-auto">
                     <table class="min-w-full bg-[#151829] rounded-lg overflow-hidden">
                         <thead class="bg-[#9e60d1] text-white">
@@ -26,31 +29,91 @@
                             </tr>
                         </thead>
                         <tbody class="text-gray-400 bg-[#382e47]">
+                            {% for record in records_royalti_label%}
                             <tr class="text-white">
-                                <td class="py-3 px-4">Santa doesnt know you like i do</td>
-                                <td class="py-3 px-4">Fruitcake</td>
-                                <td class="py-3 px-4">100</td>
-                                <td class="py-3 px-4">55</td>
-                                <td class="py-3 px-4">Rp 1000000</td>
+                                <td class="py-3 px-4">{{record.6}}</td>
+                                <td class="py-3 px-4">{{record.5}}</td>
+                                <td class="py-3 px-4">{{record.3}}</td>
+                                <td class="py-3 px-4">{{record.4}}</td>
+                                <td class="py-3 px-4">{{record.1}}</td>
                             </tr>
-                            <tr class="text-white">
-                                <td class="py-3 px-4">Vintage</td>
-                                <td class="py-3 px-4">Zephyr</td>
-                                <td class="py-3 px-4">10</td>
-                                <td class="py-3 px-4">52</td>
-                                <td class="py-3 px-4">Rp 100000</td>
-                            </tr>
-                            <tr class="text-white">
-                                <td class="py-3 px-4">...</td>
-                                <td class="py-3 px-4">...</td>
-                                <td class="py-3 px-4">...</td>
-                                <td class="py-3 px-4">...</td>
-                                <td class="py-3 px-4">...</td>
-                            </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
+                {% else %}
+                    <h2 class="text-base mb-8 text-gray-400 md:max-w-lg">Belum Memiliki Royalti</h2>
+                {% endif %}
             </div>
+            {% endif %}
+            {% if role == "pengguna" %}
+            {% if isArtist == "True" %}
+            <h2 class="text-4xl font-bold mb-5 text-white font-serif">List Royalti Sebagai Artist</h2>
+            <div class="-mx-4">
+                <div class="overflow-x-auto">
+                {% if records_royalti_artist %}
+                    <table class="min-w-full bg-[#151829] rounded-lg overflow-hidden">
+                        <thead class="bg-[#9e60d1] text-white">
+                            <tr>
+                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Judul Lagu</th>
+                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Judul Album</th>
+                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Total Play</th>
+                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Total Download</th>
+                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Total Royalti Didapat</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-400 bg-[#382e47]">
+                            {% for record in records_royalti_artist%}
+                            <tr class="text-white">
+                                <td class="py-3 px-4">{{record.6}}</td>
+                                <td class="py-3 px-4">{{record.5}}</td>
+                                <td class="py-3 px-4">{{record.3}}</td>
+                                <td class="py-3 px-4">{{record.4}}</td>
+                                <td class="py-3 px-4">{{record.1}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                    <h2 class="text-base mb-8 text-gray-400 md:max-w-lg">Belum Memiliki Royalti</h2>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% if isSongwriter == "True" %}
+            <h2 class="text-4xl font-bold mb-5 text-white font-serif">List Royalti Sebagai Songwriter</h2>
+            <div class="-mx-4">
+                {% if records_royalti_songwriter %}
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-[#151829] rounded-lg overflow-hidden">
+                        <thead class="bg-[#9e60d1] text-white">
+                            <tr>
+                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Judul Lagu</th>
+                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Judul Album</th>
+                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Total Play</th>
+                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Total Download</th>
+                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Total Royalti Didapat</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-400 bg-[#382e47]">
+                            {% for record in records_royalti_songwriter%}
+                            <tr class="text-white">
+                                <td class="py-3 px-4">{{record.6}}</td>
+                                <td class="py-3 px-4">{{record.5}}</td>
+                                <td class="py-3 px-4">{{record.3}}</td>
+                                <td class="py-3 px-4">{{record.4}}</td>
+                                <td class="py-3 px-4">{{record.1}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                    <h2 class="text-base mb-8 text-gray-400 md:max-w-lg">Belum Memiliki Royalti</h2>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% endif %}
         </div>
     </div>
     

@@ -1,4 +1,4 @@
-{% extends 'base_label.html' %} 
+{% extends 'base_biasa.html' %} 
 {% load static %}
 
 {% block meta %}
@@ -15,21 +15,22 @@
             <div class="grid grid-cols-2 gap-4 text-white">
                 <div>
                     <p class="text-lg text-gray-400">Nama:</p>
-                    <p class="text-xl font-semibold">Sasa</p>
+                    <p class="text-xl font-semibold">{{nama}}</p>
                 </div>
                 <div>
                     <p class="text-lg text-gray-400">Email:</p>
-                    <p class="text-xl font-semibold">syazantri@gmail.com</p>
+                    <p class="text-xl font-semibold">{{email}}</p>
                 </div>
                 <div>
                     <p class="text-lg text-gray-400">Kontak:</p>
-                    <p class="text-xl font-semibold">08121999912</p>
+                    <p class="text-xl font-semibold">{{kontak}}</p>
                 </div>
             </div>
         </div>
     </div>
     <div class="max-w-4xl mx-auto mt-8 px-4">
         <h2 class="text-3xl font-semibold mb-4 text-white font-serif">List Album</h2>
+        {% if records_album %}
         <div class="rounded-lg p-6">
             <div class="overflow-x-auto">
                 <table class="min-w-full bg-[#151829] rounded-lg overflow-hidden">
@@ -38,41 +39,23 @@
                             <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Judul</th>
                             <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Jumlah Lagu</th>
                             <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Total Durasi</th>
-                            <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Action</th>
                         </tr>
                     </thead>
                     <tbody class="text-gray-400 bg-[#382e47]">
+                        {% for record in records_album %}
                         <tr class="text-white">
-                            <td class="py-3 px-4">Fruitcake</td>
-                            <td class="py-3 px-4">6</td>
-                            <td class="py-3 px-4">37</td>
-                            <td class="py-3 px-4">
-                                <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Lihat Daftar Lagu</button>
-                                <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9] ml-2">Hapus</button>
-                            </td>
+                            <td class="py-3 px-4">{{record.1}}</td>
+                            <td class="py-3 px-4">{{record.2}}</td>
+                            <td class="py-3 px-4">{{record.4}}</td>
                         </tr>
-                        <tr class="text-white">
-                            <td class="py-3 px-4">Folklore</td>
-                            <td class="py-3 px-4">14</td>
-                            <td class="py-3 px-4">61</td>
-                            <td class="py-3 px-4">
-                                <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Lihat Daftar Lagu</button>
-                                <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9] ml-2">Hapus</button>
-                            </td>
-                        </tr>
-                        <tr class="text-white">
-                            <td class="py-3 px-4">...</td>
-                            <td class="py-3 px-4">...</td>
-                            <td class="py-3 px-4">...</td>
-                            <td class="py-3 px-4">
-                                <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Lihat Daftar Lagu</button>
-                                <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9] ml-2">Hapus</button>
-                            </td>
-                        </tr>
-                    </tbody>
+                        {% endfor %}
+                    </tbody> 
                 </table>
             </div>
         </div>
+        {% else %}
+            <h2 class="text-base mb-8 text-gray-400 md:max-w-lg">Belum Memproduksi Album</h2>
+        {% endif %}
     </div>
 </body>
 {% endblock content %}

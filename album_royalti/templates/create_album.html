@@ -1,4 +1,4 @@
-{% extends 'base_artist_songwriter.html' %}
+{% extends 'base_biasa.html' %}
 {% block meta %}
 <title>Create Album</title>
 {% endblock meta%}
@@ -6,14 +6,20 @@
 <div class="flex flex-col items-center justify-center font-sans">
     <div class="bg-gray-900 rounded-lg p-8">
         <h2 class="text-3xl font-semibold text-white mb-4 text-center font-serif">Create Album</h2>
-        <form class="space-y-4">
+        <form class="space-y-4" method="POST">
+            {% csrf_token %}
             <div>
-                <label for="email" class="text-white">Judul</label>
-                <input type="email" id="email" name="email" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
+                <label for="judul" class="text-white">Judul</label>
+                <input type="judul" id="judul" name="judul" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
             </div>
             <div>
-                <label for="password" class="text-white">Label</label>
-                <input type="password" id="password" name="password" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
+                <label for="label" class="text-white">Label</label>
+                <select id="label" name="label" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
+                    <option value="">Select Label</option>
+                    {% for label in list_label %}
+                    <option value="{{ label.0 }}">{{ label.1 }}</option>
+                    {% endfor %}
+                 </select>
             </div>
             
             <div>
