@@ -30,8 +30,9 @@ except (Exception, Error) as error:
     print("Error while connecting to PostgreSQL", error)
 
 # Tutup connection
-finally:
-    if connection:
-        cursor.close()
-        connection.close()
-        print("PostgreSQL connection is closed")
+# finally:
+#     if 'cursor' in locals():
+#         cursor.close()
+#     if 'connection' in locals():
+#         connection.close()
+#         print("PostgreSQL connection is closed")

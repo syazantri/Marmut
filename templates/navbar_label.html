@@ -17,10 +17,10 @@
             
             
             <div class="flex relative items-center">
-                <a href="#" class="text-gray-300 hover:text-[#b17bc9] px-3 py-3 font-semibold text-base">Manage Album</a>
-                <a href="#" class="text-gray-300 hover:text-[#b17bc9] px-3 py-3 font-semibold text-base">Royalti</a>
-                <a href="#" class="text-gray-300 hover:text-[#b17bc9] px-3 py-3 font-semibold text-base">Dashboard</a>
-                <a href="#" class="text-gray-300 hover:text-[#b17bc9] px-3 py-3 font-semibold text-base mr-2">Logout</a>
+                <a href="{% url 'album_royalti:list_album' %}" class="text-gray-300 hover:text-[#b17bc9] px-3 py-3 font-semibold text-base">Kelola Album</a>
+                <a href="{% url 'album_royalti:cek_royalti' %}" class="text-gray-300 hover:text-[#b17bc9] px-3 py-3 font-semibold text-base">Royalti</a>
+                <a href="{% url 'dashboard:dashboard_label' %}" class="text-gray-300 hover:text-[#b17bc9] px-3 py-3 font-semibold text-base">Dashboard</a>
+                <a href="{% url 'authentication:logout' %}" class="text-gray-300 hover:text-[#b17bc9] px-3 py-3 font-semibold text-base mr-2">Logout</a>
             </div>
         </div>
     </div>
