@@ -1,73 +1,50 @@
 {% extends 'base_biasa.html' %}
 
-{% block meta %}
-    <title>Downloaded Songs</title>
-{% endblock meta %}
-
 {% block content %}
 <body class="h-screen flex justify-center bg-[#151829] text-white">
 
     <div class="py-10 bg-[#151829]">
         <div class="max-w-4xl mx-auto">
-            <h2 class="text-3xl font-bold text-white font-serif" style="text-align: center;">Riwayat Transaksi Paket</h2>
-            <div class="-mx-4">
-                <div class="overflow-x-auto">
-                    <table class="min-w-full bg-[#151829] rounded-lg overflow-hidden">
-                        <thead class="bg-[#9e60d1] text-white">
-                            <tr>
-                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Jenis</th>
-                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Tanggal Dimulai</th>
-                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Tanggal Berakhir</th>
-                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Metode Pembayaran</th>
-                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Nominal</th>
-                            </tr>
-                        </thead>
-                        <tbody class="text-gray-400 bg-[#382e47]">
-                            <tr class="text-white">
-                                <td class="py-3 px-4">1 Bulan</td>
-                                <td class="py-3 px-4">8 April 2024,
-                                    23:00</td>
-                                <td class="py-3 px-4">8 Mei 2024,
-                                    23:00</td>
-                                <td class="py-3 px-4">E-Wallet</td>
-                                <td class="py-3 px-4">Rp54.900</td>
-                                </td>
-                            </tr>
-                            <tr class="text-white">
-                                <td class="py-3 px-4">6 Bulan</td>
-                                <td class="py-3 px-4">11 Oktober 2023,
-                                    23:00</td>
-                                <td class="py-3 px-4">8 April 2024,
-                                    23:00</td>
-                                <td class="py-3 px-4">Kartu Kredit</td>
-                                <td class="py-3 px-4">Rp269.900</td>
-                                </td>
-                            </tr>
-
-                            <tr class="text-white">
-                                <td class="py-3 px-4">...</td>
-                                <td class="py-3 px-4">...</td>
-                                <td class="py-3 px-4">...</td>
-                                <td class="py-3 px-4">...</td>
-                                <td class="py-3 px-4">...</td>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    
+            <h2 class="text-center text-3xl font-bold text-white font-serif mb-5">Premium Subscription History</h2>
+            <div class="card bg-[#2c2f38] text-white rounded-lg overflow-hidden">
+                <div class="card-header bg-[#9e60d1] p-3">
+                    <h4 class="text-lg font-semibold">Subscription History</h4>
                 </div>
-                <p style="text-align: left; margin-top: 20px;"><a href="#" style="background-color: #9E60D1; border: none; border-radius: 5px; padding: 8px 12px; color: white; text-decoration: none;">Kembali</a></p>
+                <div class="card-body p-3">
+                    {% if transactions %}
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-[#2c2f38] rounded-lg overflow-hidden">
+                            <thead class="bg-[#9e60d1] text-white">
+                                <tr>
+                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">ID</th>
+                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Package Type</th>
+                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Start Date</th>
+                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">End Date</th>
+                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Payment Method</th>
+                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-gray-400 bg-[#382e47]">
+                                {% for transaction in transactions %}
+                                <tr class="text-white">
+                                    <td class="py-3 px-4">{{ transaction.id }}</td>
+                                    <td class="py-3 px-4">{{ transaction.jenis_paket }}</td>
+                                    <td class="py-3 px-4">{{ transaction.timestamp_dimulai }}</td>
+                                    <td class="py-3 px-4">{{ transaction.timestamp_berakhir }}</td>
+                                    <td class="py-3 px-4">{{ transaction.metode_bayar }}</td>
+                                    <td class="py-3 px-4">{{ transaction.nominal }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="mt-3">No subscription history found.</p>
+                    {% endif %}
+                </div>
             </div>
-            
         </div>
-        
     </div>
 
-    
-    
-
 </body>
-</html>
-
 {% endblock content %}

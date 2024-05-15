@@ -17,58 +17,28 @@
                             <tr>
                                 <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Judul Lagu</th>
                                 <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Oleh</th>
+                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Tanggal Download</th>
                                 <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="text-gray-400 bg-[#382e47]">
+                            {% for song in songs %}
                             <tr class="text-white">
-                                <td class="py-3 px-4">Dear Maria Count Me In</td>
-                                <td class="py-3 px-4">All Time Low</td>
+                                <td class="py-3 px-4">{{ song.judul }}</td>
+                                <td class="py-3 px-4">{{ song.id_artist }}</td>
+                                <td class="py-3 px-4">{{ song.tanggal_download }}</td>
                                 <td class="actions">
-                                    <button style="background-color: #9E60D1; border: none; border-radius: 5px; padding: 8px 12px; color: white;">Lihat</button>
-                                    <button style="background-color: #B17BC9; border: none; border-radius: 5px; padding: 8px 12px; color: white; margin-left: 5px;">Hapus</button>
-                                </td>
-                                
-                            </tr>
-                            <tr class="text-white">
-                                <td class="py-3 px-4">Still Waiting</td>
-                                <td class="py-3 px-4">Sum41</td>
-                                <td class="actions">
-                                    <button style="background-color: #9E60D1; border: none; border-radius: 5px; padding: 8px 12px; color: white;">Lihat</button>
-                                    <button style="background-color: #B17BC9; border: none; border-radius: 5px; padding: 8px 12px; color: white; margin-left: 5px;">Hapus</button>
+                                    <a href="{% url 'lihat_song' song.id %}" style="background-color: #9E60D1; border: none; border-radius: 5px; padding: 8px 12px; color: white; text-decoration: none;">Lihat</a>
+                                    <a href="{% url 'premium_search:delete' song.id %}" style="background-color: #B17BC9; border: none; border-radius: 5px; padding: 8px 12px; color: white; text-decoration: none; margin-left: 5px;">Hapus</a>
                                 </td>
                             </tr>
-
-                            <tr class="text-white">
-                                <td class="py-3 px-4">Thks fr th Mmrs</td>
-                                <td class="py-3 px-4">Fall Out Boys</td>
-                                <td class="actions">
-                                    <button style="background-color: #9E60D1; border: none; border-radius: 5px; padding: 8px 12px; color: white;">Lihat</button>
-                                    <button style="background-color: #B17BC9; border: none; border-radius: 5px; padding: 8px 12px; color: white; margin-left: 5px;">Hapus</button>
-                                </td>
-                            </tr>
-                            <tr class="text-white">
-                                <td class="py-3 px-4">...</td>
-                                <td class="py-3 px-4">...</td>
-                                <td class="py-3 px-4">...</td>
-                                
-                            </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
-
-                    
                 </div>
                 <p style="text-align: left; margin-top: 20px;"><a href="#" style="background-color: #9E60D1; border: none; border-radius: 5px; padding: 8px 12px; color: white; text-decoration: none;">Kembali</a></p>
             </div>
-            
         </div>
-        
     </div>
-
-    
-    
-
 </body>
-</html>
-
 {% endblock content %}

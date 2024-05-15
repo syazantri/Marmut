@@ -23,25 +23,29 @@
                         </thead>
                         <tbody class="text-gray-400 bg-[#382e47]">
                             <tr class="text-white">
-                                <td class="py-3 px-4" style="text-align: center;">1 Bulan</td>
-                                <td class="py-3 px-4" style="text-align: center;">54.900</td>
+                                <td class="py-3 px-4" style="text-align: center;">{{ jenis_paket }}</td>
+                                <td class="py-3 px-4" style="text-align: center;">{{ harga }}</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
                 <h3 style="color: aliceblue;">Metode Pembayaran:</h3>
-                <select class="bg-[#9E60D1] text-white rounded-md px-3 py-2">
-                    <option value="transfer_bank">Pilihan</option>
-                    <option value="transfer_bank">Transfer Bank</option>
-                    <option value="kartu_kredit">Kartu Kredit</option>
-                    <option value="e_wallet">E-Wallet</option>
-                </select>
-
-                <button class="bg-[#9E60D1] text-white rounded-md px-4 py-2">Submit</button>
+                <form method="POST" action="{% url 'premium_search:process_payment' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="jenis_paket" value="{{ jenis_paket }}">
+                    <input type="hidden" name="harga" value="{{ harga }}">
+                    <div class="mb-3">
+                        <select class="bg-[#9E60D1] text-white rounded-md px-3 py-2" name="metode_bayar" required>
+                            <option value="transfer_bank">Transfer Bank</option>
+                            <option value="kartu_kredit">Kartu Kredit</option>
+                            <option value="e_wallet">E-Wallet</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="bg-[#9E60D1] text-white rounded-md px-4 py-2">Submit</button>
+                </form>
             </div>
         </div>
     </div>
 
 </body>
-</html>
 {% endblock content %}

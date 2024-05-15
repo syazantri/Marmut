@@ -11,7 +11,7 @@
         <div class="max-w-4xl mx-auto">
             <div class="flex justify-between items-center mb-5"> 
                 <h2 class="text-3xl font-bold text-white font-serif">Langganan Paket</h2>
-                <button style="background-color: #9E60D1; border: none; border-radius: 5px; padding: 8px 12px; color: white;">Riwayat Transaksi</button>
+                <a href="{% url 'premium_search:riwayat' %}"><button style="background-color: #9E60D1; border: none; border-radius: 5px; padding: 8px 12px; color: white;">Riwayat Transaksi</button></a>
             </div>
             <div class="-mx-4">
                 <div class="overflow-x-auto">
@@ -28,49 +28,35 @@
                                 <td class="py-3 px-4">1 Bulan</td>
                                 <td class="py-3 px-4">54.900</td>
                                 <td class="actions">
-                                    <button style="background-color: #9E60D1; border: none; border-radius: 5px; padding: 8px 12px; color: white; display :flex; align-items: center;">Berlangganan</button>
-
-
+                                    <a href="{% url 'premium_search:payment' %}?jenis_paket=1%20bulan&harga=54900"><button style="background-color: #9E60D1; border: none; border-radius: 5px; padding: 8px 12px; color: white; display: flex; align-items: center;">Berlangganan</button></a>
                                 </td>
                             </tr>
                             <tr class="text-white">
-                                <td class="py-3 px-4">3 Bulan  </td>
+                                <td class="py-3 px-4">3 Bulan</td>
                                 <td class="py-3 px-4">149.900</td>
                                 <td class="actions">
-                                    <button style="background-color: #9E60D1; border: none; border-radius: 5px; padding: 8px 12px; color: white;">Berlangganan</button>
+                                    <a href="{% url 'premium_search:payment' %}?jenis_paket=3%20bulan&harga=149900"><button style="background-color: #9E60D1; border: none; border-radius: 5px; padding: 8px 12px; color: white;">Berlangganan</button></a>
                                 </td>
                             </tr>
-
                             <tr class="text-white">
                                 <td class="py-3 px-4">6 Bulan</td>
                                 <td class="py-3 px-4">269.900</td>
                                 <td class="actions">
-                                    <button style="background-color: #9E60D1; border: none; border-radius: 5px; padding: 8px 12px; color: white;">Berlangganan</button>
+                                    <a href="{% url 'premium_search:payment' %}?jenis_paket=6%20bulan&harga=269900"><button style="background-color: #9E60D1; border: none; border-radius: 5px; padding: 8px 12px; color: white;">Berlangganan</button></a>
                                 </td>
                             </tr>
-
                             <tr class="text-white">
-                                <td class="py-3 px-4">12 Bulan</td>
+                                <td class="py-3 px-4">1 Tahun</td>
                                 <td class="py-3 px-4">479.900</td>
                                 <td class="actions">
-                                    <button style="background-color: #9E60D1; border: none; border-radius: 5px; padding: 8px 12px; color: white;">Berlangganan</button>
+                                    <a href="{% url 'premium_search:payment' %}?jenis_paket=1%20tahun&harga=479900"><button style="background-color: #9E60D1; border: none; border-radius: 5px; padding: 8px 12px; color: white;">Berlangganan</button></a>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
-
-                    
                 </div>
             </div>
-            
         </div>
-        
     </div>
-
-    
-    
-
 </body>
-</html>
-
 {% endblock content %}
