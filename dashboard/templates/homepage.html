@@ -1,7 +1,7 @@
 {% extends 'base_guest.html' %} {% load static %}
 {% block meta %}
 <head>
-    <title>Marmut</title>
+    <title>Marmut - A5</title>
 </head>
 {% endblock meta %}
 {% block content %}
@@ -9,11 +9,11 @@
 
     <div class="py-12 md:py-48 bg-[#151829]">
         <div class="max-w-4xl mx-auto px-4 md:px-0">
-            <h2 class="text-4xl md:text-7xl font-bold mb-3 text-white font-serif">Marmut</h2>
+            <h2 class="text-4xl md:text-7xl font-bold mb-3 text-white font-serif">Marmut - A5</h2>
             <p class="text-base md:text-lg mb-8 text-gray-400 md:max-w-lg">Listen to your favorite songs and podcasts now for free. Create playlists, and share with others to find people with the same music taste as you!</p>
             <div class="flex items-center">
-                <a href="#" class="bg-[#9e60d1] text-white px-6 py-3 rounded-full font-semibold hover:bg-[#b17bc9]">Sign Up</a>
-                <a href="#" class="border border-white-400 text-white px-6 py-3 rounded-full font-semibold hover:text-white hover:bg-gray-800 ml-4">Log in</a>
+                <a href="{% url 'authentication:main_register' %}" class="bg-[#9e60d1] text-white px-6 py-3 rounded-full font-semibold hover:bg-[#b17bc9]">Register</a>
+                <a href="{% url 'authentication:login' %}" class="border border-white-400 text-white px-6 py-3 rounded-full font-semibold hover:text-white hover:bg-gray-800 ml-4">Login</a>
             </div>
         </div>
     </div>

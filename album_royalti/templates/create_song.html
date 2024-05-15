@@ -1,4 +1,4 @@
-{% extends 'base_artist_songwriter.html' %}
+{% extends 'base_biasa.html' %}
 {% block meta %}
 <title>Create Song</title>
 {% endblock meta %}
@@ -6,48 +6,49 @@
 <div class="flex flex-col items-center justify-center font-sans">
     <div class="bg-gray-900 rounded-lg p-8">
         <h2 class="text-3xl font-semibold text-white mb-4 text-center font-serif">Create Lagu</h2>
-        <form class="space-y-4">
+        <form class="space-y-4" method="POST">
+            {% csrf_token %}
             <div>
-                <label for="email" class="text-white">Album</label>
-                <input type="email" id="email" name="email" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
+                <label for="album" class="text-white font-semibold">Album:</label>
+                <label for="album" class="text-white font-semibold">{{ judul_album.0 }}</label>
             </div>
             <div>
-                <label for="email" class="text-white">Judul</label>
-                <input type="email" id="email" name="email" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
+                <label for="judul" class="text-white">Judul</label>
+                <input type="text" id="judul" name="judul" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
             </div>
+            {% if isArtist == "True" %}
+            <div>
+                <label for="artist" class="text-white font-semibold">Artist:</label>
+                <label for="artist" class="text-white font-semibold">{{ nama_artist.0 }}</label>
+            </div>
+            {% else %}
             <div>
                 <label for="artist" class="text-white">Artist</label>
-                <select id="artist" name="artist[]" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
-                    <option value="Sasa">Sasaa</option>
-                    <option value="Dova">Dovaa</option>
-                    <option value="Lilac">Lilacc</option>
-                    <option value="Moi">Moii</option>
-                    <option value="Basdat why kuis sabtu sore">Basdat why kuis sabtu soree</option>
+                <select id="artist" name="artist" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
+                    <option value="">Select Artist</option>
+                    {% for record in records_artist  %}
+                    <option value="{{ record.0 }}">{{ record.3 }}</option>
+                    {% endfor %}
                 </select>
             </div>
+            {% endif %}
             <div>
-                <label for="songwriters" class="text-white">Songwriter</label>
-                <select id="songwriters" name="songwriters[]" multiple class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
-                    <option value="Sasa">Sasa</option>
-                    <option value="Dova">Dova</option>
-                    <option value="Lilac">Lilac</option>
-                    <option value="Moi">Moi</option>
-                    <option value="Basdat why kuis sabtu sore">Basdat why kuis sabtu sore</option>
-                </select>
+                <label for="songwriter" class="text-white">Songwriters</label><br>
+                {% for record in records_songwriter  %}
+                <input type="checkbox" id="songwriter_{{ record.0 }}" name="songwriter[]" value="{{ record.0 }}" class="mr-2">
+                <label for="songwriter_{{ record.0 }}" value="{{ record.0 }}" class="text-white">{{ record.3 }}</label><br>
+                {% endfor %}
             </div>
             <div>
-                <label for="genre" class="text-white">Genre</label>
-                <select id="genre" name="genre[]" multiple class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
-                    <option value="Jazz">Jazz</option>
-                    <option value="Pop">Pop</option>
-                    <option value="Pop rock">Pop rock</option>
-                    <option value="HipHop/Rap">HipHop/Rap</option>
-                    <option value="RnB/Soul">RnB/Soul</option>
-                </select>
+                <label for="genre" class="text-white">Genres</label><br>
+                {% for record in records_genre %}
+                <input type="checkbox" id="genre_{{ record.0 }}" name="genre[]" value="{{ record.0 }}" class="mr-2">
+                <label for="genre_{{ record.0 }}" value="{{ record.0 }}" class="text-white">{{ record.0 }}</label><br>
+                {% endfor %}
             </div>
             <div>
-                <label for="password" class="text-white">Durasi</label>
-                <input type="password" id="password" name="password" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
+                <label for="durasi" class="text-white">Durasi</label>
+                <input type="text" id="durasi" name="durasi" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
             </div>
             <div>
                 <button type="submit" class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold">Submit</button>
@@ -56,43 +57,18 @@
     </div>
 </div>
 
+{% if isSongwriter == "True" %}
 <script>
-    var isMouseDown = false;
-
-    document.getElementById("songwriters").addEventListener("mousedown", function (e) {
-        isMouseDown = true;
-        e.target.selected = !e.target.selected;
-        e.preventDefault();
-    });
-
-    document.addEventListener("mouseup", function () {
-        isMouseDown = false;
-    });
-
-    document.getElementById("songwriters").addEventListener("mousemove", function (e) {
-        if (isMouseDown) {
-            e.target.selected = !e.target.selected;
-            e.preventDefault();
-        }
-    });
-
-    var isMouseDownGenre = false;
-
-    document.getElementById("genre").addEventListener("mousedown", function (e) {
-        isMouseDownGenre = true;
-        e.target.selected = !e.target.selected;
-        e.preventDefault();
-    });
-
-    document.addEventListener("mouseup", function () {
-        isMouseDownGenre = false;
-    });
-
-    document.getElementById("genre").addEventListener("mousemove", function (e) {
-        if (isMouseDownGenre) {
-            e.target.selected = !e.target.selected;
-            e.preventDefault();
-        }
+    document.addEventListener('DOMContentLoaded', function () {
+        var defaultSongwriter = "{{ nama_songwriter.0 }}";
+        var songwriterCheckboxes = document.querySelectorAll('[name="songwriter[]"]');
+        songwriterCheckboxes.forEach(function (checkbox) {
+            if (checkbox.value === defaultSongwriter) {
+                checkbox.checked = true;
+                checkbox.disabled = true;
+            }
+        });
     });
 </script>
+{% endif %}
 {% endblock content %}

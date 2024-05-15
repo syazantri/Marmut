@@ -7,7 +7,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 </head>
 
-
+{% csrf_token %}
 <nav class="bg-[#151829] border-b border-gray-700 font-sans py-1">
     <div class="max-w-7xl mx-auto px-4">
         <div class="flex justify-between h-16">
@@ -17,18 +17,39 @@
             
             
             <div class="flex relative items-center">
-                
+                {% if request.COOKIES.role == "pengguna" or role == "pengguna" %}
                 <div class="relative flex items-center mr-2">
                     <input type="text" placeholder="Search" class="bg-gray-700 text-gray-300 hover:text-white hover:bg-gray-600 px-3 py-3 rounded h-10 pt-3 border-current placeholder-light">
                     <span class="absolute right-3 text-gray-400">
                         <i class="fas fa-search"></i>
                     </span>
                 </div>
-                <a href="#" class="text-gray-300 hover:text-[#b17bc9] px-3 py-3 font-semibold text-base">Chart</a>
-                <a href="#" class="text-gray-300 hover:text-[#b17bc9] px-3 py-3 font-semibold text-base">Manage Playlist</a>
-                <a href="#" class="text-gray-300 hover:text-[#b17bc9] px-3 py-3 font-semibold text-base">Dashboard</a>
-                <a href="#" class="text-gray-300 hover:text-[#b17bc9] px-3 py-3 font-semibold text-base mr-2">Logout</a>
-                <button  class="bg-[#9e60d1] text-white hover:text-white hover:bg-[#b17bc9] px-3 py-3 rounded font-semibold text-base h-10 pt-2">Premium Plan</button>
+                {% if request.COOKIES.isArtist == "True" or request.COOKIES.isSongwriter == "True" or isArtist == True or isSongwriter == True %}
+                <a href="{% url 'album_royalti:list_edit_album' %}" class="text-gray-300 hover:text-[#b17bc9] px-3 py-3 font-semibold text-sm">Kelola Album & Songs</a>
+                <a href="{% url 'album_royalti:cek_royalti' %}" class="text-gray-300 hover:text-[#b17bc9] px-3 py-3 font-semibold text-sm">Royalti</a>
+                {% endif %}
+                {% if request.COOKIES.isPodcaster == "True" or isPodcaster == True %}
+                <a href="{% url 'podcast_chart:list_podcast' %}" class="text-gray-300 hover:text-[#b17bc9] px-3 py-3 font-semibold text-sm">Kelola Podcast</a>
+                {% endif %}
+                <a href="{% url 'podcast_chart:lihat_chart' %}" class="text-gray-300 hover:text-[#b17bc9] px-3 py-3 font-semibold text-sm">Chart</a>
+                <a href="{% url 'playlist_player:user_playlist' %}" class="text-gray-300 hover:text-[#b17bc9] px-3 py-3 font-semibold text-sm">Kelola Playlist</a>
+                <a href="{% url 'dashboard:dashboard' %}" class="text-gray-300 hover:text-[#b17bc9] px-3 py-3 font-semibold text-sm">Dashboard</a>
+                <a href="{% url 'authentication:logout' %}" class="text-gray-300 hover:text-[#b17bc9] px-3 py-3 font-semibold text-sm mr-2">Logout</a>
+                {% if request.COOKIES.statusLangganan == "Premium" or status_langganan == "Premium" %}
+                <a href="{% url 'premium_search:downloaded_song' %}">
+                    <button  class="bg-[#9e60d1] text-white hover:text-white hover:bg-[#b17bc9] px-3 py-3 rounded font-semibold text-sm h-10 pt-2">Downloaded Songs</button>
+                </a>
+                {% else %}
+                <a href="{% url 'premium_search:cek_langganan' %}">
+                    <button  class="bg-[#9e60d1] text-white hover:text-white hover:bg-[#b17bc9] px-3 py-3 rounded font-semibold text-sm h-10 pt-2">Premium Plan</button>
+                </a>
+                {% endif %}
+                {% else %}
+                <a href="{% url 'album_royalti:list_album' %}" class="text-gray-300 hover:text-[#b17bc9] px-3 py-3 font-semibold text-base">Kelola Album</a>
+                <a href="{% url 'album_royalti:cek_royalti' %}" class="text-gray-300 hover:text-[#b17bc9] px-3 py-3 font-semibold text-base">Royalti</a>
+                <a href="{% url 'dashboard:dashboard_label' %}" class="text-gray-300 hover:text-[#b17bc9] px-3 py-3 font-semibold text-base">Dashboard</a>
+                <a href="{% url 'authentication:logout' %}" class="text-gray-300 hover:text-[#b17bc9] px-3 py-3 font-semibold text-base mr-2">Logout</a>
+                {% endif %}
             </div>
         </div>
     </div>

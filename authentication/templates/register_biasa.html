@@ -4,7 +4,8 @@
 <div class="flex flex-col items-center justify-center font-sans">
     <div class="bg-gray-900 rounded-lg p-8">
         <h2 class="text-3xl font-semibold text-white mb-4 text-center font-serif font-serif">Register</h2>
-        <form class="space-y-4">
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
             <div>
                 <label for="email" class="text-white">Email</label>
                 <input type="email" id="email" name="email" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
@@ -14,39 +15,39 @@
                 <input type="password" id="password" name="password" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
             </div>
             <div>
-                <label for="password" class="text-white">Nama</label>
-                <input type="password" id="password" name="nama" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
+                <label for="nama" class="text-white">Nama</label>
+                <input type="text" id="nama" name="nama" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
             </div>
             <div>
-                <label for="role" class="text-white">Gender</label>
-                <select id="role" name="role" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]">
-                    <option value="producer">Laki-laki</option>
-                    <option value="artist">Perempuan</option>
+                <label for="gender" class="text-white">Gender</label>
+                <select id="gender" name="gender" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]">
+                    <option value="1">Laki-laki</option>
+                    <option value="0">Perempuan</option>
                 </select>
             </div>
             <div>
-                <label for="password" class="text-white">Tempat Lahir</label>
-                <input type="password" id="password" name="tempat_lahir" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
+                <label for="tempat_lahir" class="text-white">Tempat Lahir</label>
+                <input type="text" id="tempat_lahir" name="tempat_lahir" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
             </div>
             <div>
-                <label for="password" class="text-white">Tanggal Lahir</label>
-                <input type="date" id="password" name="tanggal_lahir" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
+                <label for="tanggal_lahir" class="text-white">Tanggal Lahir</label>
+                <input type="date" id="tanggal_lahir" name="tanggal_lahir" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
             </div>
             <div>
-                <label for="password" class="text-white">Kota Asal</label>
-                <input type="password" id="password" name="kota_asal" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
+                <label for="kota_asal" class="text-white">Kota Asal</label>
+                <input type="text" id="kota_asal" name="kota_asal" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
             </div>
             <div>
                 <label class="text-white">Role</label>
                 <div class="flex flex-col gap-2">
                     <label class="text-white">
-                        <input type="checkbox" name="role[]" value="podcaster" class="mr-2 text-white">Podcaster
+                        <input type="checkbox" name="role" value="Podcaster" class="mr-2 text-white">Podcaster
                     </label>
                     <label class="text-white">
-                        <input type="checkbox" name="role[]" value="artist" class="mr-2 text-white">Artist
+                        <input type="checkbox" name="role" value="Artist" class="mr-2 text-white">Artist
                     </label>
                     <label class="text-white">
-                        <input type="checkbox" name="role[]" value="songwriter" class="mr-2 text-white">Songwriter
+                        <input type="checkbox" name="role" value="Songwriter" class="mr-2 text-white">Songwriter
                     </label>
                 </div>
             </div>
