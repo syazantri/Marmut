@@ -3,7 +3,7 @@ from django.db import connection
 from django.contrib.auth.decorators import login_required
 import uuid
 from datetime import datetime, timedelta
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 
 def riwayat(request):
     email = request.COOKIES.get('email') 
@@ -87,41 +87,52 @@ def process_payment(request):
         if not email:
             return HttpResponse("Error: No email found in cookies.", status=400)
         
-        with connection.cursor() as cursor:
-            cursor.execute("SET SEARCH_PATH TO A5")
-            cursor.execute("SELECT COUNT(*) FROM TRANSACTION WHERE email = %s AND timestamp_berakhir > CURRENT_TIMESTAMP", [email])
-            active_subscription_count = cursor.fetchone()[0]
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("SET SEARCH_PATH TO A5")
+                cursor.execute("SELECT COUNT(*) FROM TRANSACTION WHERE email = %s AND timestamp_berakhir > CURRENT_TIMESTAMP", [email])
+                active_subscription_count = cursor.fetchone()[0]
+                
+                if active_subscription_count > 0:
+                    return HttpResponse("Error: User already has an active subscription.", status=400)
             
-            if active_subscription_count > 0:
-                return HttpResponse("Error: User already has an active subscription.")
-        
-        package_durations = {
-            '1 bulan': 1,
-            '3 bulan': 3,
-            '6 bulan': 6,
-            '1 tahun': 12
-        }
+            package_durations = {
+                '1 bulan': 1,
+                '3 bulan': 3,
+                '6 bulan': 6,
+                '1 tahun': 12
+            }
 
-        if jenis_paket not in package_durations:
-            return HttpResponse("Error: Invalid package type.", status=400)
+            if jenis_paket not in package_durations:
+                return HttpResponse("Error: Invalid package type.", status=400)
 
-        duration = package_durations[jenis_paket]
-        start_date = datetime.now()
-        end_date = start_date + timedelta(days=duration * 30)
+            duration = package_durations[jenis_paket]
+            start_date = datetime.now()
+            end_date = start_date + timedelta(days=duration * 30)
 
-        transaction_id = str(uuid.uuid4())
+            transaction_id = str(uuid.uuid4())
 
-        with connection.cursor() as cursor:
-            cursor.execute("""
-                INSERT INTO TRANSACTION (id, jenis_paket, email, timestamp_dimulai, timestamp_berakhir, metode_bayar, nominal)
-                VALUES (%s, %s, %s, %s, %s, %s, %s);
-            """, [transaction_id, jenis_paket, email, start_date, end_date, metode_bayar, harga])
+            with connection.cursor() as cursor:
+                # Insert into TRANSACTION table
+                cursor.execute("""
+                    INSERT INTO TRANSACTION (id, jenis_paket, email, timestamp_dimulai, timestamp_berakhir, metode_bayar, nominal)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s);
+                """, [transaction_id, jenis_paket, email, start_date, end_date, metode_bayar, harga])
 
-            cursor.execute("SELECT COUNT(*) FROM PREMIUM WHERE email = %s", [email])
-            if cursor.fetchone()[0] == 0:
-                cursor.execute("INSERT INTO PREMIUM (email) VALUES (%s);", [email])
-                cursor.execute("DELETE FROM NONPREMIUM WHERE email = %s;", [email])
+                # Check if the user is in the PREMIUM table
+                cursor.execute("SELECT COUNT(*) FROM PREMIUM WHERE email = %s", [email])
+                if cursor.fetchone()[0] == 0:
+                    cursor.execute("INSERT INTO PREMIUM (email) VALUES (%s);", [email])
+                    
+                    # Delete the user from NONPREMIUM table
+                    cursor.execute("DELETE FROM NONPREMIUM WHERE email = %s;", [email])
+                    
+            return redirect('dashboard:dashboard')
 
+        except Exception as e:
+            print(f"Error: {e}")
+            return HttpResponse(f"Error: {e}", status=500)
+    
     return HttpResponse("Invalid request.", status=400)
 
 def downloaded_song(request):
@@ -132,32 +143,42 @@ def downloaded_song(request):
     with connection.cursor() as cursor:
         cursor.execute("SET SEARCH_PATH TO A5")
         cursor.execute("""
-            SELECT k.judul, a.nama_artist, ds.tanggal_download
+            SELECT k.judul, ak.nama
             FROM DOWNLOADED_SONG ds
             JOIN SONG s ON ds.id_song = s.id_konten
             JOIN KONTEN k ON s.id_konten = k.id
             JOIN ARTIST a ON s.id_artist = a.id
+            JOIN AKUN ak ON a.email_akun = ak.email
             WHERE ds.email_downloader = %s
-            ORDER BY ds.tanggal_download DESC
         """, [email])
         rows = cursor.fetchall()
         songs = [
             {
-                'judul_lagu': row[0],
-                'oleh': row[1],
-                'tanggal_download': row[2]
+                'judul': row[0],
+                'nama_artist': row[1],
             }
             for row in rows
         ]
 
     return render(request, 'downloaded_song.html', {'songs': songs})
 
+def delete(request, id_song):
+    email = request.COOKIES.get('email')
+    if not email:
+        return HttpResponse("Error: No email found in cookies.", status=400)
+
+    with connection.cursor() as cursor:
+        cursor.execute("SET SEARCH_PATH TO A5")
+        cursor.execute("""
+            DELETE FROM DOWNLOADED_SONG
+            WHERE id_song = %s AND email_downloader = %s
+        """, [id_song, email])
+
+    return JsonResponse({'message': 'Song deleted successfully', 'id_song': id_song})
+
+
 def search_bar(request):
     return render(request, 'search.html')
 
 def not_found(request):
     return render(request, 'not_found.html')
-
-def delete(request):
-    return render(request, 'delete.html')
-
