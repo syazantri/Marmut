@@ -140,10 +140,6 @@ def process_payment(request):
     
     return HttpResponse("Invalid request.", status=400)
 
-from django.shortcuts import render
-from django.db import connection
-from django.http import HttpResponse
-
 def downloaded_song(request):
     email = request.COOKIES.get('email')
     if not email:
@@ -172,7 +168,6 @@ def downloaded_song(request):
 
     return render(request, 'downloaded_song.html', {'songs': songs})
 
-
 def delete(request):
     email = request.COOKIES.get('email')
     id_song = request.GET.get('id_song')
@@ -191,7 +186,60 @@ def delete(request):
 
 
 def search_bar(request):
-    return render(request, 'search.html')
+    query = request.GET.get('query', '').lower()  # Get the query and convert it to lowercase
+    if query:
+        results = []
+        with connection.cursor() as cursor:
 
+            cursor.execute("SET SEARCH_PATH TO A5")
+            # Searching in Podcasts
+            cursor.execute("""
+                SELECT 'PODCAST' AS type,
+                k.judul AS judul,
+                a.nama AS oleh
+                FROM podcast p
+                JOIN konten k ON p.id_konten = k.id
+                JOIN podcaster pod ON p.email_podcaster = pod.email
+                JOIN akun a ON pod.email = a.email
+                WHERE LOWER(k.judul) LIKE %s
+            """, [f"%{query}%"])
+            results.extend(cursor.fetchall())
+
+            # Searching in Songs
+            cursor.execute("""
+                SELECT 'SONG' AS type,
+                k.judul AS judul,
+                a.nama AS oleh
+                FROM song s
+                JOIN konten k ON s.id_konten = k.id
+                JOIN artist ar ON s.id_artist = ar.id
+                JOIN akun a ON ar.email_akun = a.email
+                WHERE LOWER(k.judul) LIKE %s
+            """, [f"%{query}%"])
+            results.extend(cursor.fetchall())
+
+            # Searching in User Playlists
+            cursor.execute("""
+                SELECT 'USER PLAYLIST' AS type,
+                up.judul AS judul,
+                    a.nama AS oleh
+                FROM user_playlist up
+                JOIN akun a ON up.email_pembuat = a.email
+                WHERE LOWER(up.judul) LIKE %s
+            """, [f"%{query}%"])
+            results.extend(cursor.fetchall())
+
+        context = {
+            'query': query,
+            'results': [{
+                'type': result[0],
+                'title': result[1],
+                'by': result[2],
+                'url': '#'  # Placeholder for the URL. Update this as needed.
+            } for result in results]
+        }
+        return render(request, 'search.html', context)
+    else:
+        return render(request, 'not_found.html', {'query': query})
 def not_found(request):
     return render(request, 'not_found.html')

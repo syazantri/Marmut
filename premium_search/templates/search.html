@@ -1,17 +1,18 @@
-{% extends 'base_biasa.html'%}
+{% extends 'base_biasa.html' %}
 
 {% block meta %}
-    <title>Search</title>
+    <title>Search Results for "{{ query }}"</title>
 {% endblock meta %}
 
 {% block content %}
 <body class="h-screen flex justify-center bg-[#151829] text-white">
-
     <div class="py-10 bg-[#151829]">
         <div class="max-w-4xl mx-auto">
-            <h2 class="text-2xl font-bold mb-5 text-white font-serif">Hasil Pencarian "helmet"</h2>
+            {% if results %}
+            <h2 class="text-2xl font-bold mb-5 text-white font-serif">Hasil Pencarian "{{ query }}"</h2>
             <div class="-mx-4">
                 <div class="overflow-x-auto">
+                    
                     <table class="min-w-full bg-[#151829] rounded-lg overflow-hidden">
                         <thead class="bg-[#9e60d1] text-white">
                             <tr>
@@ -22,62 +23,27 @@
                             </tr>
                         </thead>
                         <tbody class="text-gray-400 bg-[#382e47]">
-                            <tr class="text-white">
-                                <td class="py-3 px-4">PODCAST</td>
-                                <td class="py-3 px-4">SAFETY FOR SURE : HELMET ON TOP</td>
-                                <td class="py-3 px-4">U DIN</td>
-                                <td class="actions">
-                                    <button style="background-color: #9E60D1; border: none; border-radius: 5px; padding: 8px 12px; color: white;">Lihat</button>
-                                </td>
-                            </tr>
-                            <tr class="text-white">
-                                <td class="py-3 px-4">SONG</td>
-                                <td class="py-3 px-4">Helmet</td>
-                                <td class="py-3 px-4">Fafa</td>
-                                <td class="actions">
-                                    <button style="background-color: #9E60D1; border: none; border-radius: 5px; padding: 8px 12px; color: white;">Lihat</button>
-                                </td>
-                            </tr>
-
-                            <tr class="text-white">
-                                <td class="py-3 px-4">PODCAST</td>
-                                <td class="py-3 px-4">USE YOUR HELMET!!!!</td>
-                                <td class="py-3 px-4">Police</td>
-                                <td class="actions">
-                                    <button style="background-color: #9E60D1; border: none; border-radius: 5px; padding: 8px 12px; color: white;">Lihat</button>
-                                </td>
-                            </tr>
-
-                            <tr class="text-white">
-                                <td class="py-3 px-4">USER PLAYLIST</td>
-                                <td class="py-3 px-4">TOP 100 SONG : To Listen In Your Helmet</td>
-                                <td class="py-3 px-4">Riders</td>
-                                <td class="actions">
-                                    <button style="background-color: #9E60D1; border: none; border-radius: 5px; padding: 8px 12px; color: white;">Lihat</button>
-                                </td>
-                            </tr>
-                            <tr class="text-white">
-                                <td class="py-3 px-4">...</td>
-                                <td class="py-3 px-4">...</td>
-                                <td class="py-3 px-4">...</td>
-                                <td class="py-3 px-4">...</td>
-                                
-                            </tr>
+                            
+                                {% for result in results %}
+                                <tr class="text-white">
+                                    <td class="py-3 px-4">{{ result.type }}</td>
+                                    <td class="py-3 px-4">{{ result.title }}</td>
+                                    <td class="py-3 px-4">{{ result.by }}</td>
+                                    <td class="actions">
+                                        <button onclick="location.href='{{ result.url }}'" style="background-color: #9E60D1; border: none; border-radius: 5px; padding: 8px 12px; color: white;">Lihat</button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr class="text-white">
+                                    <h2 class="text-2xl font-bold mb-5 text-white font-serif">Maaf, pencarian untuk "{{ query }}" tidak ditemukan</h2>
+                                </tr>
+                            {% endif %}
                         </tbody>
                     </table>
-
-                    
                 </div>
             </div>
-            
         </div>
-        
     </div>
-
-    
-    
-
 </body>
-</html>
-
 {% endblock content %}
