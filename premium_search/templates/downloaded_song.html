@@ -5,8 +5,23 @@
 {% endblock meta %}
 
 {% block content %}
-<body class="h-screen flex justify-center bg-[#151829] text-white">
+<style>
+    .modal-button {
+        padding: 8px 12px;
+        border-radius: 5px;
+        margin-top: 10px;
+        background-color: #9E60D1;
+        border: none;
+        color: white;
+        cursor: pointer;
+    }
 
+    .modal-button:hover {
+        background-color: #B17BC9;
+    }
+</style>
+
+<body class="h-screen flex justify-center bg-[#151829] text-white">
     <div class="py-10 bg-[#151829]">
         <div class="max-w-4xl mx-auto">
             <h2 class="text-4xl font-bold mb-5 text-white font-serif">Daftar Lagu</h2>
@@ -21,54 +36,55 @@
                             </tr>
                         </thead>
                         <tbody class="text-gray-400 bg-[#382e47]">
-                            <tr class="text-white">
-                                <td class="py-3 px-4">Dear Maria Count Me In</td>
-                                <td class="py-3 px-4">All Time Low</td>
+                            {% for song in songs %}
+                            <tr class="text-white" data-id="{{ song.id_song }}">
+                                <td class="py-3 px-4">{{ song.judul }}</td>
+                                <td class="py-3 px-4">{{ song.nama_artist }}</td>
                                 <td class="actions">
-                                    <button style="background-color: #9E60D1; border: none; border-radius: 5px; padding: 8px 12px; color: white;">Lihat</button>
-                                    <button style="background-color: #B17BC9; border: none; border-radius: 5px; padding: 8px 12px; color: white; margin-left: 5px;">Hapus</button>
-                                </td>
-                                
-                            </tr>
-                            <tr class="text-white">
-                                <td class="py-3 px-4">Still Waiting</td>
-                                <td class="py-3 px-4">Sum41</td>
-                                <td class="actions">
-                                    <button style="background-color: #9E60D1; border: none; border-radius: 5px; padding: 8px 12px; color: white;">Lihat</button>
-                                    <button style="background-color: #B17BC9; border: none; border-radius: 5px; padding: 8px 12px; color: white; margin-left: 5px;">Hapus</button>
+                                    <a href="{% url 'playlist_player:play_song' %}" style="background-color: #9E60D1; border: none; border-radius: 5px; padding: 8px 12px; color: white; text-decoration: none;">Lihat</a>
+                                    <button class="btn-delete" data-id="{{ song.id_song }}" data-title="{{ song.judul }}" style="background-color: #B17BC9; border: none; border-radius: 5px; padding: 8px 12px; color: white; text-decoration: none; margin-left: 5px;">Hapus</button>
                                 </td>
                             </tr>
-
-                            <tr class="text-white">
-                                <td class="py-3 px-4">Thks fr th Mmrs</td>
-                                <td class="py-3 px-4">Fall Out Boys</td>
-                                <td class="actions">
-                                    <button style="background-color: #9E60D1; border: none; border-radius: 5px; padding: 8px 12px; color: white;">Lihat</button>
-                                    <button style="background-color: #B17BC9; border: none; border-radius: 5px; padding: 8px 12px; color: white; margin-left: 5px;">Hapus</button>
-                                </td>
-                            </tr>
-                            <tr class="text-white">
-                                <td class="py-3 px-4">...</td>
-                                <td class="py-3 px-4">...</td>
-                                <td class="py-3 px-4">...</td>
-                                
-                            </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
-
-                    
                 </div>
-                <p style="text-align: left; margin-top: 20px;"><a href="#" style="background-color: #9E60D1; border: none; border-radius: 5px; padding: 8px 12px; color: white; text-decoration: none;">Kembali</a></p>
+                <p style="text-align: left; margin-top: 20px;"><a href="{% url 'premium_search:cek_langganan' %}" style="background-color: #9E60D1; border: none; border-radius: 5px; padding: 8px 12px; color: white; text-decoration: none;">Kembali</a></p>
             </div>
-            
         </div>
-        
+    </div>
+    <!-- Modal -->
+    <div id="deleteModal" style="display:none; position: fixed; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background: white; padding: 20px; border-radius: 10px; width: 300px; text-align: center;">
+            <p id="modalText"></p>
+            <button onclick="closeModal()" class="modal-button">Kembali</button>
+        </div>
     </div>
 
-    
-    
+    <script>
+        document.querySelectorAll('.btn-delete').forEach(button => {
+            button.addEventListener('click', function() {
+                const songId = this.getAttribute('data-id');
+                const songTitle = this.getAttribute('data-title');
+                fetch(`{% url 'premium_search:delete' %}?id_song=${songId}`, {
+                    method: 'GET',
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.message === 'Song deleted successfully') {
+                        document.getElementById('modalText').innerText = `Berhasil menghapus Lagu dengan judul '${songTitle}' dari daftar unduhan!`;
+                        document.getElementById('deleteModal').style.display = 'flex';
+                        // Optionally remove the row from the table
+                        this.closest('tr').remove();
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
 
+        function closeModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+        }
+    </script>
 </body>
-</html>
-
 {% endblock content %}

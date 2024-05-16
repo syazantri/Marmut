@@ -19,10 +19,13 @@
             <div class="flex relative items-center">
                 {% if request.COOKIES.role == "pengguna" or role == "pengguna" %}
                 <div class="relative flex items-center mr-2">
-                    <input type="text" placeholder="Search" class="bg-gray-700 text-gray-300 hover:text-white hover:bg-gray-600 px-3 py-3 rounded h-10 pt-3 border-current placeholder-light">
-                    <span class="absolute right-3 text-gray-400">
-                        <i class="fas fa-search"></i>
-                    </span>
+                    <form action="{% url 'premium_search:search_bar' %}" method="GET" class="relative flex items-center mr-2">
+                        <input type="text" name="query" placeholder="Search" class="bg-gray-700 text-gray-300 hover:text-white hover:bg-gray-600 px-3 py-3 rounded h-10 pt-3 border-current placeholder-light">
+                        <button type="submit" class="absolute right-3 text-gray-400">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+                    
                 </div>
                 {% if request.COOKIES.isArtist == "True" or request.COOKIES.isSongwriter == "True" or isArtist == True or isSongwriter == True %}
                 <a href="{% url 'album_royalti:list_edit_album' %}" class="text-gray-300 hover:text-[#b17bc9] px-3 py-3 font-semibold text-sm">Kelola Album & Songs</a>

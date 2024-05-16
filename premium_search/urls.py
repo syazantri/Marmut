@@ -11,4 +11,5 @@ urlpatterns = [
     path('delete/',delete,name='delete'),
     path('payment/',payment,name='payment'),
     path('riwayat/',riwayat,name='riwayat'),
+    path('process_payment/', process_payment, name='process_payment'),
 ]
