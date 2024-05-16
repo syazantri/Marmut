@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect
 from django.db import connection
-from django.contrib.auth.decorators import login_required
 import uuid
 from datetime import datetime, timedelta
 from django.http import HttpResponse, JsonResponse
@@ -68,6 +67,8 @@ def cek_langganan(request):
             
             if not result:
                 cursor.execute("INSERT INTO PREMIUM (email) VALUES (%s);", [email])
+                cursor.execute("DELETE FROM NONPREMIUM WHERE email = %s;", [email])
+                cursor.commit()
         
     return render(request, 'cek_langganan.html')
 
@@ -94,7 +95,7 @@ def process_payment(request):
                 active_subscription_count = cursor.fetchone()[0]
                 
                 if active_subscription_count > 0:
-                    return HttpResponse("Error: User already has an active subscription.", status=400)
+                    return render(request, 'already_subscribed.html')
             
             package_durations = {
                 '1 bulan': 1,
@@ -121,11 +122,15 @@ def process_payment(request):
 
                 # Check if the user is in the PREMIUM table
                 cursor.execute("SELECT COUNT(*) FROM PREMIUM WHERE email = %s", [email])
-                if cursor.fetchone()[0] == 0:
+                
+                if not cursor.fetchone():
                     cursor.execute("INSERT INTO PREMIUM (email) VALUES (%s);", [email])
-                    
+                    print(email)
+
                     # Delete the user from NONPREMIUM table
                     cursor.execute("DELETE FROM NONPREMIUM WHERE email = %s;", [email])
+                    cursor.commit()
+                    
                     
             return redirect('dashboard:dashboard')
 
@@ -135,6 +140,10 @@ def process_payment(request):
     
     return HttpResponse("Invalid request.", status=400)
 
+from django.shortcuts import render
+from django.db import connection
+from django.http import HttpResponse
+
 def downloaded_song(request):
     email = request.COOKIES.get('email')
     if not email:
@@ -143,7 +152,7 @@ def downloaded_song(request):
     with connection.cursor() as cursor:
         cursor.execute("SET SEARCH_PATH TO A5")
         cursor.execute("""
-            SELECT k.judul, ak.nama
+            SELECT k.judul, ak.nama, ds.id_song
             FROM DOWNLOADED_SONG ds
             JOIN SONG s ON ds.id_song = s.id_konten
             JOIN KONTEN k ON s.id_konten = k.id
@@ -154,6 +163,7 @@ def downloaded_song(request):
         rows = cursor.fetchall()
         songs = [
             {
+                'id_song': row[2],
                 'judul': row[0],
                 'nama_artist': row[1],
             }
@@ -162,8 +172,11 @@ def downloaded_song(request):
 
     return render(request, 'downloaded_song.html', {'songs': songs})
 
-def delete(request, id_song):
+
+def delete(request):
     email = request.COOKIES.get('email')
+    id_song = request.GET.get('id_song')
+
     if not email:
         return HttpResponse("Error: No email found in cookies.", status=400)
 

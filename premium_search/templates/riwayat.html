@@ -5,33 +5,39 @@
 
     <div class="py-10 bg-[#151829]">
         <div class="max-w-4xl mx-auto">
-            <h2 class="text-center text-3xl font-bold text-white font-serif mb-5">Premium Subscription History</h2>
+            <h2 class="text-center text-3xl font-bold text-white font-serif mb-5">Riwayat Transaksi Paket</h2>
             <div class="card bg-[#2c2f38] text-white rounded-lg overflow-hidden">
-                <div class="card-header bg-[#9e60d1] p-3">
-                    <h4 class="text-lg font-semibold">Subscription History</h4>
-                </div>
+                
                 <div class="card-body p-3">
                     {% if transactions %}
                     <div class="overflow-x-auto">
                         <table class="min-w-full bg-[#2c2f38] rounded-lg overflow-hidden">
                             <thead class="bg-[#9e60d1] text-white">
                                 <tr>
-                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">ID</th>
-                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Package Type</th>
-                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Start Date</th>
-                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">End Date</th>
-                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Payment Method</th>
-                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Amount</th>
+                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Jenis Paket</th>
+                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Tanggal Dimulai</th>
+                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Tanggal Selesai</th>
+                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Metode Pembayaran</th>
+                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Nominal</th>
                                 </tr>
                             </thead>
                             <tbody class="text-gray-400 bg-[#382e47]">
                                 {% for transaction in transactions %}
                                 <tr class="text-white">
-                                    <td class="py-3 px-4">{{ transaction.id }}</td>
                                     <td class="py-3 px-4">{{ transaction.jenis_paket }}</td>
                                     <td class="py-3 px-4">{{ transaction.timestamp_dimulai }}</td>
                                     <td class="py-3 px-4">{{ transaction.timestamp_berakhir }}</td>
-                                    <td class="py-3 px-4">{{ transaction.metode_bayar }}</td>
+                                    <td class="py-3 px-4">
+                                        {% if transaction.metode_bayar == "e_wallet" %}
+                                            E-Wallet
+                                        {% elif transaction.metode_bayar == "transfer_bank" %}
+                                            Transfer Bank
+                                        {% elif transaction.metode_bayar == "kartu_kredit" %}
+                                            Kartu Kredit
+                                        {% else %}
+                                            {{ transaction.metode_bayar }}
+                                        {% endif %}
+                                    </td>
                                     <td class="py-3 px-4">{{ transaction.nominal }}</td>
                                 </tr>
                                 {% endfor %}
@@ -39,10 +45,11 @@
                         </table>
                     </div>
                     {% else %}
-                    <p class="mt-3">No subscription history found.</p>
+                    <p class="mt-3" style="text-align: center;">Tidak ada riwayat transaksi.</p>
                     {% endif %}
-                </div>
+                </div>            
             </div>
+            <a href="{% url 'premium_search:cek_langganan' %}"><button style="background-color: #9E60D1; border: none; border-radius: 5px; padding: 8px 12px; color: white;">Kembali</button></a>
         </div>
     </div>
 
