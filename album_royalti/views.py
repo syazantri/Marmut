@@ -14,7 +14,12 @@ def cek_royalti(request):
     records_royalti_songwriter = []
 
     if role == "label":
-        idPemilikCiptaLabel = request.COOKIE.get('idPemilikCiptaLabel')
+        idPemilikCiptaLabel = request.COOKIES.get('idPemilikCiptaLabel')
+
+        cursor.execute(
+            f'select rate_royalti from pemilik_hak_cipta where id = \'{idPemilikCiptaLabel}\'')
+        rate_royalti_label = cursor.fetchone()
+
         cursor.execute(
             f'select id_song, jumlah from royalti where id_pemilik_hak_cipta = \'{idPemilikCiptaLabel}\'')
         records_royalti_label = cursor.fetchall()
@@ -23,18 +28,39 @@ def cek_royalti(request):
                 cursor.execute(
                     f'select id_album, total_play, total_download from song where id_konten = \'{records_royalti_label[i][0]}\'')
                 records_royalti_label[i] = records_royalti_label[i] + cursor.fetchone()
+
+                cursor.execute(
+                    f'''
+                    UPDATE royalti
+                    SET jumlah = {int(records_royalti_label[i][3])} * {int(rate_royalti_label[0])}
+                    WHERE id_pemilik_hak_cipta = \'{idPemilikCiptaLabel}\' AND id_song = \'{records_royalti_label[i][0]}\'
+                    '''
+                )
+
                 cursor.execute(
                     f'select judul from album where id = \'{records_royalti_label[i][2]}\'')
                 records_royalti_label[i] = records_royalti_label[i] + cursor.fetchone()
                 cursor.execute(
                     f'select judul from konten where id = \'{records_royalti_label[i][0]}\'')
                 records_royalti_label[i] = records_royalti_label[i] + cursor.fetchone()
+
+            for i in range(len(records_royalti_label)):
+                cursor.execute(
+                    f'select jumlah from royalti where id_pemilik_hak_cipta = \'{idPemilikCiptaLabel}\'')
+                tuple_royalti_label = (int(records_royalti_label[i][3]) * int(rate_royalti_label[0]),)
+                records_royalti_label[i] = records_royalti_label[i] + tuple_royalti_label
+
+            connection.commit()
     else:
         isArtist = request.COOKIES.get('isArtist')
         isSongwriter = request.COOKIES.get('isSongwriter')
 
         if isArtist == "True" :
             idPemilikCiptaArtist = request.COOKIES.get('idPemilikCiptaArtist')
+            cursor.execute(
+                f'select rate_royalti from pemilik_hak_cipta where id = \'{idPemilikCiptaArtist}\'')
+            rate_royalti_artist = cursor.fetchone()
+
             cursor.execute(
                 f'select id_song, jumlah from royalti where id_pemilik_hak_cipta = \'{idPemilikCiptaArtist}\'')
             records_royalti_artist = cursor.fetchall()
@@ -43,14 +69,35 @@ def cek_royalti(request):
                     cursor.execute(
                         f'select id_album, total_play, total_download from song where id_konten = \'{records_royalti_artist[i][0]}\'')
                     records_royalti_artist[i] = records_royalti_artist[i] + cursor.fetchone()
+
+                    cursor.execute(
+                    f'''
+                    UPDATE royalti
+                    SET jumlah = {int(records_royalti_artist[i][3])} * {int(rate_royalti_artist[0])}
+                    WHERE id_pemilik_hak_cipta = \'{idPemilikCiptaArtist}\' AND id_song = \'{records_royalti_artist[i][0]}\'
+                    '''
+                    )
+                    
                     cursor.execute(
                         f'select judul from album where id = \'{records_royalti_artist[i][2]}\'')
                     records_royalti_artist[i] = records_royalti_artist[i] + cursor.fetchone()
                     cursor.execute(
                         f'select judul from konten where id = \'{records_royalti_artist[i][0]}\'')
                     records_royalti_artist[i] = records_royalti_artist[i] + cursor.fetchone()
-        else:
+
+                for i in range(len(records_royalti_artist)):
+                    cursor.execute(
+                        f'select jumlah from royalti where id_pemilik_hak_cipta = \'{idPemilikCiptaArtist}\'')
+                    tuple_royalti_artist = (int(records_royalti_artist[i][3]) * int(rate_royalti_artist[0]),)
+                    records_royalti_artist[i] = records_royalti_artist[i] + tuple_royalti_artist
+
+
+        if isSongwriter == "True" :
             idPemilikCiptaSongwriter = request.COOKIES.get('idPemilikCiptaSongwriter')
+            cursor.execute(
+                f'select rate_royalti from pemilik_hak_cipta where id = \'{idPemilikCiptaSongwriter}\'')
+            rate_royalti_songwriter = cursor.fetchone()
+
             cursor.execute(
                 f'select id_song, jumlah from royalti where id_pemilik_hak_cipta = \'{idPemilikCiptaSongwriter}\'')
             records_royalti_songwriter = cursor.fetchall()
@@ -59,12 +106,29 @@ def cek_royalti(request):
                     cursor.execute(
                         f'select id_album, total_play, total_download from song where id_konten = \'{records_royalti_songwriter[i][0]}\'')
                     records_royalti_songwriter[i] = records_royalti_songwriter[i] + cursor.fetchone()
+
+                    cursor.execute(
+                    f'''
+                    UPDATE royalti
+                    SET jumlah = {int(records_royalti_songwriter[i][3])} * {int(rate_royalti_songwriter[0])}
+                    WHERE id_pemilik_hak_cipta = \'{idPemilikCiptaSongwriter}\' AND id_song = \'{records_royalti_songwriter[i][0]}\'
+                    '''
+                    )
+
                     cursor.execute(
                         f'select judul from album where id = \'{records_royalti_songwriter[i][2]}\'')
                     records_royalti_songwriter[i] = records_royalti_songwriter[i] + cursor.fetchone()
                     cursor.execute(
                         f'select judul from konten where id = \'{records_royalti_songwriter[i][0]}\'')
                     records_royalti_songwriter[i] = records_royalti_songwriter[i] + cursor.fetchone()
+
+                for i in range(len(records_royalti_songwriter)):
+                    cursor.execute(
+                        f'select jumlah from royalti where id_pemilik_hak_cipta = \'{idPemilikCiptaSongwriter}\'')
+                    tuple_royalti_songwriter = (int(records_royalti_songwriter[i][3]) * int(rate_royalti_songwriter[0]),)
+                    records_royalti_songwriter[i] = records_royalti_songwriter[i] + tuple_royalti_songwriter
+
+        connection.commit()
 
     context = {
         'status': 'success',
