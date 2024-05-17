@@ -25,13 +25,7 @@
             <a href="{% url 'playlist_player:play_user_playlist' %}?playlist_id={{ playlist_id }}">
                 <button class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold">Shuffle Play</button>
             </a>
-            <form method="POST" action="{% url 'playlist_player:play_user_playlist' %}">
-                {% csrf_token %}
-                <input type="hidden" name="playlist_id" value="{{ playlist_id }}">
-                <button type="submit" name="shuffle_play" class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold">
-                    Shuffle Play
-                </button>
-            </form>
+
             <a href="{% url 'dashboard:dashboard' %}">
                 <button class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold">Kembali</button>
             </a>
@@ -80,3 +74,27 @@
 </html>
 
 {% endblock content %}
+
+<script>
+    document.getElementById("shuffle-play-btn").addEventListener("click", function() {
+        var playlistId = "{{ playlist_id }}";
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "{% url 'playlist_player:play_user_playlist' %}?playlist_id=" + playlistId, true);
+        xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    // Response received successfully, handle it as needed
+                    // For example, you can update the page content with the received data
+                    console.log(xhr.responseText);
+                } else {
+                    // Error handling
+                    console.error("Error:", xhr.statusText);
+                }
+            }
+        };
+        xhr.send("shuffle_play=true");
+    });
+    </script>
+    

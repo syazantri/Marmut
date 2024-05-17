@@ -158,28 +158,33 @@ def add_song_to_user_playlist(request):
 
         connection.commit()
         url = reverse('playlist_player:pesan_add_song_to_playlist')
-        url_with_params = f"{url}?playlist_id={playlist_id} song_id={song_id}"
+        url_with_params = f"{url}?song_id={song_id}"
         return redirect(url_with_params)
+
     cursor.execute(
         f'select id_playlist, judul from user_playlist where email_pembuat = \'{email}\''
     )
     list_playlist = cursor.fetchall()
     context = {
         'records_song': records_song,
-        'list_playlist': list_playlist 
+        'list_playlist': list_playlist,
+
     }
     return render(request, 'add_song_to_user_playlist.html', context)
 
 def pesan_add_song_to_playlist(request):
     song_id = request.GET.get('song_id')
-    playlist_id = request.GET.get('playlist_id')
+    # playlist_id = request.GET.get('playlist_id')
+    records = []
+    cursor.execute(
+        f'SELECT judul from konten where konten.id = \'{song_id}\'')
+    records = cursor.fetchall()
+
     context = {
-        'song_id': song_id,
-        'playlist_id': playlist_id
+        'records': records,
+        'song_id': song_id
     }
     return render(request, 'pesan_add_song_to_playlist.html', context)
-
-
 
 def play_user_playlist(request): 
     playlist_id = request.GET.get('playlist_id')
@@ -221,7 +226,6 @@ def play_user_playlist(request):
                     f'INSERT INTO akun_play_song (email_pemain, id_song, waktu) '
                     f'VALUES (\'{email}\', \'{song[0]}\', \'{current_timestamp}\')')
 
-            # connection.commit()
             connection.commit()
             return redirect('playlist_player:play_user_playlist')
         
@@ -229,12 +233,15 @@ def play_user_playlist(request):
             for song in records_song:
                 song_id = song[0]
                 if f'play_song_{song_id}' in request.POST:
+                    current_timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     cursor.execute(
                         f'INSERT INTO akun_play_song (email_pemain, id_song, waktu) '
                         f'VALUES (\'{email}\', \'{song_id}\', \'{current_timestamp}\')')
-                    # connection.commit()
+
                     connection.commit()
-                    return redirect('playlist_player:play_song')
+                    url = reverse('playlist_player:play_song')
+                    url_with_params = f"{url}?song_id={song_id}"
+                    return redirect(url_with_params)
 
     # Konversi durasi total playlist ke format _ jam _ menit
     total_durasi_menit = records_playlist[0][7]
@@ -253,3 +260,35 @@ def play_user_playlist(request):
     response = render(request, 'play_user_playlist.html', context)
     response.set_cookie('playlist_id', playlist_id)
     return response
+
+
+def ubah_playlist(request, id_playlist):
+    if request.method == 'POST':
+        judul = request.POST['judul_playlist']
+        deskripsi = request.POST['deskripsi_playlist']
+
+        cursor.execute(
+                    """UPDATE user_playlist
+                        SET judul = %s, deskripsi = %s
+                        WHERE id_user_playlist = %s;
+                    """, [judul, deskripsi, id_playlist])
+        
+        return redirect('playlist_player:user_playlist')
+    
+    judul_playlist = ''
+    deskripsi_playlist = ''
+
+    cursor.execute(
+                """SELECT judul, deskripsi
+                    FROM user_playlist
+                    WHERE id_user_playlist = %s;
+                """, [id_playlist])
+    result = cursor.fetchall()
+
+    judul_playlist, deskripsi_playlist = result[0]
+
+    return render(request, 'ubah_playlist.html', {
+        'id': id_playlist,
+        'judul': judul_playlist,
+        'deskripsi': deskripsi_playlist
+    })
