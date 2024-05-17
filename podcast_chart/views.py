@@ -11,46 +11,64 @@ def play_podcast(request):
     data_podcast = {}
     data_episode = []
 
+    # Query to get podcast details
     with connection.cursor() as cursor:
-        # Query to get podcast details
         cursor.execute("""
             SELECT konten.judul, konten.tanggal_rilis, konten.tahun, AKUN.nama AS podcaster_name, SUM(episode.durasi) AS total_durasi
             FROM podcast
-            JOIN podcaster ON podcast.email_podcaster = podcaster.email JOIN AKUN ON podcaster.email = AKUN.email JOIN konten ON podcast.id_konten = konten.id JOIN episode ON podcast.id_konten = episode.id_konten_podcast
+            JOIN podcaster ON podcast.email_podcaster = podcaster.email 
+            JOIN AKUN ON podcaster.email = AKUN.email 
+            JOIN konten ON podcast.id_konten = konten.id 
+            JOIN episode ON podcast.id_konten = episode.id_konten_podcast
             WHERE podcast.id_konten = %s
             GROUP BY konten.judul, konten.tanggal_rilis, konten.tahun, AKUN.nama;
         """, [podcast_id])
-    result = cursor.fetchone()
-    if result:
-        total_durasi = result[4]
-        hours = total_durasi // 60
-        minutes = total_durasi % 60
-        formatted_duration = f"{hours} jam {minutes} menit" if hours > 0 else f"{minutes} menit"
-        podcast_data = {'judul': result[0],'tanggal_rilis': result[1],'tahun': result[2],'podcaster': result[3],'total_durasi': formatted_duration}
-    cursor.execute(
-            """
+        result = cursor.fetchone()
+        if result:
+            total_durasi = result[4]
+            hours = total_durasi // 60
+            minutes = total_durasi % 60
+            formatted_duration = f"{hours} jam {minutes} menit" if hours > 0 else f"{minutes} menit"
+            data_podcast = {
+                'judul': result[0],
+                'tanggal_rilis': result[1],
+                'tahun': result[2],
+                'podcaster': result[3],
+                'total_durasi': formatted_duration
+            }
+
+    # Query to get genres
+    with connection.cursor() as cursor:
+        cursor.execute("""
             SELECT DISTINCT genre FROM genre WHERE id_konten = %s
-            """, [podcast_id]
-        )
-    result = cursor.fetchall()
-    if result:
-            podcast_data['genre'] = [e for e in result[0]]
-        # Query to get episodes details
-    cursor.execute("""
-                SELECT judul, deskripsi, durasi, tanggal_rilis
-                FROM episode
-                WHERE id_konten_podcast = %s
         """, [podcast_id])
-    kumpulan_episode = cursor.fetchall()
-    for episode in kumpulan_episode:
+        result = cursor.fetchall()
+        if result:
+            data_podcast['genre'] = [row[0] for row in result]
+
+    # Query to get episodes details
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT judul, deskripsi, durasi, tanggal_rilis
+            FROM episode
+            WHERE id_konten_podcast = %s
+        """, [podcast_id])
+        kumpulan_episode = cursor.fetchall()
+        for episode in kumpulan_episode:
             duration_hours = episode[2] // 60
             duration_minutes = episode[2] % 60
             formatted_duration = f"{duration_hours} jam {duration_minutes} menit" if duration_hours else f"{duration_minutes} menit"
 
-            data_episode.append({'title': episode[0],'description': episode[1],'duration': formatted_duration,'date': episode[3].strftime('%d/%m/%Y')})
+            data_episode.append({
+                'title': episode[0],
+                'description': episode[1],
+                'duration': formatted_duration,
+                'date': episode[3].strftime('%d/%m/%Y')
+            })
+
     context = {
-        'detail_podcast' : data_podcast,
-        'kumpulan_episode' : data_episode
+        'detail_podcast': data_podcast,
+        'kumpulan_episode': data_episode
     }
 
     return render(request, 'play_podcast.html', context)
