@@ -1,7 +1,7 @@
 {% extends 'base_biasa.html' %}
 
 {% block meta %}
-    <title>Search Results for "{{ query }}"</title>
+    <title>Hasil Pencarian</title>
 {% endblock meta %}
 
 {% block content %}
@@ -30,7 +30,7 @@
                                     <td class="py-3 px-4">{{ result.title }}</td>
                                     <td class="py-3 px-4">{{ result.by }}</td>
                                     <td class="actions">
-                                        <button onclick="location.href='{{ result.url }}'" style="background-color: #9E60D1; border: none; border-radius: 5px; padding: 8px 12px; color: white;">Lihat</button>
+                                        <a href="{% url 'playlist_player:play_song' %}" style="background-color: #9E60D1; border: none; border-radius: 5px; padding: 8px 12px; color: white; text-decoration: none;">Lihat</a>
                                     </td>
                                 </tr>
                                 {% endfor %}
