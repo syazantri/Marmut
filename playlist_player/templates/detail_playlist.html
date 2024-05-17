@@ -55,7 +55,6 @@
                                     <a href="{% url 'playlist_player:play_song' %}?song_id={{ record.4 }}">
                                         <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Play</button>
                                     </a>
-                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Play</button>
                                     <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9] ml-2">Hapus</button>
                                 </td>
                             </tr>
@@ -74,27 +73,3 @@
 </html>
 
 {% endblock content %}
-
-<script>
-    document.getElementById("shuffle-play-btn").addEventListener("click", function() {
-        var playlistId = "{{ playlist_id }}";
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "{% url 'playlist_player:play_user_playlist' %}?playlist_id=" + playlistId, true);
-        xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === XMLHttpRequest.DONE) {
-                if (xhr.status === 200) {
-                    // Response received successfully, handle it as needed
-                    // For example, you can update the page content with the received data
-                    console.log(xhr.responseText);
-                } else {
-                    // Error handling
-                    console.error("Error:", xhr.statusText);
-                }
-            }
-        };
-        xhr.send("shuffle_play=true");
-    });
-    </script>
-    

@@ -1,6 +1,7 @@
+import json
 import uuid
 from django.db import IntegrityError
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from utils.query import *
@@ -98,6 +99,7 @@ def play_song(request):
     records_song = []
     records_genre = []
     records_songwriter = []
+    email = request.COOKIES.get('email')
 
     cursor.execute(
         f'SELECT * from konten where id = \'{song_id}\'')
@@ -123,6 +125,25 @@ def play_song(request):
         f'SELECT akun.nama from songwriter_write_song, songwriter, akun where songwriter_write_song.id_song = \'{song_id}\' AND songwriter.id = songwriter_write_song.id_songwriter AND songwriter.email_akun = akun.email')
     records_songwriter = cursor.fetchone()
 
+    if request.method == 'POST':
+        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+        cursor.execute(
+            f'select total_play from song where id_konten = \'{song_id}\'')
+        total_play = cursor.fetchall() + 1
+
+        cursor.execute(
+            f'update song set total_play = \'{total_play}\' where id_konten = \'{song_id}\''
+        )
+    
+        cursor.execute(
+            f'insert into akun_play_song values(\'{email}\', \'{song_id}\',  \'{timestamp}\' )'
+        )
+        connection.commit()
+        url = reverse('playlist_player:play_song')
+        url_with_params = f"{url}?song_id={song_id}"
+        return redirect(url_with_params)
+
 
     context = {
         'status': 'success',
@@ -134,6 +155,7 @@ def play_song(request):
     }
     response = render(request, 'play_song.html', context)
     return response
+
 
 def add_song_to_user_playlist(request):
     song_id = request.GET.get('song_id')
@@ -149,49 +171,31 @@ def add_song_to_user_playlist(request):
         f'SELECT akun.nama from akun, song, artist where song.id_konten = \'{song_id}\' AND song.id_artist = artist.id AND artist.email_akun = akun.email')
     records_song[0] = records_song[0] + cursor.fetchone()
 
-
-
     if request.method == 'POST' and not request.method == 'GET':
         playlist_id = request.POST.get('playlist_id')
 
-        # try:
-        #     cursor.execute(
-        #         "INSERT INTO playlist_song (id_playlist, id_song) VALUES (%s, %s)", [playlist_id, song_id]
-        #     )
-        #     connection.commit()
-        #     url = reverse('playlist_player:pesan_add_song_to_playlist')
-        #     url_with_params = f"{url}?song_id={song_id}"
-        #     return redirect(url_with_params)
-        
-        # except Exception as e:
-        #     error_message = str(e)
-        #     if "Lagu sudah ada dalam playlist" in error_message:
-        #         context = {
-        #             'records_song': records_song,
-        #             'list_playlist': list_playlist,
-        #             'error_message': "Lagu sudah ada dalam playlist",
-        #         }
-        #         return render(request, 'pesan_add_song_to_user_playlist.html', context)
-        #     else:
-        #         raise
 
         try:
-            with connection.cursor() as cursor:
-                cursor.execute(
-                    "INSERT INTO playlist_song (id_playlist, id_song) VALUES (%s, %s)", [playlist_id, song_id]
-                )
+            cursor.execute(
+                "INSERT INTO playlist_song (id_playlist, id_song) VALUES (%s, %s)", [playlist_id, song_id]
+            )
             connection.commit()
             url = reverse('playlist_player:pesan_add_song_to_playlist')
             url_with_params = f"{url}?song_id={song_id}"
             return redirect(url_with_params)
         
-        except IntegrityError as e:
-            connection.rollback()
+        except Exception as e:
             error_message = str(e)
-            if "duplicate key value violates unique constraint" in error_message:
-                error_message = "Lagu sudah ada dalam playlist"
+            if "Lagu sudah ada dalam playlist" in error_message:
+                context = {
+                    'records_song': records_song,
+                    'list_playlist': list_playlist,
+                    'error_message': "Lagu sudah ada dalam playlist",
+                }
+                return render(request, 'playlist_player:pesan_add_song_to_user_playlist.html', context)
             else:
                 raise
+
 
     cursor.execute(
         f'select id_playlist, judul from user_playlist where email_pembuat = \'{email}\''
@@ -222,7 +226,7 @@ def play_user_playlist(request):
     playlist_id = request.GET.get('playlist_id')
     print(playlist_id)
     email = request.COOKIES.get('email')
-    records_playlist = []
+    records_playlist = [] 
     records_song = []
 
     # Mengambil data playlist berdasarkan playlist_id
@@ -335,3 +339,6 @@ def hapus_playlist(request):
     )
     connection.commit()
     return HttpResponseRedirect(reverse("playlist_player:user_playlist"))
+
+
+ 
