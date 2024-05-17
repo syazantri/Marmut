@@ -27,7 +27,12 @@
                             <a href="{% url 'podcast_chart:list_episode'%}?podcast_id={{ podcast.podcast_id }}" class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Lihat Daftar Episode</a>
                             <a href="{% url 'podcast_chart:create_episode'%}?podcast_id={{ podcast.podcast_id }}" class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Tambah Episode</a>
                             <!-- <a href="{% url 'podcast_chart:play_podcast' %}?podcast_id={{ podcast.podcast_id }}" class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Play Podcast</a> -->
-                            <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Hapus</button>
+                            <!-- <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Hapus</button> -->
+                            <form action="{% url 'podcast_chart:delete_podcast' %}" method="GET">
+                                <input type="hidden" name="podcast_id" value="{{ podcast.podcast_id }}">
+                                <button type="submit" class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Hapus</button>
+                            </form>
+                            
 
                         </td>
                     </tr>

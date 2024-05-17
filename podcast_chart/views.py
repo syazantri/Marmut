@@ -299,3 +299,29 @@ def list_episode(request):
     return render(request, 'list_episode.html', context)
 
 
+def delete_podcast(request):
+    podcast_id = request.GET.get('podcast_id')
+    
+    with connection.cursor() as cursor:
+        cursor.execute(
+            'DELETE FROM podcast WHERE id_konten = %s', [podcast_id]
+        )
+        cursor.execute(
+            'DELETE FROM konten WHERE id = %s', [podcast_id]
+        )
+        connection.commit()
+    
+    return HttpResponseRedirect(reverse('podcast_chart:list_podcast'))
+
+
+def delete_episode(request):
+    episode_id = request.GET.get('episode_id')
+    podcast_id = request.GET.get('podcast_id')
+    
+    with connection.cursor() as cursor:
+        cursor.execute(
+            'DELETE FROM episode WHERE id_episode = %s', [episode_id]
+        )
+        connection.commit()
+    
+    return HttpResponseRedirect(reverse('podcast_chart:list_episode') + f'?podcast_id={podcast_id}')
