@@ -1,4 +1,5 @@
 import uuid
+from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from utils.query import *
@@ -263,7 +264,7 @@ def play_user_playlist(request):
 
 
 def ubah_playlist(request):
-    id_playlist = request.POST.get('id_playlist')
+    id_playlist = request.GET.get('id_playlist')
 
     # if not id_playlist:
     #     return redirect('playlist_player:user_playlist')  
@@ -274,12 +275,6 @@ def ubah_playlist(request):
         judul = request.POST['judul']
         deskripsi = request.POST['deskripsi']
 
-        # cursor.execute(
-        #     """UPDATE user_playlist
-        #         SET judul = %s, deskripsi = %s
-        #         WHERE id_user_playlist = %s;
-        #     """, [judul, deskripsi, id_playlist]
-        # )
         cursor.execute(
             f'update user_playlist set judul = \'{judul}\', deskripsi = \'{deskripsi}\' where  id_user_playlist = \'{id_playlist}\'')
         connection.commit()
@@ -303,3 +298,12 @@ def ubah_playlist(request):
         'judul': judul_playlist,
         'deskripsi': deskripsi_playlist
     })  
+
+def hapus_playlist(request):
+    id_playlist = request.GET.get('id_playlist')
+    cursor.execute("""
+                    DELETE FROM user_playlist
+                    WHERE id_user_playlist = %s;
+                    """, [id_playlist])
+    
+    return HttpResponseRedirect(reverse("user_playlist:user_playlist"))
