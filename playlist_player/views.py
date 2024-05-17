@@ -212,8 +212,6 @@ def play_user_playlist(request):
     records_playlist = cursor.fetchall()
     print(records_playlist)
 
-    # Mengambil daftar lagu dalam playlist berdasarkan playlist_id
-    # cursor.execute(f'SELECT id_song FROM playlist_song WHERE id_playlist = \'{playlist_id}\'')
     cursor.execute(f'SELECT id_song FROM playlist_song WHERE id_playlist = %s', [playlist_id])
     records_song = cursor.fetchall()
     for i in range(len(records_song)):
