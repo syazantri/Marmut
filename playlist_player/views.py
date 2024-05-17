@@ -139,6 +139,7 @@ def play_song(request):
         cursor.execute(
             f'insert into akun_play_song values(\'{email}\', \'{song_id}\',  \'{timestamp}\' )'
         )
+
         connection.commit()
         url = reverse('playlist_player:play_song')
         url_with_params = f"{url}?song_id={song_id}"
