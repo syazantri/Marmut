@@ -72,6 +72,7 @@ def detail_playlist(request):
 
 def tambah_lagu(request):
     playlist_id = request.GET.get('playlist_id')
+    list_lagu = []
     if request.method == 'POST' and not request.method == 'GET':
         lagu = request.POST.get('lagu')
 
@@ -86,11 +87,9 @@ def tambah_lagu(request):
         # return redirect('playlist_player:detail_playlist')
 
     cursor.execute(
-        f'select song.id_konten, akun.nama from konten, song, artist, akun where konten.id = song.id_konten AND song.id_artist = artist.id AND artist.email_akun = akun.email')
+        f'select song.id_konten, akun.nama, konten.judul from konten, song, artist, akun where konten.id = song.id_konten AND song.id_artist = artist.id AND artist.email_akun = akun.email')
     list_lagu = cursor.fetchall()
-    cursor.execute(
-        f'select judul from konten where konten.id = song.id_konten')
-    list_lagu[0] = list_lagu[0] + cursor.fetchall()
+
     context = {
         'list_lagu': list_lagu,
         'playlist_id': playlist_id
@@ -229,6 +228,8 @@ def pesan_add_song_to_playlist(request):
         'song_id': song_id
     }
     return render(request, 'pesan_add_song_to_playlist.html', context)
+
+
 
 def play_user_playlist(request): 
     playlist_id = request.GET.get('playlist_id')

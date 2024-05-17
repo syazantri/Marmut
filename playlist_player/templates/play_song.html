@@ -38,10 +38,15 @@
             
             <div class="-mx-4">
                 <div>
+                    <div class="mt-4">
+                        <label for="progressSlider" class="block">Progress Lagu (Slider):</label>
+                        <input type="range" id="progressSlider" name="progressSlider" min="0" max="100" value="0" class="w-full">
+                        <span id="sliderValue" class="block text-center">0%</span>
+                    </div>
                     <form action="{% url 'playlist_player:play_song' %}?song_id={{ song_id }}" method="POST">
                         {% csrf_token %}
                         <input type="hidden" name="song_id" value="{{ song_id }}">
-                        <button type="submit" class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold">Play</button>
+                        <button type="submit" class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold mb-2">Play</button>
                     </form>
                     <a href="{% url 'playlist_player:add_song_to_user_playlist' %}?song_id={{ song_id }}">
                         <button class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold mb-2">Add to Playlist</button>
