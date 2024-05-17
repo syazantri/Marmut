@@ -267,32 +267,34 @@ def ubah_playlist(request):
 
     # if not id_playlist:
     #     return redirect('playlist_player:user_playlist')  
+    print(id_playlist)
 
     if request.method == 'POST':
 
         judul = request.POST['judul']
         deskripsi = request.POST['deskripsi']
 
+        # cursor.execute(
+        #     """UPDATE user_playlist
+        #         SET judul = %s, deskripsi = %s
+        #         WHERE id_user_playlist = %s;
+        #     """, [judul, deskripsi, id_playlist]
+        # )
         cursor.execute(
-            """UPDATE user_playlist
-                SET judul = %s, deskripsi = %s
-                WHERE id_user_playlist = %s;
-            """, [judul, deskripsi, id_playlist]
-        )
+            f'update user_playlist set judul = \'{judul}\', deskripsi = \'{deskripsi}\' where  id_user_playlist = \'{id_playlist}\'')
         connection.commit()
         return redirect('playlist_player:user_playlist')
     
     judul_playlist = ''
     deskripsi_playlist = ''
 
-    with connection.cursor() as cursor:
-        cursor.execute(
-            """SELECT judul, deskripsi
-               FROM user_playlist
-               WHERE id_user_playlist = %s;
-            """, [id_playlist]
-        )
-        result = cursor.fetchone()
+    cursor.execute(
+        """SELECT judul, deskripsi
+            FROM user_playlist
+            WHERE id_user_playlist = %s;
+        """, [id_playlist]
+    )
+    result = cursor.fetchone()
 
     if result:
         judul_playlist, deskripsi_playlist = result
