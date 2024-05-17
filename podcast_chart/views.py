@@ -1,13 +1,63 @@
 import uuid
+from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from utils.query import *
 from datetime import datetime
 
 # Create your views here.
 def play_podcast(request):
-    return render(request, 'play_podcast.html')
+    podcast_id = request.GET.get('podcast_id')
+    data_podcast = {}
+    data_episode = []
+
+    with connection.cursor() as cursor:
+        # Query to get podcast details
+        cursor.execute("""
+            SELECT konten.judul, konten.tanggal_rilis, konten.tahun, AKUN.nama AS podcaster_name, SUM(episode.durasi) AS total_durasi
+            FROM podcast
+            JOIN podcaster ON podcast.email_podcaster = podcaster.email JOIN AKUN ON podcaster.email = AKUN.email JOIN konten ON podcast.id_konten = konten.id JOIN episode ON podcast.id_konten = episode.id_konten_podcast
+            WHERE podcast.id_konten = %s
+            GROUP BY konten.judul, konten.tanggal_rilis, konten.tahun, AKUN.nama;
+        """, [podcast_id])
+    result = cursor.fetchone()
+    if result:
+        total_durasi = result[4]
+        hours = total_durasi // 60
+        minutes = total_durasi % 60
+        formatted_duration = f"{hours} jam {minutes} menit" if hours > 0 else f"{minutes} menit"
+        podcast_data = {'judul': result[0],'tanggal_rilis': result[1],'tahun': result[2],'podcaster': result[3],'total_durasi': formatted_duration}
+    cursor.execute(
+            """
+            SELECT DISTINCT genre FROM genre WHERE id_konten = %s
+            """, [podcast_id]
+        )
+    result = cursor.fetchall()
+    if result:
+            podcast_data['genre'] = [e for e in result[0]]
+        # Query to get episodes details
+    cursor.execute("""
+                SELECT judul, deskripsi, durasi, tanggal_rilis
+                FROM episode
+                WHERE id_konten_podcast = %s
+        """, [podcast_id])
+    kumpulan_episode = cursor.fetchall()
+    for episode in kumpulan_episode:
+            duration_hours = episode[2] // 60
+            duration_minutes = episode[2] % 60
+            formatted_duration = f"{duration_hours} jam {duration_minutes} menit" if duration_hours else f"{duration_minutes} menit"
+
+            data_episode.append({'title': episode[0],'description': episode[1],'duration': formatted_duration,'date': episode[3].strftime('%d/%m/%Y')})
+    context = {
+        'detail_podcast' : data_podcast,
+        'kumpulan_episode' : data_episode
+    }
+
+    return render(request, 'play_podcast.html', context)
 
 def create_podcast(request):
+    records_genre = []
+    
     if request.method == 'POST':
         judul = request.POST.get('judul')
         id_podcast = str(uuid.uuid4())
@@ -18,11 +68,6 @@ def create_podcast(request):
         current_datetime = datetime.now()
         date_now = current_datetime.strftime('%Y-%m-%d')
         current_year = current_datetime.year
-
-        # untuk pilihan dropdown genre
-        cursor.execute(
-            f'select distinct genre from genre')
-        records_genre = cursor.fetchall()
 
         with connection.cursor() as cursor:
             cursor.execute(
@@ -45,20 +90,29 @@ def create_podcast(request):
             connection.commit()
         return redirect('podcast_chart:list_podcast')  # Mengarahkan ke halaman daftar podcast
 
-    # # untuk pilihan dropdown genre
-    # cursor.execute(
-    #     f'select distinct genre from genre')
-    # records_genre = cursor.fetchall()
-
+    # Untuk pilihan dropdown genre
+    with connection.cursor() as cursor:
+        cursor.execute('SELECT DISTINCT genre FROM genre')
+        records_genre = cursor.fetchall()
+    
     context = {
-        'records_genre': records_genre,
+        'records_genre': records_genre
     }
 
     return render(request, 'create_podcast.html', context)
 
 
 def lihat_chart(request):
-    return render(request, 'lihat_chart.html')
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT tipe FROM chart")
+        charts = cursor.fetchall()
+    
+    context = {
+        'charts': [{'tipe': row[0]} for row in charts]
+    }
+
+    return render(request, 'lihat_chart.html', context)
+
 
 def detail_chart(request):
     return render(request, 'detail_chart.html')
@@ -91,14 +145,16 @@ def list_podcast(request):
     return render(request, 'list_podcast.html', context)
 
 
-def create_episode(request, podcast_id):
+def create_episode(request):
+    podcast_id = request.GET.get('podcast_id')
     if request.method == 'POST':
         # Mendapatkan data yang dikirimkan melalui form
         judul = request.POST.get('judul')
         deskripsi = request.POST.get('deskripsi')
         durasi = request.POST.get('durasi')
         id_episode = uuid.uuid4()
-        date_now = datetime.date.today()
+        current_datetime = datetime.now()
+        date_now = current_datetime.strftime('%Y-%m-%d')
 
         # Insert data episode ke dalam database
         with connection.cursor() as cursor:
@@ -109,7 +165,7 @@ def create_episode(request, podcast_id):
             """, [id_episode, podcast_id, judul, deskripsi, durasi, date_now])
         connection.commit()
         # Redirect ke halaman list episode setelah membuat episode
-        return redirect('podcast_chart:list_episode', podcast_id=podcast_id)
+        return HttpResponseRedirect(reverse('podcast_chart:list_episode') + f'?podcast_id={podcast_id}')
 
     else:
         # Mengambil informasi podcast yang dipilih
@@ -117,7 +173,7 @@ def create_episode(request, podcast_id):
             cursor.execute(
                 'SELECT judul FROM konten WHERE id = %s', (podcast_id,)
             )
-            podcast_title = cursor.fetchone()[0]
+            podcast_title = cursor.fetchone()
 
         context = {
             'podcast_title': podcast_title,
@@ -126,13 +182,14 @@ def create_episode(request, podcast_id):
         return render(request, 'create_episode.html', context)
 
 
-def list_episode(request, podcast_id):
+def list_episode(request):
+    podcast_id = request.GET.get('podcast_id')
     with connection.cursor() as cursor:
         cursor.execute("""
                 SELECT konten.id, konten.judul 
                 FROM konten
                 JOIN podcast ON konten.id = podcast.id_konten
-                WHERE podcast.id_konten = %s """,[podcast_id])
+                WHERE podcast.id_konten = %s """, [podcast_id])
         podcast = cursor.fetchone()
         cursor.execute("""
                 SELECT judul, deskripsi, durasi, tanggal_rilis, episode.id_episode
@@ -142,20 +199,30 @@ def list_episode(request, podcast_id):
         episodes = cursor.fetchall()
     connection.commit()
 
+    def format_duration(duration):
+        if duration >= 60:
+            hours = duration // 60
+            minutes = duration % 60
+            return f"{hours} jam {minutes} menit"
+        else:
+            return f"{duration} menit"
+
     context = {
-            'podcast' : {
-                'id':podcast[0],
-                'judul': podcast[1]}, 
-                'episodes': [
-                    {
-                        'title': row[0], 
-                        'description': row[1], 
-                        'duration': f"{row[2]} menit", 
-                        'date': row[3].strftime('%Y-%m-%d'), 
-                        'episode_id':row[4]
-                    } for row in episodes
-                ]
-            }
-        
-    
+        'podcast': {
+            'id': podcast[0],
+            'judul': podcast[1]
+        },
+        'episodes': [
+            {
+                'title': row[0],
+                'description': row[1],
+                'duration': format_duration(row[2]),
+                'date': row[3].strftime('%Y-%m-%d'),
+                'episode_id': row[4]
+            } for row in episodes
+        ]
+    }
+
     return render(request, 'list_episode.html', context)
+
+
