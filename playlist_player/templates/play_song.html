@@ -38,13 +38,11 @@
             
             <div class="-mx-4">
                 <div>
-                    {% csrf_token %}
                     <form action="{% url 'playlist_player:play_song' %}?song_id={{ song_id }}" method="POST">
+                        {% csrf_token %}
                         <input type="hidden" name="song_id" value="{{ song_id }}">
                         <button type="submit" class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold">Play</button>
                     </form>
-                </div>
-                <div>
                     <a href="{% url 'playlist_player:add_song_to_user_playlist' %}?song_id={{ song_id }}">
                         <button class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold mb-2">Add to Playlist</button>
                     </a>

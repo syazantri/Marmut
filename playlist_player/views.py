@@ -1,7 +1,7 @@
 import json
 import uuid
 from django.db import IntegrityError
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from utils.query import *
@@ -88,6 +88,9 @@ def tambah_lagu(request):
     cursor.execute(
         f'select song.id_konten, akun.nama from konten, song, artist, akun where konten.id = song.id_konten AND song.id_artist = artist.id AND artist.email_akun = akun.email')
     list_lagu = cursor.fetchall()
+    cursor.execute(
+        f'select judul from konten where konten.id = song.id_konten')
+    list_lagu[0] = list_lagu[0] + cursor.fetchall()
     context = {
         'list_lagu': list_lagu,
         'playlist_id': playlist_id
@@ -125,12 +128,13 @@ def play_song(request):
         f'SELECT akun.nama from songwriter_write_song, songwriter, akun where songwriter_write_song.id_song = \'{song_id}\' AND songwriter.id = songwriter_write_song.id_songwriter AND songwriter.email_akun = akun.email')
     records_songwriter = cursor.fetchone()
 
-    if request.method == 'POST':
+    if request.method == 'POST' and not request.method == 'GET':
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
         cursor.execute(
             f'select total_play from song where id_konten = \'{song_id}\'')
-        total_play = cursor.fetchall() + 1
+        total = cursor.fetchall()
+        total_play = total[0][0] + 1
 
         cursor.execute(
             f'update song set total_play = \'{total_play}\' where id_konten = \'{song_id}\''
@@ -185,17 +189,20 @@ def add_song_to_user_playlist(request):
             url_with_params = f"{url}?song_id={song_id}"
             return redirect(url_with_params)
         
+        # except Exception as e:
+        #     error_message = str(e)
+        #     if "Lagu sudah ada dalam playlist" in error_message:
+        #         context = {
+        #             'records_song': records_song,
+        #             'list_playlist': list_playlist,
+        #             'error_message': "Lagu sudah ada dalam playlist",
+        #         }
+        #         return render(request, 'playlist_player:pesan_add_song_to_user_playlist', context)
+        #     else:
+        #         raise
         except Exception as e:
-            error_message = str(e)
-            if "Lagu sudah ada dalam playlist" in error_message:
-                context = {
-                    'records_song': records_song,
-                    'list_playlist': list_playlist,
-                    'error_message': "Lagu sudah ada dalam playlist",
-                }
-                return render(request, 'playlist_player:pesan_add_song_to_user_playlist.html', context)
-            else:
-                raise
+            return HttpResponse(f"Error: {e}", status=500)
+
 
 
     cursor.execute(

@@ -13,7 +13,7 @@
                 <select id="lagu" name="lagu" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
                     <option value="">Select Lagu</option>
                     {% for lagu in list_lagu %}
-                    <option value="{{ lagu.0 }}">{{ lagu.1 }}</option>
+                    <option value="{{ lagu.0 }}">{{ lagu.2 }} - {{lagu.1}}</option>
                     {% endfor %}
                  </select>
             </div>
