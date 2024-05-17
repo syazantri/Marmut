@@ -12,17 +12,13 @@
 
     <div class="py-10 bg-[#151829]">
         <div class="max-w-4xl mx-auto">
-            <center><h2 class="text-4xl font-bold mb-5 text-white font-serif">Chart Detail</h2></center>
-            <div class="text-white" style="padding-bottom: 10px; font-size: 18px;">
-                <span><strong>Tipe:</strong> Daily Top 20</span><br>
-            </div>
+            <center><h2 class="text-4xl font-bold mb-5 text-white font-serif">{{ judul }}</h2></center>
             
-            <td class="py-3 px-4" style="text-align: center; vertical-align: middle;">
+            <div class="text-white" style="padding-bottom: 10px; font-size: 18px;">
                 <center>
                     <a href="{% url 'podcast_chart:lihat_chart' %}" class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Kembali</a>
                 </center>
-            </td>
-                    
+            </div>
             
             <div class="-mx-4" style="margin-top: 30px;">
                 <div class="overflow-x-auto">
@@ -37,35 +33,20 @@
                                 <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Tanggal Rilis</th>
                                 <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Total Plays</th>
                                 <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Actions</th>
-
                             </tr>
                         </thead>
                         <tbody class="text-gray-400 bg-[#382e47]">
+                            {% for song in list_song %}
                             <tr class="text-white">
-                                <td class="py-3 px-4">Sheesh</td>
-                                <td class="py-3 px-4">Baby Monster</td>
-                                <td class="py-3 px-4">20/04/2024</td>
-                                <td class="py-3 px-4">2000000</td>
+                                <td class="py-3 px-4">{{ song.title }}</td>
+                                <td class="py-3 px-4">{{ song.artist }}</td>
+                                <td class="py-3 px-4">{{ song.release_date }}</td>
+                                <td class="py-3 px-4">{{ song.total_plays }}</td>
                                 <td class="py-3 px-4">
                                     <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Lihat</button>
                                 </td>
                             </tr>
-                            <tr class="text-white">
-                                <td class="py-3 px-4">HAHAHA</td>
-                                <td class="py-3 px-4">Juicy Luicy</td>
-                                <td class="py-3 px-4">25/04/2024</td>
-                                <td class="py-3 px-4">1500000</td>
-                                <td class="py-3 px-4">
-                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Lihat</button>
-                                </td>
-                            </tr>
-                            <tr class="text-white">
-                                <td class="py-3 px-4">...</td>
-                                <td class="py-3 px-4">...</td>
-                                <td class="py-3 px-4">...</td>
-                                <td class="py-3 px-4">...</td>
-                                <td class="py-3 px-4">...</td>
-                            </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
@@ -75,5 +56,4 @@
 
 </body>
 </html>
-
 {% endblock content %}

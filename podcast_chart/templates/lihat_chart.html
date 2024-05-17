@@ -25,7 +25,7 @@
                             <tr class="text-white">
                                 <td class="py-3 px-4">{{ chart.tipe }}</td>
                                 <td class="py-3 px-4">
-                                    <a href="{% url 'podcast_chart:detail_chart' %}" class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Lihat Daftar Lagu</a>
+                                    <a href="{% url 'podcast_chart:detail_chart' %}?tipe_top={{ chart.tipe }}" class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Lihat Daftar Lagu</a>
                                 </td>
                             </tr>
                             {% endfor %}
