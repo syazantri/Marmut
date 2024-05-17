@@ -301,9 +301,8 @@ def ubah_playlist(request):
 
 def hapus_playlist(request):
     id_playlist = request.GET.get('id_playlist')
-    cursor.execute("""
-                    DELETE FROM user_playlist
-                    WHERE id_user_playlist = %s;
-                    """, [id_playlist])
+    cursor.execute(
+        f'delete from user_playlist where id_user_playlist = \'{id_playlist}\''
+    )
     
     return HttpResponseRedirect(reverse("user_playlist:user_playlist"))
