@@ -353,11 +353,22 @@ def login(request):
             records_user_playlist = cursor.fetchall()
         
             # Cek dia user premium atau nonpremium
-            cursor.execute(
-                f'select * from premium where email = \'{email}\'')
-            premium = cursor.fetchall()
-            if len(premium) != 0:
+            # CEK DIA masih PREMIUM GAKK
+            cursor.execute(f"SELECT putih_cekStatusLangganan(\'{email}\') AS status_langganan")
+            status = cursor.fetchone()[0]
+
+            if status == 0:
                 status_langganan = "Premium"
+            if status == 1:
+                cursor.execute(f"DELETE FROM PREMIUM WHERE EMAIL = \'{email}\'")
+                cursor.execute(f"INSERT INTO NONPREMIUM VALUES(\'{email}\')")
+                status_langganan = "NonPremium"
+
+            # cursor.execute(
+            #     f'select * from premium where email = \'{email}\'')
+            # premium = cursor.fetchall()
+            # if len(premium) != 0:
+            #     status_langganan = "Premium"
 
             # Assign role verified
             role_verified_list = []
@@ -372,6 +383,7 @@ def login(request):
             else:
                 role_verified = ', '.join(role_verified_list)
 
+            connection.commit()
             context = {
                 'role': 'pengguna',
                 'status': 'success',
