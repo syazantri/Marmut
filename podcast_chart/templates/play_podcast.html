@@ -1,38 +1,39 @@
-{% extends 'base_biasa.html' %} 
+{% extends 'base_biasa.html' %}
 {% load static %}
 
 {% block meta %}
 <head>
-    <title>Play Podcast- Marmut</title>
+    <title>Play Podcast - Marmut</title>
 </head>
 {% endblock meta %}
 
 {% block content %}
 <body class="h-screen flex justify-center bg-[#151829] text-white">
-
     <div class="py-10 bg-[#151829]">
         <div class="max-w-4xl mx-auto">
             <center><h2 class="text-4xl font-bold mb-5 text-white font-serif">Podcast Detail</h2></center>
             <div class="text-white" style="padding-bottom: 10px; font-size: 18px;">
-                <span><strong>Judul:</strong> Rintik Sendu</span><br>
+                <span><strong>Judul:</strong> {{ detail_podcast.judul }}</span><br>
                 <span><strong>Genre(s):</strong></span><br>
-                <span>- Buku</span><br>
-                <span>- Kisah</span><br>
-                <span><strong>Podcaster:</strong> Tsana</span><br>
-                <span><strong>Total Durasi:</strong> 9 jam 35 menit</span><br>
-                <span><strong>Tanggal Rilis:</strong> 24/04/2024</span><br>
-                <span><strong>Tahun:</strong> 2024</span><br>
+                {% for genre in detail_podcast.genre %}
+                    <span>- {{ genre }}</span><br>
+                {% endfor %}
+                <span><strong>Podcaster:</strong> {{ detail_podcast.podcaster }}</span><br>
+                <span><strong>Total Durasi:</strong> {{ detail_podcast.total_durasi }}</span><br>
+                <span><strong>Tanggal Rilis:</strong> {{ detail_podcast.tanggal_rilis|date:"d/m/Y" }}</span><br>
+                <span><strong>Tahun:</strong> {{ detail_podcast.tahun }}</span><br>
             </div>
             
-            <td class="py-3 px-4" style="text-align: center; vertical-align: middle;">
-                <center><button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]" style="margin: 20px;">Kembali</button></center>
-            </td>            
+            <div class="text-center py-3">
+                <a href="{% url 'dashboard:dashboard' %}" class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Kembali</a>
+            </div>
+                       
             
             <div class="-mx-4">
                 <div class="overflow-x-auto">
                     <table class="min-w-full bg-[#151829] rounded-lg overflow-hidden">
                         <thead class="bg-[#b17bc9] text-white">
-                            <tr bgcolor="#9e60d1" class="text-white">
+                            <tr class="text-white">
                                 <th class="text-left py-3 px-4 uppercase font-semibold text-sm" colspan="4"><center>DAFTAR EPISODE</center></th>
                             </tr>                                                      
                             <tr>
@@ -43,32 +44,19 @@
                             </tr>
                         </thead>
                         <tbody class="text-gray-400 bg-[#382e47]">
+                            {% for episode in kumpulan_episode %}
                             <tr class="text-white">
-                                <td class="py-3 px-4">Everything, in time</td>
-                                <td class="py-3 px-4">Remember: you can be your greatest enemy or your own best friend</td>
-                                <td class="py-3 px-4">13 menit</td>
-                                <td class="py-3 px-4">24/04/2024</td>
+                                <td class="py-3 px-4">{{ episode.title }}</td>
+                                <td class="py-3 px-4">{{ episode.description }}</td>
+                                <td class="py-3 px-4">{{ episode.duration }}</td>
+                                <td class="py-3 px-4">{{ episode.date }}</td>
                             </tr>
-                            <tr class="text-white">
-                                <td class="py-3 px-4">Kita usahakan orang tepat itu</td>
-                                <td class="py-3 px-4">Karena yang tepat, pasti akan sama-sama merawat</td>
-                                <td class="py-3 px-4">21 menit</td>
-                                <td class="py-3 px-4">25/04/2024</td>
-                            </tr>
-                            <tr class="text-white">
-                                <td class="py-3 px-4">...</td>
-                                <td class="py-3 px-4">...</td>
-                                <td class="py-3 px-4">...</td>
-                                <td class="py-3 px-4">...</td>
-                            </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
     </div>
-
 </body>
-</html>
-
 {% endblock content %}

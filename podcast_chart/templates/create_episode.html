@@ -6,21 +6,22 @@
 <div class="flex flex-col items-center justify-center font-sans">
     <div class="bg-gray-900 rounded-lg p-8">
         <h2 class="text-3xl font-semibold text-white mb-4 text-center font-serif">Create Episode</h2>
-        <form class="space-y-4">
+        <form method="post" class="space-y-4"> 
+            {% csrf_token %}
             <div class="text-white" style="padding-bottom: 10px; font-size: 18px;">
-                <span><strong>Podcast:</strong> Rintik Sendu</span><br>
+                <span><strong>Podcast:</strong> {{ podcast_title }}</span><br> 
             </div>
             <div>
-                <label for="email" class="text-white">Judul</label>
-                <input type="email" id="email" name="email" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
+                <label for="judul" class="text-white">Judul</label>
+                <input type="text" id="judul" name="judul" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required> <!-- Changed type to "text" and name to "judul" -->
             </div>
             <div>
-                <label for="email" class="text-white">Deskripsi</label>
-                <input type="email" id="email" name="email" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
+                <label for="deskripsi" class="text-white">Deskripsi</label>
+                <textarea id="deskripsi" name="deskripsi" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required></textarea> <!-- Changed type to "textarea" and name to "deskripsi" -->
             </div>
             <div>
-                <label for="email" class="text-white">Durasi</label>
-                <input type="email" id="email" name="email" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
+                <label for="durasi" class="text-white">Durasi</label>
+                <input type="text" id="durasi" name="durasi" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required> <!-- Changed type to "text" and name to "durasi" -->
             </div>
             <div>
                 <button type="submit" class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold">Submit</button>

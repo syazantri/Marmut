@@ -329,7 +329,7 @@ def create_song(request):
         for songwriter in songwriters:
             cursor.execute(
                 f'select id_pemilik_hak_cipta from songwriter where id = \'{songwriter}\'')
-            id_pemilik_hak_cipta_songwriter = cursor.fetchone();
+            id_pemilik_hak_cipta_songwriter = cursor.fetchone()
             cursor.execute(
                 f'insert into royalti values (\'{id_pemilik_hak_cipta_songwriter[0]}\', \'{id_song}\', 0)')
             cursor.execute(

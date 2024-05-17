@@ -1,64 +1,48 @@
 {% extends 'base_biasa.html' %} 
-{% load static %}
-
 {% block meta %}
-<head>
-    <title>List Album - Marmut</title>
-</head>
+<title>List Podcast - Marmut</title>
 {% endblock meta %}
-
 {% block content %}
-<body class="h-screen flex justify-center bg-[#151829] text-white">
+<div class="flex justify-center items-center h-screen bg-[#151829] text-white">
+    <div class="max-w-4xl w-full mx-4">
+        <h2 class="text-4xl font-bold mb-5 text-center font-serif">List Podcast</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-[#151829] rounded-lg overflow-hidden">
+                <thead class="bg-[#9e60d1] text-white">
+                    <tr>
+                        <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Judul</th>
+                        <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Jumlah Episode</th>
+                        <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Total Durasi</th>
+                        <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="text-gray-400 bg-[#382e47]">
+                    {% for podcast in podcasts %}
+                    <tr class="text-white">
+                        <td class="py-3 px-4">{{ podcast.judul }}</td>
+                        <td class="py-3 px-4">{{ podcast.jumlah_episode }}</td>
+                        <td class="py-3 px-4">{{ podcast.total_durasi }}</td>
+                        <td class="py-3 px-4">
+                            <!-- {% csrf_token %} -->
+                            <a href="{% url 'podcast_chart:list_episode'%}?podcast_id={{ podcast.podcast_id }}" class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Lihat Daftar Episode</a>
+                            <a href="{% url 'podcast_chart:create_episode'%}?podcast_id={{ podcast.podcast_id }}" class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Tambah Episode</a>
+                            <!-- <a href="{% url 'podcast_chart:play_podcast' %}?podcast_id={{ podcast.podcast_id }}" class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Play Podcast</a> -->
+                            <!-- <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Hapus</button> -->
+                            <form action="{% url 'podcast_chart:delete_podcast' %}" method="GET">
+                                <input type="hidden" name="podcast_id" value="{{ podcast.podcast_id }}">
+                                <button type="submit" class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Hapus</button>
+                            </form>
+                            
 
-    <div class="py-10 bg-[#151829]">
-        <div class="max-w-4xl mx-auto">
-            <center><h2 class="text-4xl font-bold mb-5 text-white font-serif">List Podcast</h2></center> 
-            <div class="-mx-4">
-                <div class="overflow-x-auto">
-                    <table class="min-w-full bg-[#151829] rounded-lg overflow-hidden">
-                        <thead class="bg-[#9e60d1] text-white">
-                            <tr>
-                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Judul</th>
-                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Jumlah Episode</th>
-                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Total Durasi</th>
-                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody class="text-gray-400 bg-[#382e47]">
-                            <tr class="text-white">
-                                <td class="py-3 px-4">Rintik Sendu</td>
-                                <td class="py-3 px-4">20</td>
-                                <td class="py-3 px-4">57 menit</td>
-                                <td class="py-3 px-4">
-                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Lihat Daftar Episode</button>
-                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Tambah Episode</button>
-                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9] ">Hapus</button>
-                                </td>
-                            </tr>
-                            <tr class="text-white">
-                                <td class="py-3 px-4">Lentera Malam</td>
-                                <td class="py-3 px-4">10</td>
-                                <td class="py-3 px-4">49 menit</td>
-                                <td class="py-3 px-4">
-                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Lihat Daftar Episode</button>
-                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Tambah Episode</button>
-                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Hapus</button>
-                                </td>
-                            </tr>
-                            <tr class="text-white">
-                                <td class="py-3 px-4">...</td>
-                                <td class="py-3 px-4">...</td>
-                                <td class="py-3 px-4">...</td>
-                                <td class="py-3 px-4">...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="flex justify-end mt-4">
+                <a href="{% url 'podcast_chart:create_podcast' %}" class="bg-[#9e60d1] text-white px-4 py-2 rounded-full font-semibold hover:bg-[#b17bc9]">Tambah Podcast</a>
             </div>
         </div>
     </div>
-
-</body>
-</html>
-
+</div>
 {% endblock content %}
