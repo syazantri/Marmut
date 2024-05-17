@@ -44,11 +44,12 @@
                 </div>
                 <div>
                     <a href="{% url 'playlist_player:add_song_to_user_playlist' %}?song_id={{ song_id }}">
-                        <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Lihat</button>
+                        <button class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold mb-2">Add to Playlist</button>
                     </a>
-                    <button class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold mb-2">Add to Playlist</button>
                     <button class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold mb-2">Download</button>
-                    <button class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold">Kembali</button>
+                    <a href="{% url 'dashboard:dashboard' %}">
+                        <button class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold">Kembali</button>
+                    </a>
                 </div>
             </div>
         </div>

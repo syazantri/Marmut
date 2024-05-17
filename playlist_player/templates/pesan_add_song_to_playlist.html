@@ -9,6 +9,7 @@
         {% for record in records %}
             <div>
                 <h3 class="text-1xl font-bold mb-1 text-white font-serif">Berhasil Menambahkan Lagu {{record.0}} dengan Judul ke {{record}}</h3>
+                <h3 class="text-1xl font-bold mb-1 text-white font-serif">{{error_message}}</h3>
             </div>
         {% endfor %}
         <a href="{% url 'dashboard:dashboard' %}">

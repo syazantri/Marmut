@@ -1,3 +1,4 @@
+from sqlite3 import IntegrityError
 import uuid
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, render
@@ -153,14 +154,26 @@ def add_song_to_user_playlist(request):
     if request.method == 'POST' and not request.method == 'GET':
         playlist_id = request.POST.get('playlist_id')
 
-        cursor.execute(
-            f'insert into playlist_song values (\'{playlist_id}\', \'{song_id}\')'
-        )
+        try:
+            cursor.execute(
+                f'insert into playlist_song values (\'{playlist_id}\', \'{song_id}\')'
+            )
 
-        connection.commit()
-        url = reverse('playlist_player:pesan_add_song_to_playlist')
-        url_with_params = f"{url}?song_id={song_id}"
-        return redirect(url_with_params)
+            connection.commit()
+            url = reverse('playlist_player:pesan_add_song_to_playlist')
+            url_with_params = f"{url}?song_id={song_id}"
+            return redirect(url_with_params)
+        except IntegrityError as e:
+            error_message = str(e)
+            if "Lagu sudah ada dalam playlist" in error_message:
+                context = {
+                    'records_song': records_song,
+                    'list_playlist': list_playlist,
+                    'error_message': "Lagu sudah ada dalam playlist"
+                }
+                return render(request, 'add_song_to_user_playlist.html', context)
+            else:
+                raise
 
     cursor.execute(
         f'select id_playlist, judul from user_playlist where email_pembuat = \'{email}\''
@@ -304,5 +317,5 @@ def hapus_playlist(request):
     cursor.execute(
         f'delete from user_playlist where id_user_playlist = \'{id_playlist}\''
     )
-    
-    return HttpResponseRedirect(reverse("user_playlist:user_playlist"))
+    connection.commit()
+    return HttpResponseRedirect(reverse("playlist_player:user_playlist"))
