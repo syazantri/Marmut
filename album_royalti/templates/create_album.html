@@ -21,11 +21,74 @@
                     {% endfor %}
                  </select>
             </div>
-            
+
+            <h2 class="text-3xl font-semibold text-white mb-4 text-center font-serif">Lagu Pertama</h2>
+            <div>
+                <label for="judul_lagu" class="text-white">Judul</label>
+                <input type="text" id="judul_lagu" name="judul_lagu" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
+            </div>
+            {% if isArtist == "True" %}
+            <div>
+                <label for="artist" class="text-white font-semibold">Artist:</label>
+                <label for="artist" class="text-white font-semibold">{{ nama_artist.0 }}</label>
+            </div>
+            {% else %}
+            <div>
+                <label for="artist" class="text-white">Artist</label>
+                <select id="artist" name="artist" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
+                    <option value="">Select Artist</option>
+                    {% for record in records_artist  %}
+                    <option value="{{ record.0 }}">{{ record.3 }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
+            <div>
+                <label for="songwriter" class="text-white">Songwriters</label><br>
+                {% for record in records_songwriter  %}
+                {% if record.1 == request.COOKIES.email %}
+                <input type="checkbox" id="songwriter_{{ record.0 }}" name="songwriter[]" value="{{ record.0 }}" class="mr-2" checked disabled>
+                <label for="songwriter_{{ record.0 }}" value="{{ record.0 }}" class="text-white">{{ record.3 }}</label><br>
+                {% else %}
+                <input type="checkbox" id="songwriter_{{ record.0 }}" name="songwriter[]" value="{{ record.0 }}" class="mr-2">
+                <label for="songwriter_{{ record.0 }}" value="{{ record.0 }}" class="text-white">{{ record.3 }}</label><br>
+                {% endif %}
+                {% endfor %}
+            </div>
+            <div>
+                <label for="genre" class="text-white">Genres</label><br>
+                {% for record in records_genre %}
+                <input type="checkbox" id="genre_{{ record.0 }}" name="genre[]" value="{{ record.0 }}" class="mr-2">
+                <label for="genre_{{ record.0 }}" value="{{ record.0 }}" class="text-white">{{ record.0 }}</label><br>
+                {% endfor %}
+            </div>
+            <div>
+                <label for="durasi" class="text-white">Durasi</label>
+                <input type="text" id="durasi" name="durasi" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
+            </div>
             <div>
                 <button type="submit" class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold">Submit</button>
             </div>
+            
         </form>
     </div>
-</div>
+</div>   
+    <script>
+        function validateForm() {
+            var songwriters = document.querySelectorAll('input[name="songwriter[]"]:checked');
+            var genres = document.querySelectorAll('input[name="genre[]"]:checked');
+    
+            if (songwriters.length === 0) {
+                alert("Please choose at least one songwriter.");
+                return false;
+            }
+    
+            if (genres.length === 0) {
+                alert("Please choose at least one genre.");
+                return false;
+            }
+    
+            return true; 
+        }
+    </script>
 {% endblock content %}
