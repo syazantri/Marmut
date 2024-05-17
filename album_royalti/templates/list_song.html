@@ -34,7 +34,9 @@
                                 <td class="py-3 px-4">{{record.2}}</td>
                                 <td class="py-3 px-4">
                                     <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Detail</button>
-                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9] ml-2">Hapus</button>
+                                    <a href="{% url 'album_royalti:delete_song' %}?song_id={{ record.0 }}&album_id={{ album_id }} ">
+                                        <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9] ml-2">Hapus</button>
+                                    </a>
                                 </td>
                             </tr>
                             {% endfor %}

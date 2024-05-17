@@ -1,5 +1,7 @@
 import uuid
+from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from utils.query import *
 from datetime import datetime
 
@@ -78,20 +80,142 @@ def cek_royalti(request):
 
 
 def create_album(request):
+    isArtist = request.COOKIES.get('isArtist')
+    isSongwriter = request.COOKIES.get('isSongwriter')
+    idArtist = request.COOKIES.get('idArtist')
+    idSongwriter = request.COOKIES.get('idSongwriter')
+    nama_artist = ""
+    nama_songwriter = ""
+
     if request.method == 'POST' and not request.method == 'GET':
         judul = request.POST.get('judul')
         label = request.POST.get('label')
         id_album = str(uuid.uuid4())
         cursor.execute(
             f'insert into album values (\'{id_album}\', \'{judul}\', 0, \'{label}\', 0)')
+    
+        judul_lagu = request.POST.get('judul_lagu')
+        id_song = str(uuid.uuid4())
+        durasi = request.POST.get('durasi')
+        current_datetime = datetime.now()
+        date_now = current_datetime.strftime('%Y-%m-%d')
+        current_year = current_datetime.year
+        year_now = '{:04d}'.format(current_year)
+        songwriters = request.POST.getlist('songwriter[]')
+        genres = request.POST.getlist('genre[]')
+
+        if isArtist == "True":
+            id_artist = idArtist
+            id_pemilik_hak_cipta_artist = request.COOKIES.get('idPemilikCiptaArtist')
+        else:
+            id_artist = request.POST.get('artist')
+            cursor.execute(
+                f'select id_pemilik_hak_cipta from artist where id = \'{id_artist}\'')
+            id_pemilik_hak_cipta_artist = cursor.fetchone()
+
+        if isSongwriter == "True":
+            songwriters.append(idSongwriter)
+
+        # insert ke tabel konten
+        cursor.execute(
+            f'insert into konten values (\'{id_song}\', \'{judul_lagu}\', \'{date_now}\', \'{year_now}\', \'{durasi}\')')
+        
+        # insert ke tabel song
+        cursor.execute(
+            f'insert into song values (\'{id_song}\', \'{id_artist}\', \'{id_album}\', 0, 0)')
+        
+        # insert ke songwriter_write_song dan royalti
+        for songwriter in songwriters:
+            cursor.execute(
+                f'select id_pemilik_hak_cipta from songwriter where id = \'{songwriter}\'')
+            id_pemilik_hak_cipta_songwriter = cursor.fetchone();
+            cursor.execute(
+                f'insert into royalti values (\'{id_pemilik_hak_cipta_songwriter[0]}\', \'{id_song}\', 0)')
+            cursor.execute(
+                f'insert into songwriter_write_song values (\'{songwriter}\', \'{id_song}\')')
+
+        # insert ke genre
+        for genre in genres:
+            cursor.execute(
+                f'insert into genre values (\'{id_song}\', \'{genre}\')')
+        
+        # insert royalti artist
+        if isArtist == "True":
+            cursor.execute(
+                f'insert into royalti values (\'{id_pemilik_hak_cipta_artist}\', \'{id_song}\', 0)')
+        else:
+            cursor.execute(
+                f'insert into royalti values (\'{id_pemilik_hak_cipta_artist[0]}\', \'{id_song}\', 0)')
+        
+        # insert royalti label
+        cursor.execute(
+            f'select id_label from album where id = \'{id_album}\'')
+        id_label = cursor.fetchone()
+        cursor.execute(
+            f'select id_pemilik_hak_cipta from label where id = \'{id_label[0]}\'')
+        id_pemilik_hak_cipta_label = cursor.fetchone()
+        cursor.execute(
+            f'insert into royalti values (\'{id_pemilik_hak_cipta_label[0]}\', \'{id_song}\', 0)')
         
         connection.commit()
         return redirect('album_royalti:list_edit_album')
-    
+
+    # untuk pilihan dropdown artist
+    cursor.execute(
+        f'select id, email_akun, id_pemilik_hak_cipta from artist')
+    records_artist = cursor.fetchall()
+    for i in range(len(records_artist)):
+        cursor.execute(
+            f'select nama from akun where email = \'{records_artist[i][1]}\'')
+        records_artist[i] = records_artist[i] + cursor.fetchone()
+
+    # untuk pilihan dropdown songwriter
+    cursor.execute(
+        f'select id, email_akun, id_pemilik_hak_cipta from songwriter')
+    records_songwriter = cursor.fetchall()
+    for i in range(len(records_songwriter)):
+        cursor.execute(
+            f'select nama from akun where email = \'{records_songwriter[i][1]}\'')
+        records_songwriter[i] = records_songwriter[i] + cursor.fetchone()
+
+    # untuk pilihan dropdown genre
+    cursor.execute(
+        f'select distinct genre from genre')
+    records_genre = cursor.fetchall()
+
+    # get nama artist
+    if isArtist == "True":
+        cursor.execute(
+            f'select email_akun from artist where id = \'{idArtist}\'')
+        email_artist = cursor.fetchone()
+        cursor.execute(
+            f'select nama from akun where email = \'{email_artist[0]}\'')
+        nama_artist = cursor.fetchone()
+
+    # get nama songwriter
+    if isSongwriter == "True":
+        cursor.execute(
+            f'select email_akun from songwriter where id = \'{idSongwriter}\'')
+        email_songwriter = cursor.fetchone()
+        cursor.execute(
+            f'select nama from akun where email = \'{email_songwriter[0]}\'')
+        nama_songwriter = cursor.fetchone()
+
+    # get nama label
     cursor.execute(
         f'select id, nama from label')
     list_label = cursor.fetchall()
+
     context = {
+        'isArtist': isArtist,
+        'isSongwriter': isSongwriter,
+        'idArtist': idArtist,
+        'idSongwriter': idSongwriter,
+        'records_artist': records_artist,
+        'records_songwriter': records_songwriter,
+        'records_genre': records_genre,
+        'nama_artist': nama_artist,
+        'nama_songwriter': nama_songwriter,
         'list_label': list_label
     }
     return render(request, 'create_album.html', context)
@@ -126,6 +250,9 @@ def create_song(request):
                 f'select id_pemilik_hak_cipta from artist where id = \'{id_artist}\'')
             id_pemilik_hak_cipta_artist = cursor.fetchone()
 
+        if isSongwriter == "True":
+            songwriters.append(idSongwriter)
+
         # insert ke tabel konten
         cursor.execute(
             f'insert into konten values (\'{id_song}\', \'{judul}\', \'{date_now}\', \'{year_now}\', \'{durasi}\')')
@@ -150,8 +277,12 @@ def create_song(request):
                 f'insert into genre values (\'{id_song}\', \'{genre}\')')
         
         # insert royalti artist
-        cursor.execute(
-            f'insert into royalti values (\'{id_pemilik_hak_cipta_artist[0]}\', \'{id_song}\', 0)')
+        if isArtist == "True":
+            cursor.execute(
+                f'insert into royalti values (\'{id_pemilik_hak_cipta_artist}\', \'{id_song}\', 0)')
+        else:
+            cursor.execute(
+                f'insert into royalti values (\'{id_pemilik_hak_cipta_artist[0]}\', \'{id_song}\', 0)')
         
         # insert royalti label
         cursor.execute(
@@ -164,13 +295,13 @@ def create_song(request):
             f'insert into royalti values (\'{id_pemilik_hak_cipta_label[0]}\', \'{id_song}\', 0)')
         
         # update album
-        cursor.execute(
-            f'select jumlah_lagu, total_durasi from album where id = \'{album_id}\'')
-        album_saat_ini = cursor.fetchone()
-        new_total_durasi = int(album_saat_ini[1]) + int(durasi)
-        new_jumlah_lagu = int(album_saat_ini[0]) + 1
-        cursor.execute(
-            f'UPDATE album SET jumlah_lagu = {new_jumlah_lagu}, total_durasi = {new_total_durasi} WHERE id = \'{album_id}\'')
+        # cursor.execute(
+        #     f'select jumlah_lagu, total_durasi from album where id = \'{album_id}\'')
+        # album_saat_ini = cursor.fetchone()
+        # new_total_durasi = int(album_saat_ini[1]) + int(durasi)
+        # new_jumlah_lagu = int(album_saat_ini[0]) + 1
+        # cursor.execute(
+        #     f'UPDATE album SET jumlah_lagu = {new_jumlah_lagu}, total_durasi = {new_total_durasi} WHERE id = \'{album_id}\'')
         
         connection.commit()
         return redirect('album_royalti:list_edit_album')
@@ -306,8 +437,10 @@ def list_edit_album(request):
             list_album_id_songwriter = []
             for song in list_song_id_songwriter:
                 cursor.execute(
-                    f'SELECT id_album FROM SONG WHERE id_konten = \'{song[0]}\'')
-                list_album_id_songwriter.append(cursor.fetchone())
+                    f'SELECT DISTINCT id_album FROM SONG WHERE id_konten = \'{song[0]}\'')
+                album_id_sekarang = cursor.fetchone()
+                if album_id_sekarang not in list_album_id_songwriter:
+                    list_album_id_songwriter.append(album_id_sekarang)
 
             if len(list_album_id_songwriter) != 0:
                 songwriterHasAlbum = True
@@ -348,12 +481,41 @@ def list_song(request):
     context = {
         'status': 'success',
         'records_song': records_song,
+        'album_id': album_id,
     }
     response = render(request, 'list_song.html', context)
     return response
 
 def delete_song(request):
-    # id_song = request.GET.get('song_id')
-    # cursor.execute(
-    #     f'delete from song where id_konten = \'{id_song}\'')
-    return render(request, 'list_song.html')
+    id_song = request.GET.get('song_id')
+    album_id = request.GET.get('album_id')
+    
+    cursor.execute(
+        f'delete from song where id_konten = \'{id_song}\'')
+    cursor.execute(
+        f'delete from konten where id = \'{id_song}\'')
+    
+    connection.commit()
+    return HttpResponseRedirect(reverse('album_royalti:list_song') + f'?album_id={album_id}')
+
+def delete_album(request):
+    album_id = request.GET.get('album_id')
+    role = request.COOKIES.get('role')
+    records_song = []
+
+    cursor.execute(
+        f'SELECT id_konten, total_play, total_download from song where id_album = \'{album_id}\'')
+    records_song = cursor.fetchall()
+    for record in records_song:
+        cursor.execute(
+            f'delete from song where id_konten = \'{record[0]}\'')
+        cursor.execute(
+            f'delete from konten where id = \'{record[0]}\'')
+    cursor.execute(
+        f'delete from album where id = \'{album_id}\'')
+    
+    connection.commit()
+    if role == "pengguna":
+        return HttpResponseRedirect(reverse('album_royalti:list_edit_album'))
+    else:
+        return HttpResponseRedirect(reverse('dashboard:list_album'))
