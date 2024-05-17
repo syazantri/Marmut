@@ -6,7 +6,7 @@
 <div class="flex flex-col items-center justify-center font-sans">
     <div class="bg-gray-900 rounded-lg p-8">
         <h2 class="text-3xl font-semibold text-white mb-4 text-center font-serif">Create Lagu</h2>
-        <form class="space-y-4" method="POST">
+        <form class="space-y-4" method="POST" onsubmit="return validateForm()">
             {% csrf_token %}
             <div>
                 <label for="album" class="text-white font-semibold">Album:</label>
@@ -35,8 +35,13 @@
             <div>
                 <label for="songwriter" class="text-white">Songwriters</label><br>
                 {% for record in records_songwriter  %}
+                {% if record.1 == request.COOKIES.email %}
+                <input type="checkbox" id="songwriter_{{ record.0 }}" name="songwriter[]" value="{{ record.0 }}" class="mr-2" checked disabled>
+                <label for="songwriter_{{ record.0 }}" value="{{ record.0 }}" class="text-white">{{ record.3 }}</label><br>
+                {% else %}
                 <input type="checkbox" id="songwriter_{{ record.0 }}" name="songwriter[]" value="{{ record.0 }}" class="mr-2">
                 <label for="songwriter_{{ record.0 }}" value="{{ record.0 }}" class="text-white">{{ record.3 }}</label><br>
+                {% endif %}
                 {% endfor %}
             </div>
             <div>
@@ -57,18 +62,22 @@
     </div>
 </div>
 
-{% if isSongwriter == "True" %}
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var defaultSongwriter = "{{ nama_songwriter.0 }}";
-        var songwriterCheckboxes = document.querySelectorAll('[name="songwriter[]"]');
-        songwriterCheckboxes.forEach(function (checkbox) {
-            if (checkbox.value === defaultSongwriter) {
-                checkbox.checked = true;
-                checkbox.disabled = true;
-            }
-        });
-    });
+    function validateForm() {
+        var songwriters = document.querySelectorAll('input[name="songwriter[]"]:checked');
+        var genres = document.querySelectorAll('input[name="genre[]"]:checked');
+
+        if (songwriters.length === 0) {
+            alert("Please choose at least one songwriter.");
+            return false;
+        }
+
+        if (genres.length === 0) {
+            alert("Please choose at least one genre.");
+            return false;
+        }
+
+        return true; 
+    }
 </script>
-{% endif %}
 {% endblock content %}

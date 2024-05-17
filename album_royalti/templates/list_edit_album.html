@@ -41,13 +41,13 @@
                                 <td class="py-3 px-4">{{record.4}}</td>
                                 <td class="py-3 px-4">
                                     <a href="{% url 'album_royalti:list_song' %}?album_id={{ record.0 }}">
-                                        <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Lihat Daftar Lagu</button>
+                                        <button class="bg-[#9e60d1] text-xs text-white px-1 py-0.5 rounded-full hover:bg-[#b17bc9]">Lihat Daftar Lagu</button>
                                     </a>
                                     <a href="{% url 'album_royalti:create_song' %}?album_id={{ record.0 }}">
-                                        <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9] ml-2">Tambah Lagu</button>
+                                        <button class="bg-[#9e60d1] text-xs text-white px-1 py-0.5 rounded-full hover:bg-[#b17bc9] ml-2">Tambah Lagu</button>
                                     </a>
-                                    <a href="{#}">
-                                        <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9] ml-2">Hapus</button>
+                                    <a href="{% url 'album_royalti:delete_album' %}?album_id={{ record.0 }}">
+                                        <button class="bg-[#9e60d1] text-xs text-white px-1 py-0.5 rounded-full hover:bg-[#b17bc9] ml-2">Hapus</button>
                                     </a>
                                 </td>
                             </tr>
@@ -92,7 +92,7 @@
                                     <a href="{% url 'album_royalti:create_song' %}?album_id={{ record.0 }}">
                                         <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9] ml-2">Tambah Lagu</button>
                                     </a>
-                                    <a href="{#}">
+                                    <a href="{% url 'album_royalti:delete_album' %}?album_id={{ record.0 }}">
                                         <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9] ml-2">Hapus</button>
                                     </a>
                                 </td>
