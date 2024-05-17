@@ -1,4 +1,3 @@
-from sqlite3 import IntegrityError
 import uuid
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, render
@@ -163,7 +162,8 @@ def add_song_to_user_playlist(request):
             url = reverse('playlist_player:pesan_add_song_to_playlist')
             url_with_params = f"{url}?song_id={song_id}"
             return redirect(url_with_params)
-        except IntegrityError as e:
+        
+        except Exception as e:
             error_message = str(e)
             if "Lagu sudah ada dalam playlist" in error_message:
                 context = {
