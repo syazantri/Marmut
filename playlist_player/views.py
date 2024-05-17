@@ -1,4 +1,5 @@
 import uuid
+from django.db import IntegrityError
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -153,25 +154,42 @@ def add_song_to_user_playlist(request):
     if request.method == 'POST' and not request.method == 'GET':
         playlist_id = request.POST.get('playlist_id')
 
-        try:
-            cursor.execute(
-                f'insert into playlist_song values (\'{playlist_id}\', \'{song_id}\')'
-            )
+        # try:
+        #     cursor.execute(
+        #         "INSERT INTO playlist_song (id_playlist, id_song) VALUES (%s, %s)", [playlist_id, song_id]
+        #     )
+        #     connection.commit()
+        #     url = reverse('playlist_player:pesan_add_song_to_playlist')
+        #     url_with_params = f"{url}?song_id={song_id}"
+        #     return redirect(url_with_params)
+        
+        # except Exception as e:
+        #     error_message = str(e)
+        #     if "Lagu sudah ada dalam playlist" in error_message:
+        #         context = {
+        #             'records_song': records_song,
+        #             'list_playlist': list_playlist,
+        #             'error_message': "Lagu sudah ada dalam playlist",
+        #         }
+        #         return render(request, 'pesan_add_song_to_user_playlist.html', context)
+        #     else:
+        #         raise
 
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    "INSERT INTO playlist_song (id_playlist, id_song) VALUES (%s, %s)", [playlist_id, song_id]
+                )
             connection.commit()
             url = reverse('playlist_player:pesan_add_song_to_playlist')
             url_with_params = f"{url}?song_id={song_id}"
             return redirect(url_with_params)
         
-        except Exception as e:
+        except IntegrityError as e:
+            connection.rollback()
             error_message = str(e)
-            if "Lagu sudah ada dalam playlist" in error_message:
-                context = {
-                    'records_song': records_song,
-                    'list_playlist': list_playlist,
-                    'error_message': "Lagu sudah ada dalam playlist"
-                }
-                return render(request, 'add_song_to_user_playlist.html', context)
+            if "duplicate key value violates unique constraint" in error_message:
+                error_message = "Lagu sudah ada dalam playlist"
             else:
                 raise
 
