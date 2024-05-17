@@ -263,23 +263,23 @@ def play_user_playlist(request):
 
 
 def ubah_playlist(request):
-    id_playlist = request.GET.get('id_playlist')
+    id_playlist = request.POST.get('id_playlist')
 
-    if not id_playlist:
-        return redirect('playlist_player:user_playlist')  # Redirect or handle the case where id_playlist is not provided
+    # if not id_playlist:
+    #     return redirect('playlist_player:user_playlist')  
 
     if request.method == 'POST':
+
         judul = request.POST['judul']
         deskripsi = request.POST['deskripsi']
 
-        with connection.cursor() as cursor:
-            cursor.execute(
-                """UPDATE user_playlist
-                   SET judul = %s, deskripsi = %s
-                   WHERE id_user_playlist = %s;
-                """, [judul, deskripsi, id_playlist]
-            )
-        
+        cursor.execute(
+            """UPDATE user_playlist
+                SET judul = %s, deskripsi = %s
+                WHERE id_user_playlist = %s;
+            """, [judul, deskripsi, id_playlist]
+        )
+        connection.commit()
         return redirect('playlist_player:user_playlist')
     
     judul_playlist = ''
@@ -298,7 +298,6 @@ def ubah_playlist(request):
         judul_playlist, deskripsi_playlist = result
 
     return render(request, 'ubah_playlist.html', {
-        'id_playlist': id_playlist,
         'judul': judul_playlist,
         'deskripsi': deskripsi_playlist
     })  
