@@ -124,12 +124,12 @@ def process_payment(request):
                 cursor.execute("SELECT COUNT(*) FROM PREMIUM WHERE email = %s", [email])
                 
                 if not cursor.fetchone():
-                    cursor.execute("INSERT INTO PREMIUM (email) VALUES (%s);", [email])
-                    print(email)
+                    # cursor.execute("INSERT INTO PREMIUM (email) VALUES (%s);", [email])
+                    # print(email)
 
-                    # Delete the user from NONPREMIUM table
+                    # # Delete the user from NONPREMIUM table
                     cursor.execute("DELETE FROM NONPREMIUM WHERE email = %s;", [email])
-                    cursor.commit()
+                    connection.commit()
                     
                     
             return redirect('dashboard:dashboard')

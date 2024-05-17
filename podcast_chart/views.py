@@ -195,7 +195,7 @@ def list_podcast(request):
     with connection.cursor() as cursor:
 
         cursor.execute("""
-            SELECT konten.id, konten.judul AS podcast_title, COALESCE(SUM(episode.durasi), 0) AS total_durasi, COUNT(episode.id_konten_podcast) AS jumlah_episode
+            SELECT konten.id, konten.judul AS podcast_title, konten.durasi, COUNT(episode.id_konten_podcast) AS jumlah_episode
             FROM podcast
             JOIN konten ON podcast.id_konten = konten.id
             LEFT JOIN episode ON podcast.id_konten = episode.id_konten_podcast
