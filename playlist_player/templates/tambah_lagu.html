@@ -6,14 +6,16 @@
 <div class="flex flex-col items-center justify-center font-sans">
     <div class="bg-gray-900 rounded-lg p-8">
         <h2 class="text-3xl font-semibold text-white mb-4 text-center font-serif">Tambah Lagu</h2>
-        <form class="space-y-4">
+        <form class="space-y-4" method="POST">
+            {% csrf_token %}
             <div>
                 <label for="email" class="text-white">Lagu</label>
-                <select id="song" name="song" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
-                    <option value="playlist1">Song 1</option>
-                    <option value="playlist2">Song 2</option>
-                    <option value="playlist3">Song 3</option>
-                </select>
+                <select id="lagu" name="lagu" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
+                    <option value="">Select Lagu</option>
+                    {% for lagu in list_lagu %}
+                    <option value="{{ lagu.0 }}">{{ lagu.1 }}</option>
+                    {% endfor %}
+                 </select>
             </div>
             <div>
                 <button type="submit" class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold">Submit</button>

@@ -3,7 +3,7 @@
 
 {% block meta %}
 <head>
-    <title>User Playlist Detail - Marmut</title>
+    <title>User Playlist Detail</title>
 </head>
 {% endblock meta %}
 
@@ -12,66 +12,66 @@
 
     <div class="py-10 bg-[#151829]">
         <div class="max-w-4xl mx-auto">
-            <h2 class="text-4xl font-bold mb-5 text-white font-serif">User Playlist Detail</h2>
-            <h3 class="text-1xl font-bold mb-1 text-white font-serif">Judul: Playlist1</h3>
-            <h3 class="text-1xl font-bold mb-1 text-white font-serif">Pembuat: Pembuat1</h3>
-            <h3 class="text-1xl font-bold mb-1 text-white font-serif">Jumlah Lagu: 12</h3>
-            <h3 class="text-1xl font-bold mb-1 text-white font-serif">Total Durasi: 8 jam 20 menit</h3>
-            <h3 class="text-1xl font-bold mb-1 text-white font-serif">Tanggal Dibuat: 18/03/24</h3>
-            <h3 class="text-1xl font-bold mb-1 text-white font-serif">Deskripsi: Lorem Ipsum ...</h3>
-            <div>
-                <button type="submit" class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold mb-2">Shuffle Play</button>
-                <button type="submit" class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold">Kembali</button>
-            </div>
-            <h2>DAFTAR LAGU</h2>
+            {% for record in records_playlist %}
+                <h2 class="text-4xl font-bold mb-5 text-white font-serif">User Playlist Detail</h2>
+                <h3 class="text-1xl font-bold mb-1 text-white font-serif">Judul: {{record.2}}</h3>
+                <h3 class="text-1xl font-bold mb-1 text-white font-serif">Pembuat: {{record.0}}</h3>
+                <h3 class="text-1xl font-bold mb-1 text-white font-serif">Jumlah Lagu: {{record.4}}</h3>
+                <h3 class="text-1xl font-bold mb-1 text-white font-serif">Total Durasi: {{record.7}}</h3>
+                <h3 class="text-1xl font-bold mb-1 text-white font-serif">Tanggal Dibuat: {{record.5}}</h3>
+                <h3 class="text-1xl font-bold mb-1 text-white font-serif">Deskripsi: {{record.3}}</h3>
+            {% endfor %}
+
+            <a href="{% url 'playlist_player:play_user_playlist' %}?playlist_id={{ playlist_id }}">
+                <button class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold">Shuffle Play</button>
+            </a>
+            <form method="POST" action="{% url 'playlist_player:play_user_playlist' %}">
+                {% csrf_token %}
+                <input type="hidden" name="playlist_id" value="{{ playlist_id }}">
+                <button type="submit" name="shuffle_play" class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold">
+                    Shuffle Play
+                </button>
+            </form>
+            <a href="{% url 'dashboard:dashboard' %}">
+                <button class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold">Kembali</button>
+            </a>
+
+            <h2 class="text-4xl font-bold mb-5 text-white font-serif">Daftar Lagu</h2>
             <div class="-mx-4">
                 <div class="overflow-x-auto">
                     <table class="min-w-full bg-[#151829] rounded-lg overflow-hidden">
                         <thead class="bg-[#9e60d1] text-white">
                             <tr>
-                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Judul Lagu</th>
+                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Judul</th>
                                 <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Oleh</th>
                                 <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Durasi</th>
                                 <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Action</th>
                             </tr>
                         </thead>
                         <tbody class="text-gray-400 bg-[#382e47]">
+                            {% for record in records_song %}
                             <tr class="text-white">
-                                <td class="py-3 px-4">Song1</td>
-                                <td class="py-3 px-4">Artist1</td>
-                                <td class="py-3 px-4">2 menit</td>
+                                <td class="py-3 px-4">{{record.1}}</td>
+                                <td class="py-3 px-4">{{record.2}}</td>
+                                <td class="py-3 px-4">{{record.3}}</td>
                                 <td class="py-3 px-4">
-                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Lihat</button>
+                                    <a href="{% url 'playlist_player:play_song' %}?song_id={{ record.4 }}">
+                                        <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Lihat</button>
+                                    </a>
+                                    <a href="{% url 'playlist_player:play_song' %}?song_id={{ record.4 }}">
+                                        <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Play</button>
+                                    </a>
                                     <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Play</button>
                                     <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9] ml-2">Hapus</button>
                                 </td>
                             </tr>
-                            <tr class="text-white">
-                                <td class="py-3 px-4">Song2</td>
-                                <td class="py-3 px-4">Artist2</td>
-                                <td class="py-3 px-4">3 menit</td>
-                                <td class="py-3 px-4">
-                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Lihat</button>
-                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Play</button>
-                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9] ml-2">Hapus</button>
-                                </td>
-                            </tr>
-                            <tr class="text-white">
-                                <td class="py-3 px-4">...</td>
-                                <td class="py-3 px-4">...</td>
-                                <td class="py-3 px-4">...</td>
-                                <td class="py-3 px-4">
-                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Lihat</button>
-                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Play</button>
-                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9] ml-2">Hapus</button>
-                                </td>
-                            </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
-                <div>
-                    <button type="submit" class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold">Tambah Lagu</button>
-                </div>
+                <a href="{% url 'playlist_player:tambah_lagu' %}?playlist_id={{ playlist_id }}">
+                    <button class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold">Tambah Lagu</button>
+                </a>
             </div>
         </div>
     </div>

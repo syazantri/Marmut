@@ -15,18 +15,40 @@
             <h2 class="text-4xl font-bold mb-3 text-white font-serif">User Playlist Detail</h2>
             <div class="bg-gray-800 rounded-lg p-6 mb-2">
                 <div class="grid gap-1 text-white">
-                    <h3 class="text-1xl font-bold mb-1 text-white font-serif">Judul: Playlist1</h3>
-                    <h3 class="text-1xl font-bold mb-1 text-white font-serif">Pembuat: Pembuat1</h3>
-                    <h3 class="text-1xl font-bold mb-1 text-white font-serif">Jumlah Lagu: 12</h3>
-                    <h3 class="text-1xl font-bold mb-1 text-white font-serif">Total Durasi: 8 jam 20 menit</h3>
-                    <h3 class="text-1xl font-bold mb-1 text-white font-serif">Tanggal Dibuat: 18/03/24</h3>
-                    <h3 class="text-1xl font-bold mb-1 text-white font-serif">Deskripsi: Lorem Ipsum ...</h3>
+                    {% for record in records_playlist %} 
+                        <h3 class="text-1xl font-bold mb-1 text-white font-serif">Judul: {{record.2}}</h3>
+                        <h3 class="text-1xl font-bold mb-1 text-white font-serif">Pembuat: {{record.0}}</h3>
+                        <h3 class="text-1xl font-bold mb-1 text-white font-serif">Jumlah Lagu: {{record.4}}</h3>
+                        <h3 class="text-1xl font-bold mb-1 text-white font-serif">Total Durasi: {{total_durasi_format}}</h3>
+                        <h3 class="text-1xl font-bold mb-1 text-white font-serif">Tanggal Dibuat: {{record.5}}</h3>
+                        <h3 class="text-1xl font-bold mb-1 text-white font-serif">Deskripsi: {{record.3}}</h3>
+                    {% endfor %}
                 </div>
             </div>
-            <div>
+            <a href="{% url 'playlist_player:play_user_playlist' %}?playlist_id={{ playlist_id }}">
+                <button class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold">Shuffle Play</button>
+            </a>
+
+            <form method="POST" action="{% url 'playlist_player:play_user_playlist' %}?playlist_id={{ playlist_id }}">
+                {% csrf_token %}
+                <button type="submit" name="shuffle_play" class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold">
+                    Shuffle Play
+                </button>
+            </form>
+
+            <a href="{% url 'dashboard:dashboard' %}">
+                <button class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold">Kembali</button>
+            </a>
+            <!-- <div>
                 <button type="submit" class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg mb-2 font-semibold">Shuffle Play</button>
                 <button type="submit" class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold">Kembali</button>
             </div>
+            <a href="{% url 'playlist_player:play_user_playlist' %}?playlist_id={{ playlist_id }}">
+                <button class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold">Shuffle Play</button>
+            </a>
+            <a href="{% url 'dashboard:homepage' %}">
+                <button class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold">Kembali</button>
+            </a> -->
             <h2>DAFTAR LAGU</h2>
             <div class="-mx-4">
                 <div class="overflow-x-auto">
@@ -40,33 +62,19 @@
                             </tr>
                         </thead>
                         <tbody class="text-gray-400 bg-[#382e47]">
-                            <tr class="text-white">
-                                <td class="py-3 px-4">Song1</td>
-                                <td class="py-3 px-4">Artist1</td>
-                                <td class="py-3 px-4">2 menit</td>
-                                <td class="py-3 px-4">
-                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Lihat</button>
-                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Play</button>
-                                </td>
-                            </tr>
-                            <tr class="text-white">
-                                <td class="py-3 px-4">Song2</td>
-                                <td class="py-3 px-4">Artist2</td>
-                                <td class="py-3 px-4">3 menit</td>
-                                <td class="py-3 px-4">
-                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Lihat</button>
-                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Play</button>
-                                </td>
-                            </tr>
-                            <tr class="text-white">
-                                <td class="py-3 px-4">...</td>
-                                <td class="py-3 px-4">...</td>
-                                <td class="py-3 px-4">...</td>
-                                <td class="py-3 px-4">
-                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Lihat</button>
-                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Play</button>
-                                </td>
-                            </tr>
+                            {% for record in records_song %}
+                                <tr class="text-white">
+                                    <td class="py-3 px-4">{{record.1}}</td>
+                                    <td class="py-3 px-4">{{record.2}}</td>
+                                    <td class="py-3 px-4">{{record.3}}</td>
+                                    <td class="py-3 px-4">
+                                        <form method="POST" style="display:inline;">
+                                            {% csrf_token %}
+                                            <button name="play_song_{{ record.0 }}" type="submit" class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Play</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
