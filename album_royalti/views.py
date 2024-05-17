@@ -14,7 +14,12 @@ def cek_royalti(request):
     records_royalti_songwriter = []
 
     if role == "label":
-        idPemilikCiptaLabel = request.COOKIE.get('idPemilikCiptaLabel')
+        idPemilikCiptaLabel = request.COOKIES.get('idPemilikCiptaLabel')
+
+        cursor.execute(
+            f'select rate_royalti from pemilik_hak_cipta where id = \'{idPemilikCiptaLabel}\'')
+        rate_royalti_label = cursor.fetchone()
+
         cursor.execute(
             f'select id_song, jumlah from royalti where id_pemilik_hak_cipta = \'{idPemilikCiptaLabel}\'')
         records_royalti_label = cursor.fetchall()
@@ -23,12 +28,27 @@ def cek_royalti(request):
                 cursor.execute(
                     f'select id_album, total_play, total_download from song where id_konten = \'{records_royalti_label[i][0]}\'')
                 records_royalti_label[i] = records_royalti_label[i] + cursor.fetchone()
+
+                cursor.execute(
+                    f'''
+                    UPDATE royalti
+                    SET jumlah = {int(records_royalti_label[i][3])} * {int(rate_royalti_label[0])}
+                    WHERE id_pemilik_hak_cipta = \'{idPemilikCiptaLabel}\' AND id_song = \'{records_royalti_label[i][0]}\'
+                    '''
+                )
+
                 cursor.execute(
                     f'select judul from album where id = \'{records_royalti_label[i][2]}\'')
                 records_royalti_label[i] = records_royalti_label[i] + cursor.fetchone()
                 cursor.execute(
                     f'select judul from konten where id = \'{records_royalti_label[i][0]}\'')
                 records_royalti_label[i] = records_royalti_label[i] + cursor.fetchone()
+
+                cursor.execute(
+                    f'select jumlah from royalti where id_pemilik_hak_cipta = \'{idPemilikCiptaLabel}\'')
+                records_royalti_label[i] = records_royalti_label[i] + cursor.fetchone()
+
+                connection.commit()
     else:
         isArtist = request.COOKIES.get('isArtist')
         isSongwriter = request.COOKIES.get('isSongwriter')
