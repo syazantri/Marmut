@@ -14,4 +14,5 @@ urlpatterns = [
     path('pesan-add-song-to-playlist/', pesan_add_song_to_playlist, name='pesan_add_song_to_playlist'),
     path('ubah-playlist/', ubah_playlist, name='ubah_playlist'),
     path('hapus-playlist/', hapus_playlist, name='hapus_playlist'),
+    path('pesan-download-song/', pesan_download_song, name='pesan_download_song'),
 ]

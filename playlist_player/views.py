@@ -73,16 +73,27 @@ def detail_playlist(request):
 def tambah_lagu(request):
     playlist_id = request.GET.get('playlist_id')
     list_lagu = []
+    email = request.COOKIES.get('email')
+
     if request.method == 'POST' and not request.method == 'GET':
         lagu = request.POST.get('lagu')
-
-        cursor.execute(
-            f'insert into playlist_song values (\'{playlist_id}\', \'{lagu}\')')
+        try:
+            cursor.execute(
+                f'insert into playlist_song values (\'{playlist_id}\', \'{lagu}\')')
+            
+            connection.commit()
+            url = reverse('playlist_player:detail_playlist')
+            url_with_params = f"{url}?playlist_id={playlist_id}"
+            return redirect(url_with_params)
         
-        connection.commit()
-        url = reverse('playlist_player:detail_playlist')
-        url_with_params = f"{url}?playlist_id={playlist_id}"
-        return redirect(url_with_params)
+        except Exception as e:
+            print("Oops! An exception has occured:", e)
+            print("Exception TYPE:", type(e))
+            context = {
+                'playlist_id': playlist_id
+            }
+            response = render(request, 'user_playlist.html', context)
+            return response
     
         # return redirect('playlist_player:detail_playlist')
 
@@ -127,26 +138,62 @@ def play_song(request):
         f'SELECT akun.nama from songwriter_write_song, songwriter, akun where songwriter_write_song.id_song = \'{song_id}\' AND songwriter.id = songwriter_write_song.id_songwriter AND songwriter.email_akun = akun.email')
     records_songwriter = cursor.fetchone()
 
-    if request.method == 'POST' and not request.method == 'GET':
-        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    if request.method == 'POST':
+        if 'play' in request.POST:
+            timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-        cursor.execute(
-            f'select total_play from song where id_konten = \'{song_id}\'')
-        total = cursor.fetchall()
-        total_play = total[0][0] + 1
+            cursor.execute(
+                f'select total_play from song where id_konten = \'{song_id}\'')
+            total = cursor.fetchall()
+            total_play = total[0][0] + 1
 
-        cursor.execute(
-            f'update song set total_play = \'{total_play}\' where id_konten = \'{song_id}\''
-        )
-    
-        cursor.execute(
-            f'insert into akun_play_song values(\'{email}\', \'{song_id}\',  \'{timestamp}\' )'
-        )
+            cursor.execute(
+                f'update song set total_play = \'{total_play}\' where id_konten = \'{song_id}\''
+            )
+        
+            cursor.execute(
+                f'insert into akun_play_song values(\'{email}\', \'{song_id}\',  \'{timestamp}\' )'
+            )
 
-        connection.commit()
-        url = reverse('playlist_player:play_song')
-        url_with_params = f"{url}?song_id={song_id}"
-        return redirect(url_with_params)
+            connection.commit()
+            url = reverse('playlist_player:play_song')
+            url_with_params = f"{url}?song_id={song_id}"
+            return redirect(url_with_params)
+        
+        elif 'download' in request.POST:
+            timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+            cursor.execute(
+                f'select total_download from song where id_konten = \'{song_id}\'')
+            total = cursor.fetchall()
+            total_download = total[0][0] + 1
+            try:
+                cursor.execute(
+                    f'update song set total_download = \'{total_download}\' where id_konten = \'{song_id}\''
+                )
+
+                cursor.execute(
+                    f'insert into downloaded_song values( \'{song_id}\', \'{email}\' )'
+                )
+
+                connection.commit()
+                url = reverse('playlist_player:pesan_download_song')
+                url_param = f"{url}?song_id={song_id}"
+
+                context = {
+                    'email': email,
+                }
+                return redirect(url_param, context)
+            except Exception as e:
+                print("Oops! An exception has occured:", e)
+                print("Exception TYPE:", type(e))
+                context = {
+                    'song_id': song_id,
+                    'email': email
+                }
+                response = render(request, 'user_playlist.html', context)
+                return response
+                # return HttpResponse(f"Error: {e}", status=500)
 
 
     context = {
@@ -166,6 +213,7 @@ def add_song_to_user_playlist(request):
     email = request.COOKIES.get('email')
     records_song = []
     list_playlist = []
+    isPremium = request.COOKIES.get('statusLangganan')
 
     cursor.execute(
         f'SELECT id, judul from konten where id = \'{song_id}\'')
@@ -188,19 +236,15 @@ def add_song_to_user_playlist(request):
             url_with_params = f"{url}?song_id={song_id}"
             return redirect(url_with_params)
         
-        # except Exception as e:
-        #     error_message = str(e)
-        #     if "Lagu sudah ada dalam playlist" in error_message:
-        #         context = {
-        #             'records_song': records_song,
-        #             'list_playlist': list_playlist,
-        #             'error_message': "Lagu sudah ada dalam playlist",
-        #         }
-        #         return render(request, 'playlist_player:pesan_add_song_to_user_playlist', context)
-        #     else:
-        #         raise
         except Exception as e:
-            return HttpResponse(f"Error: {e}", status=500)
+            print("Oops! An exception has occured:", e)
+            print("Exception TYPE:", type(e))
+            context = {
+                'song_id': song_id
+            }
+            return HttpResponseRedirect(reverse('playlist_player:user_playlist') + f'?song_id={song_id}')
+            # return response
+            # return render(request, 'add_song_to_user_playlist.html', context)
 
 
 
@@ -211,6 +255,7 @@ def add_song_to_user_playlist(request):
     context = {
         'records_song': records_song,
         'list_playlist': list_playlist,
+        'isPremum': isPremium
 
     }
     return render(request, 'add_song_to_user_playlist.html', context)
@@ -350,4 +395,15 @@ def hapus_playlist(request):
     return HttpResponseRedirect(reverse("playlist_player:user_playlist"))
 
 
- 
+def pesan_download_song(request):
+    song_id = request.GET.get('song_id')
+    records = []
+    cursor.execute(
+        f'SELECT judul from konten where konten.id = \'{song_id}\'')
+    records = cursor.fetchall()
+
+    context = {
+        'records': records,
+        'song_id': song_id
+    }
+    return render(request, 'pesan_download_song.html', context)
