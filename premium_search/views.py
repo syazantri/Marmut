@@ -6,13 +6,11 @@ from django.http import HttpResponse, JsonResponse
 
 def riwayat(request):
     email = request.COOKIES.get('email') 
-    if not email:
-        return HttpResponse("Error: No email found in cookies.", status=400)
 
     if request.method == 'GET':
         with connection.cursor() as cursor:
             cursor.execute("SET SEARCH_PATH TO A5")
-            cursor.execute("SELECT * FROM TRANSACTION WHERE email = %s;", [email])
+            cursor.execute("SELECT * FROM TRANSACTION WHERE email = %s ORDER BY timestamp_dimulai DESC;", [email])
             rows = cursor.fetchall()
             transactions = [
                 {
@@ -64,11 +62,6 @@ def cek_langganan(request):
 
             cursor.execute("SELECT * FROM PREMIUM WHERE email = %s;", [email])
             result = cursor.fetchone()
-            
-            if not result:
-                cursor.execute("INSERT INTO PREMIUM (email) VALUES (%s);", [email])
-                cursor.execute("DELETE FROM NONPREMIUM WHERE email = %s;", [email])
-                cursor.commit()
         
     return render(request, 'cek_langganan.html')
 
@@ -97,9 +90,6 @@ def process_payment(request):
                 '1 tahun': 12
             }
 
-            if jenis_paket not in package_durations:
-                return HttpResponse("Error: Invalid package type.", status=400)
-
             duration = package_durations[jenis_paket]
             start_date = datetime.now()
             end_date = start_date + timedelta(days=duration * 30)
@@ -108,24 +98,13 @@ def process_payment(request):
 
             with connection.cursor() as cursor:
                 cursor.execute("SET SEARCH_PATH TO A5")
-                # Insert into TRANSACTION table
+                
                 cursor.execute("""
                     INSERT INTO TRANSACTION (id, jenis_paket, email, timestamp_dimulai, timestamp_berakhir, metode_bayar, nominal)
                     VALUES (%s, %s, %s, %s, %s, %s, %s);
                 """, [transaction_id, jenis_paket, email, start_date, end_date, metode_bayar, harga])
-
-                # Check if the user is in the PREMIUM table
-                cursor.execute("SELECT COUNT(*) FROM PREMIUM WHERE email = %s", [email])
-                found = cursor.fetchone()
-                print(found[0])
-                
-                if not found[0]:
-                    cursor.execute("DELETE FROM NONPREMIUM WHERE email = %s;", [email])
-                    cursor.execute("INSERT INTO PREMIUM (email) VALUES (%s);", [email])
-
-                    # Delete the user from NONPREMIUM table
                     
-                    connection.commit()
+                connection.commit()
                     
                     
             return redirect('dashboard:dashboard')
@@ -183,59 +162,63 @@ def delete(request):
 
 
 def search_bar(request):
-    query = request.GET.get('query', '').lower()  # Get the query and convert it to lowercase
-    if query:
-        results = []
-        with connection.cursor() as cursor:
+    query = request.GET.get('query', '').lower()  
+    if not query:
+        #Jika search bar kosong
+        return redirect(request.META.get('HTTP_REFERER', '/'))
+    
+    
+    results = []
+    with connection.cursor() as cursor:
 
-            cursor.execute("SET SEARCH_PATH TO A5")
-            # Searching in Podcasts
-            cursor.execute("""
-                SELECT 'PODCAST' AS type,
-                k.judul AS judul,
-                a.nama AS oleh,
-                k.id AS id
-                FROM podcast p
-                JOIN konten k ON p.id_konten = k.id
-                JOIN podcaster pod ON p.email_podcaster = pod.email
-                JOIN akun a ON pod.email = a.email
-                WHERE LOWER(k.judul) LIKE %s
-            """, [f"%{query}%"])
-            results.extend(cursor.fetchall())
+        cursor.execute("SET SEARCH_PATH TO A5")
+        
+        cursor.execute("""
+            SELECT 'PODCAST' AS type,
+            k.judul AS judul,
+            a.nama AS oleh,
+            k.id AS id
+            FROM podcast p
+            JOIN konten k ON p.id_konten = k.id
+            JOIN podcaster pod ON p.email_podcaster = pod.email
+            JOIN akun a ON pod.email = a.email
+            WHERE LOWER(k.judul) LIKE %s
+        """, [f"%{query}%"])
+        results.extend(cursor.fetchall())
 
-            # Searching in Songs
-            cursor.execute("""
-                SELECT 'SONG' AS type,
-                k.judul AS judul,
-                a.nama AS oleh,
-                k.id AS id
-                FROM song s
-                JOIN konten k ON s.id_konten = k.id
-                JOIN artist ar ON s.id_artist = ar.id
-                JOIN akun a ON ar.email_akun = a.email
-                WHERE LOWER(k.judul) LIKE %s
-            """, [f"%{query}%"])
-            results.extend(cursor.fetchall())
+        
+        cursor.execute("""
+            SELECT 'SONG' AS type,
+            k.judul AS judul,
+            a.nama AS oleh,
+            k.id AS id
+            FROM song s
+            JOIN konten k ON s.id_konten = k.id
+            JOIN artist ar ON s.id_artist = ar.id
+            JOIN akun a ON ar.email_akun = a.email
+            WHERE LOWER(k.judul) LIKE %s
+        """, [f"%{query}%"])
+        results.extend(cursor.fetchall())
 
-            # Searching in User Playlists
-            cursor.execute("""
-                SELECT 'USER PLAYLIST' AS type,
-                up.judul AS judul,
-                a.nama AS oleh,
-                up.id_user_playlist  AS id       
-                FROM user_playlist up
-                JOIN akun a ON up.email_pembuat = a.email
-                WHERE LOWER(up.judul) LIKE %s
-            """, [f"%{query}%"])
-            results.extend(cursor.fetchall())
+       
+        cursor.execute("""
+            SELECT 'USER PLAYLIST' AS type,
+            up.judul AS judul,
+            a.nama AS oleh,
+            up.id_user_playlist  AS id       
+            FROM user_playlist up
+            JOIN akun a ON up.email_pembuat = a.email
+            WHERE LOWER(up.judul) LIKE %s
+        """, [f"%{query}%"])
+        results.extend(cursor.fetchall())
 
-        context = {
-            'query': query,
-            'results': [{
-                'type': result[0],
-                'title': result[1],
-                'by': result[2],
-                'id' : result[3],
-            } for result in results]
-        }
-        return render(request, 'search.html', context)
+    context = {
+        'query': query,
+        'results': [{
+            'type': result[0],
+            'title': result[1],
+            'by': result[2],
+            'id' : result[3],
+        } for result in results]
+    }
+    return render(request, 'search.html', context)
