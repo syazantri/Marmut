@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.db import connection
 import uuid
 from datetime import datetime, timedelta
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 
 def riwayat(request):
     email = request.COOKIES.get('email') 
@@ -77,9 +77,6 @@ def process_payment(request):
         jenis_paket = request.POST.get('jenis_paket').strip()
         harga = request.POST.get('harga').strip()
         metode_bayar = request.POST.get('metode_bayar').strip()
-
-        if not email:
-            return HttpResponse("Error: No email found in cookies.", status=400)
         
         try:
             
@@ -113,13 +110,9 @@ def process_payment(request):
             print(f"Error: {e}")
             return render(request, 'already_subscribed.html')
             
-    
-    return HttpResponse("Invalid request.", status=400)
 
 def downloaded_song(request):
     email = request.COOKIES.get('email')
-    if not email:
-        return HttpResponse("Error: No email found in cookies.", status=400)
 
     with connection.cursor() as cursor:
         cursor.execute("SET SEARCH_PATH TO A5")
@@ -147,9 +140,6 @@ def downloaded_song(request):
 def delete(request):
     email = request.COOKIES.get('email')
     id_song = request.GET.get('id_song')
-
-    if not email:
-        return HttpResponse("Error: No email found in cookies.", status=400)
 
     with connection.cursor() as cursor:
         cursor.execute("SET SEARCH_PATH TO A5")
