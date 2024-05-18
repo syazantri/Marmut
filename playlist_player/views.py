@@ -243,6 +243,7 @@ def play_song(request):
 
 def increment_play_count(request):
     if request.method == 'POST':
+        email = request.COOKIES.get('email')
         data = json.loads(request.body)
         song_id = data.get('song_id')
 
@@ -251,7 +252,12 @@ def increment_play_count(request):
             total = cursor.fetchall()
             total_play = total[0][0] + 1
 
+            current_timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            cursor.execute(
+                f'INSERT INTO akun_play_song VALUES (\'{email}\', \'{song_id}\', \'{current_timestamp}\')')
+            
             cursor.execute(f'update song set total_play = \'{total_play}\' where id_konten = \'{song_id}\'')
+            
             connection.commit()
 
             return JsonResponse({'status': 'success'})
