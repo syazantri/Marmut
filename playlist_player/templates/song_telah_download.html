@@ -1,0 +1,15 @@
+{% extends 'base_biasa.html' %}
+
+{% block content %}
+<body class="h-screen flex justify-center items-center bg-[#151829] text-white">
+    <div class="text-center">
+        <h1 class="text-3xl font-bold mb-5 text-white">Opss...Lagu telah didownload sebelumnya.</h1>
+        <p class="text-white">Redirecting to the dashboard in 3 seconds...</p>
+    </div>
+    <script>
+        setTimeout(function() {
+            window.location.href = "{% url 'dashboard:dashboard' %}";
+        }, 3000);
+    </script>
+</body>
+{% endblock content %}

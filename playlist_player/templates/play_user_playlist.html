@@ -26,17 +26,10 @@
                 </div>
             </div>
             <div>
-            <a href="{% url 'playlist_player:play_user_playlist' %}?playlist_id={{ playlist_id }}">
-                <button class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold mb-2" method = "POST">Shuffle Play</button>
-            </a>
-            <a href="{% url 'playlist_player:play_user_playlist' %}?playlist_id={{ playlist_id }}">
-                <button class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold mb-2">Shuffle Play</button>
-            </a>
-
                 <form action="{% url 'playlist_player:play_user_playlist' %}?playlist_id={{ playlist_id }}" method="POST">
                     {% csrf_token %}
                     <input type="hidden" name="playlist_id" value="{{ playlist_id }}">
-                    <button type="submit" name="shuffle_play" class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold mb-2">Play</button>
+                    <button type="submit" name="shuffle_play" class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold mb-2">Shuffle Play</button>
                 </form>
     
                 <a href="{% url 'dashboard:dashboard' %}">

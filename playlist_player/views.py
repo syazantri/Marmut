@@ -1,4 +1,3 @@
-import json
 import uuid
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
@@ -60,11 +59,17 @@ def detail_playlist(request):
             f'SELECT judul, akun.nama, durasi, konten.id from konten, song, artist, akun where konten.id = \'{records_song[i][0]}\' AND konten.id = song.id_konten AND id_artist = artist.id AND artist.email_akun = akun.email')
         records_song[i] = records_song[i] + cursor.fetchone()
 
+    total_durasi_menit = records_playlist[0][7]
+    total_jam = total_durasi_menit // 60
+    total_menit = total_durasi_menit % 60
+    total_durasi_format = f'{total_jam} jam {total_menit} menit'
+
     context = {
         'status': 'success',
         'records_playlist': records_playlist,
         'records_song': records_song,
-        'playlist_id': playlist_id
+        'playlist_id': playlist_id,
+        'total_durasi_format': total_durasi_format
     }
     response = render(request, 'detail_playlist.html', context)
     response.set_cookie('playlist_id', playlist_id)
@@ -314,17 +319,19 @@ def play_user_playlist(request):
                 f'VALUES (\'{email}\', \'{records_playlist[0][1]}\', \'{records_playlist[0][0]}\', \'{current_timestamp}\')')
 
             connection.commit()
+            print("cek")
             # Insert ke tabel AKUN_PLAY_SONG untuk setiap lagu dalam playlist 
             test = 0
-            for song in records_song:
-                id = song[0]
+            for i in range((len(records_song)//2)-1):
+                id = records_song[i][0] 
                 current_timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 cursor.execute(
                     f'INSERT INTO akun_play_song (email_pemain, id_song, waktu) '
                     f'VALUES (\'{email}\', \'{id}\', \'{current_timestamp}\')')
                 test += 1
-                if test >= (len(records_song)//2):
+                if test > (len(records_song)//2):
                     break
+            print("testes")
             connection.commit()
             
             return redirect(reverse("playlist_player:play_user_playlist") + f'?playlist_id={playlist_id}')
