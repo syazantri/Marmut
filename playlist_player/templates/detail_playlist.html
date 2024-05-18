@@ -22,7 +22,7 @@
                 <h3 class="text-1xl font-bold mb-1 text-white font-serif">Deskripsi: {{record.3}}</h3>
             {% endfor %}
 
-            <a href="{% url 'playlist_player:play_user_playlist' %}?playlist_id={{ playlist_id }}">
+            <a href="{% url 'playlist_player:play_user_playlist' %}?playlist_id={{ playlist_id }}" method = "POST">
                 <button class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold mb-2">Shuffle Play</button>
             </a>
 
@@ -45,7 +45,7 @@
                         <tbody class="text-gray-400 bg-[#382e47]">
                             {% for record in records_song %}
                             <tr class="text-white">
-                                <td class="py-3 px-4">{{record.1}}</td>
+                                <td class="py-3 px-4">{{record.1}}</td> 
                                 <td class="py-3 px-4">{{record.2}}</td>
                                 <td class="py-3 px-4">{{record.3}}</td>
                                 <td class="py-3 px-4">
@@ -54,6 +54,9 @@
                                     </a>
                                     <a href="{% url 'playlist_player:play_song' %}?song_id={{ record.4 }}">
                                         <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Play</button>
+                                    </a>
+                                    <a href="{% url 'playlist_player:hapus_song' %}?song_id={{ record.4 }}&playlist_id={{ playlist_id }}">
+                                        <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9] ml-2">Hapus</button>
                                     </a>
                                     <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9] ml-2">Hapus</button>
                                 </td>

@@ -113,6 +113,8 @@ def play_song(request):
     records_genre = []
     records_songwriter = []
     email = request.COOKIES.get('email')
+    isPremium = request.COOKIES.get('statusLangganan')
+    print(isPremium)
 
     cursor.execute(
         f'SELECT * from konten where id = \'{song_id}\'')
@@ -202,7 +204,8 @@ def play_song(request):
         'records_genre': records_genre,
         'records_songwriter': records_songwriter,
         'panjang': len(records_song),
-        'song_id':song_id
+        'song_id':song_id,
+        'isPremium': isPremium
     }
     response = render(request, 'play_song.html', context)
     return response
@@ -213,7 +216,6 @@ def add_song_to_user_playlist(request):
     email = request.COOKIES.get('email')
     records_song = []
     list_playlist = []
-    isPremium = request.COOKIES.get('statusLangganan')
 
     cursor.execute(
         f'SELECT id, judul from konten where id = \'{song_id}\'')
@@ -255,7 +257,6 @@ def add_song_to_user_playlist(request):
     context = {
         'records_song': records_song,
         'list_playlist': list_playlist,
-        'isPremum': isPremium
 
     }
     return render(request, 'add_song_to_user_playlist.html', context)
@@ -298,6 +299,11 @@ def play_user_playlist(request):
             f'AND song.id_artist = artist.id AND artist.email_akun = akun.email')
         records_song[i] = records_song[i] + cursor.fetchone() 
 
+    print(len(records_song))
+    for i in range(len(records_song)):
+        print(records_song[i][0])
+
+
     if request.method == 'POST':
         if 'shuffle_play' in request.POST:
             current_timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -307,17 +313,23 @@ def play_user_playlist(request):
                 f'INSERT INTO akun_play_user_playlist (email_pemain, id_user_playlist, email_pembuat, waktu) '
                 f'VALUES (\'{email}\', \'{records_playlist[0][1]}\', \'{records_playlist[0][0]}\', \'{current_timestamp}\')')
 
+            connection.commit()
             # Insert ke tabel AKUN_PLAY_SONG untuk setiap lagu dalam playlist 
+            test = 0
             for song in records_song:
+                id = song[0]
                 current_timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 cursor.execute(
                     f'INSERT INTO akun_play_song (email_pemain, id_song, waktu) '
-                    f'VALUES (\'{email}\', \'{song[0]}\', \'{current_timestamp}\')')
-
+                    f'VALUES (\'{email}\', \'{id}\', \'{current_timestamp}\')')
+                test += 1
+                if test >= (len(records_song)//2):
+                    break
             connection.commit()
-            return redirect('playlist_player:play_user_playlist')
+            
+            return redirect(reverse("playlist_player:play_user_playlist") + f'?playlist_id={playlist_id}')
         
-        else:
+        else: 
             for song in records_song:
                 song_id = song[0]
                 if f'play_song_{song_id}' in request.POST:
@@ -391,6 +403,9 @@ def hapus_playlist(request):
     cursor.execute(
         f'delete from user_playlist where id_user_playlist = \'{id_playlist}\''
     )
+    cursor.execute(
+        f'delete from playlist_song where id_user_playlist = \'{id_playlist}\''
+    )
     connection.commit()
     return HttpResponseRedirect(reverse("playlist_player:user_playlist"))
 
@@ -407,3 +422,12 @@ def pesan_download_song(request):
         'song_id': song_id
     }
     return render(request, 'pesan_download_song.html', context)
+
+def hapus_song(request):
+    id_song = request.GET.get('song_id')
+    id_playlist = request.GET.get('playlist_id')
+    cursor.execute(
+        f'delete from playlist_song where id_song = \'{id_song}\' AND id_playlist = \'{id_playlist}\''
+    )
+    connection.commit()
+    return HttpResponseRedirect(reverse("playlist_player:detail_playlist") + f'?playlist_id={id_playlist}')

@@ -26,14 +26,21 @@
                 </div>
             </div>
             <div>
-
             <a href="{% url 'playlist_player:play_user_playlist' %}?playlist_id={{ playlist_id }}">
-                <button class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold">Shuffle Play</button>
+                <button class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold mb-2" method = "POST">Shuffle Play</button>
+            </a>
+            <a href="{% url 'playlist_player:play_user_playlist' %}?playlist_id={{ playlist_id }}">
+                <button class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold mb-2">Shuffle Play</button>
             </a>
 
+                <form action="{% url 'playlist_player:play_user_playlist' %}?playlist_id={{ playlist_id }}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="playlist_id" value="{{ playlist_id }}">
+                    <button type="submit" name="shuffle_play" class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold mb-2">Play</button>
+                </form>
     
                 <a href="{% url 'dashboard:dashboard' %}">
-                    <button class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold">Kembali</button>
+                    <button class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold mb-2">Kembali</button>
                 </a>
             </div>
             
@@ -56,10 +63,16 @@
                                     <td class="py-3 px-4">{{record.2}}</td>
                                     <td class="py-3 px-4">{{record.3}}</td>
                                     <td class="py-3 px-4">
+                                        <a href="{% url 'playlist_player:play_song' %}?song_id={{ record.4 }}">
+                                            <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Lihat</button>
+                                        </a>
                                         <form method="POST" style="display:inline;">
                                             {% csrf_token %}
                                             <button name="play_song_{{ record.0 }}" type="submit" class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Play</button>
                                         </form>
+                                        <a href="{% url 'playlist_player:hapus_song' %}?song_id={{ record.4 }}&playlist_id={{ playlist_id }}">
+                                            <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9] ml-2">Hapus</button>
+                                        </a>
                                     </td>
                                 </tr>
                             {% endfor %}
