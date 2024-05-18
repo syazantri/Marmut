@@ -64,8 +64,33 @@
 
 <script>
     function validateForm() {
+        var judulLaguInput = document.getElementById('judul');
+            var judulLagu = judulLaguInput.value.trim();
+
+            if (judulLagu.length > 100) {
+                alert("Judul lagu tidak boleh lebih dari 100 karakter.");
+                return false;
+            }
+
+        var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+        
+                if (cookie.startsWith('isArtist=')) {
+                    var isArtist= cookie.substring(6);
+                    return isArtist;
+                }
+            }       
+
         var songwriters = document.querySelectorAll('input[name="songwriter[]"]:checked');
         var genres = document.querySelectorAll('input[name="genre[]"]:checked');
+        var artistInput = document.getElementById('artist');
+        var selectedArtist = artistInput.value;
+
+        if (selectedArtist === "" && isArtist == "False") {
+            alert("Please select an artist.");
+            return false;
+        }
 
         if (songwriters.length === 0) {
             alert("Please choose at least one songwriter.");
@@ -74,6 +99,19 @@
 
         if (genres.length === 0) {
             alert("Please choose at least one genre.");
+            return false;
+        }
+
+        var durasiInput = document.getElementById('durasi');
+        var durasi = durasiInput.value.trim();
+
+        if (durasi === "") {
+            alert("Durasi harus diisi.");
+            return false;
+        }
+
+        if (!(/^\d+$/.test(durasi))) {
+            alert("Durasi harus berupa angka bulat, dalam menit.");
             return false;
         }
 

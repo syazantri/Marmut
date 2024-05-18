@@ -90,7 +90,7 @@ def create_podcast(request):
         with connection.cursor() as cursor:
             cursor.execute(
                 'INSERT INTO konten (id, judul, tanggal_rilis, tahun, durasi) VALUES (%s, %s, %s, %s, %s)',
-                (id_podcast, judul, date_now, current_year, 1)  
+                (id_podcast, judul, date_now, current_year, 0)  
             )
 
             cursor.execute(
@@ -195,7 +195,7 @@ def list_podcast(request):
     with connection.cursor() as cursor:
 
         cursor.execute("""
-            SELECT konten.id, konten.judul AS podcast_title, COALESCE(SUM(episode.durasi), 0) AS total_durasi, COUNT(episode.id_konten_podcast) AS jumlah_episode
+            SELECT konten.id, konten.judul AS podcast_title, konten.durasi, COUNT(episode.id_konten_podcast) AS jumlah_episode
             FROM podcast
             JOIN konten ON podcast.id_konten = konten.id
             LEFT JOIN episode ON podcast.id_konten = episode.id_konten_podcast
