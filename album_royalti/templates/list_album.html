@@ -11,7 +11,7 @@
 <body class="h-screen flex justify-center bg-[#151829] text-white">
 
     <div class="py-10 bg-[#151829]">
-        <div class="max-w-4xl mx-auto mt-8 px-4">
+        <div class="w-full mx-auto mt-8 px-4">
             <h2 class="text-3xl font-semibold mb-4 text-white font-serif">List Album</h2>
             {% if records_album %}
             <div class="rounded-lg p-6">
@@ -22,7 +22,7 @@
                                 <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Judul</th>
                                 <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Jumlah Lagu</th>
                                 <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Total Durasi</th>
-                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Action</th>
+                                <th class="text-center py-3 px-4 uppercase font-semibold text-sm">Action</th>
                             </tr>
                         </thead>
                         <tbody class="text-gray-400 bg-[#382e47]">
@@ -31,12 +31,12 @@
                                 <td class="py-3 px-4">{{record.1}}</td>
                                 <td class="py-3 px-4">{{record.2}}</td>
                                 <td class="py-3 px-4">{{record.4}}</td>
-                                <td class="py-3 px-4">
+                                <td class="text-center py-3 px-4">
                                     <a href="{% url 'album_royalti:list_song' %}?album_id={{ record.0 }}">
-                                        <button class="bg-[#9e60d1] text-white text-sm px-2 py-1 rounded-full hover:bg-[#b17bc9]">Lihat Daftar Lagu</button>
+                                        <button class="bg-[#9e60d1] font-semibold text-sm text-white px-2 py-1 rounded-full hover:bg-[#b17bc9]">Lihat Daftar Lagu</button>
                                     </a>
                                     <a href="{% url 'album_royalti:delete_album' %}?album_id={{ record.0 }}">
-                                        <button class="bg-[#9e60d1] text-white text-sm px-2 py-1 rounded-full hover:bg-[#b17bc9] ml-2">Hapus</button>
+                                        <button class="bg-[#9e60d1] font-semibold text-sm text-white px-2 py-1 rounded-full hover:bg-[#b17bc9] ml-2">Hapus</button>
                                     </a>
                                 </td>
                             </tr>

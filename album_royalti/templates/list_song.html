@@ -11,8 +11,8 @@
 <body class="h-screen flex justify-center bg-[#151829] text-white">
 
     <div class="py-10 bg-[#151829]">
-        <div class="max-w-4xl mx-auto">
-            <h2 class="text-4xl font-bold mb-5 text-white font-serif">Daftar Lagu - Album</h2>
+        <div class="w-full mx-auto mt-8 px-16">
+            <h2 class="text-4xl font-bold mb-5 text-white font-serif">Daftar Lagu - Album {{ judul_album }}</h2>
             <div class="-mx-4">
                 <div class="overflow-x-auto">
                     <table class="min-w-full bg-[#151829] rounded-lg overflow-hidden">
@@ -22,7 +22,7 @@
                                 <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Durasi</th>
                                 <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Total Play</th>
                                 <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Total Download</th>
-                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Action</th>
+                                <th class="text-center py-3 px-4 uppercase font-semibold text-sm">Action</th>
                             </tr>
                         </thead>
                         <tbody class="text-gray-400 bg-[#382e47]">
@@ -32,10 +32,12 @@
                                 <td class="py-3 px-4">{{record.6}}</td>
                                 <td class="py-3 px-4">{{record.1}}</td>
                                 <td class="py-3 px-4">{{record.2}}</td>
-                                <td class="py-3 px-4">
-                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Detail</button>
+                                <td class="text-center py-3 px-4">
+                                    <a href="{% url 'playlist_player:play_song' %}?song_id={{ record.0 }}">
+                                        <button class="bg-[#9e60d1] text-sm font-semibold text-white px-2 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Detail</button>
+                                    </a>
                                     <a href="{% url 'album_royalti:delete_song' %}?song_id={{ record.0 }}&album_id={{ album_id }} ">
-                                        <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9] ml-2">Hapus</button>
+                                        <button class="bg-[#9e60d1] text-sm font-semibold text-white px-2 py-1 rounded-full font-semibold hover:bg-[#b17bc9] ml-2">Hapus</button>
                                     </a>
                                 </td>
                             </tr>

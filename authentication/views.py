@@ -326,6 +326,12 @@ def login(request):
                         record_podcast = cursor.fetchone()
                         if record_podcast is not None:
                             records_podcast.append(record_podcast)
+                        else:
+                            cursor.execute(
+                                f'SELECT k.id, k.judul, 0, 0 FROM KONTEN AS k where k.id = \'{podcast[0]}\'')
+                            record_podcast_2 = cursor.fetchone()
+                            records_podcast.append(record_podcast_2)
+
 
             # Semua pengguna pasti pengguna biasa juga yang bisa punya userplaylist
             cursor.execute(
