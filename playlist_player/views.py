@@ -46,6 +46,7 @@ def detail_playlist(request):
     playlist_id = request.GET.get('playlist_id')
     records_playlist = []
     records_song = []
+    email = request.COOKIES.get('email')
 
     cursor.execute(
         f'SELECT * from user_playlist where id_playlist = \'{playlist_id}\'')
@@ -58,12 +59,53 @@ def detail_playlist(request):
         cursor.execute(
             f'SELECT judul, akun.nama, durasi, konten.id from konten, song, artist, akun where konten.id = \'{records_song[i][0]}\' AND konten.id = song.id_konten AND id_artist = artist.id AND artist.email_akun = akun.email')
         records_song[i] = records_song[i] + cursor.fetchone()
+    
+    if request.method == 'POST':
+        if 'shuffle_play' in request.POST:
+            current_timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+            # Insert ke tabel AKUN_PLAY_PLAYLIST 
+            cursor.execute(
+                f'INSERT INTO akun_play_user_playlist (email_pemain, id_user_playlist, email_pembuat, waktu) '
+                f'VALUES (\'{email}\', \'{records_playlist[0][1]}\', \'{records_playlist[0][0]}\', \'{current_timestamp}\')')
+
+            connection.commit()
+            print("cek")
+            # Insert ke tabel AKUN_PLAY_SONG untuk setiap lagu dalam playlist 
+            test = 0
+            for i in range((len(records_song)//2)-1):
+                id = records_song[i][0] 
+                current_timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                cursor.execute(
+                    f'INSERT INTO akun_play_song (email_pemain, id_song, waktu) '
+                    f'VALUES (\'{email}\', \'{id}\', \'{current_timestamp}\')')
+                test += 1
+                if test > (len(records_song)//2):
+                    break
+            print("testes")
+            connection.commit()
+            
+            return redirect(reverse("playlist_player:play_user_playlist") + f'?playlist_id={playlist_id}')
+        
+        else: 
+            for song in records_song:
+                song_id = song[0]
+                if f'play_song_{song_id}' in request.POST:
+                    current_timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                    cursor.execute(
+                        f'INSERT INTO akun_play_song (email_pemain, id_song, waktu) '
+                        f'VALUES (\'{email}\', \'{song_id}\', \'{current_timestamp}\')')
+
+                    connection.commit()
+                    url = reverse('playlist_player:play_song')
+                    url_with_params = f"{url}?song_id={song_id}"
+                    return redirect(url_with_params)
 
     total_durasi_menit = records_playlist[0][7]
     total_jam = total_durasi_menit // 60
     total_menit = total_durasi_menit % 60
     total_durasi_format = f'{total_jam} jam {total_menit} menit'
-
+ 
     context = {
         'status': 'success',
         'records_playlist': records_playlist,
