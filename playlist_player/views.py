@@ -83,10 +83,11 @@ def tambah_lagu(request):
     if request.method == 'POST' and not request.method == 'GET':
         lagu = request.POST.get('lagu')
         try:
+            ada = []
             cursor.execute(
                 f'select * from playlist_song where id_playlist = \'{playlist_id}\' AND id_song = \'{lagu}\''
             )
-            ada = cursor.fetchone()
+            ada = cursor.fetchall()
             if len(ada) > 0:
                 return render(request, 'song_telah_ditambahkan.html')
             
