@@ -288,10 +288,11 @@ def add_song_to_user_playlist(request):
 
 
         try:
+            ada = []
             cursor.execute(
                 f'select * from playlist_song where id_playlist = \'{playlist_id}\' AND id_song = \'{song_id}\''
             )
-            ada = cursor.fetchone()
+            ada = cursor.fetchall()
             if len(ada) > 0:
                 return render(request, 'song_telah_ditambahkan.html')
             
@@ -470,7 +471,7 @@ def hapus_playlist(request):
         f'delete from user_playlist where id_user_playlist = \'{id_playlist}\''
     )
     cursor.execute(
-        f'delete from playlist_song where id_user_playlist = \'{id_playlist}\''
+        f'delete from playlist_song where id_playlist = \'{id_playlist}\''
     )
     connection.commit()
     return HttpResponseRedirect(reverse("playlist_player:user_playlist"))
