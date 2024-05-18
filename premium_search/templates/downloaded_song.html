@@ -1,99 +1,99 @@
-{% extends 'base_biasa.html' %}
+    {% extends 'base_biasa.html' %}
 
-{% block meta %}
-    <title>Downloaded Songs</title>
-{% endblock meta %}
+    {% block meta %}
+        <title>Downloaded Songs</title>
+    {% endblock meta %}
 
-{% block content %}
-<style>
-    .modal-button {
-        padding: 8px 12px;
-        border-radius: 5px;
-        margin-top: 10px;
-        background-color: #9E60D1;
-        border: none;
-        color: white;
-        cursor: pointer;
-    }
+    {% block content %}
+    <style>
+        .modal-button {
+            padding: 8px 12px;
+            border-radius: 5px;
+            margin-top: 10px;
+            background-color: #9E60D1;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
 
-    .modal-button:hover {
-        background-color: #B17BC9;
-    }
-</style>
+        .modal-button:hover {
+            background-color: #B17BC9;
+        }
+    </style>
 
-<body class="h-screen flex justify-center bg-[#151829] text-white">
-    <div class="py-10 bg-[#151829]">
-        <div class="max-w-4xl mx-auto">
-            {% if songs %}
-            <h2 class="text-4xl font-bold mb-5 text-white font-serif">Daftar Lagu</h2>
-            {% endif %}
-            <div class="-mx-4">
-                <div class="overflow-x-auto">
-                    <table class="min-w-full bg-[#151829] rounded-lg overflow-hidden">
-                        <thead class="bg-[#9e60d1] text-white">
-                            {% if songs %}
-                            <tr>
-                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Judul Lagu</th>
-                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Oleh</th>
-                                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="text-gray-400 bg-[#382e47]">
-                            
-                            {% for song in songs %}
-                            <tr class="text-white" data-id="{{ song.id_song }}">
-                                <td class="py-3 px-4">{{ song.judul }}</td>
-                                <td class="py-3 px-4">{{ song.nama_artist }}</td>
-                                <td class="actions">
-                                    <a href="{% url 'playlist_player:play_song' %}" style="background-color: #9E60D1; border: none; border-radius: 5px; padding: 8px 12px; color: white; text-decoration: none;">Lihat</a>
-                                    <button class="btn-delete" data-id="{{ song.id_song }}" data-title="{{ song.judul }}" style="background-color: #B17BC9; border: none; border-radius: 5px; padding: 8px 12px; color: white; text-decoration: none; margin-left: 5px;">Hapus</button>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                        {% else %}
-                            <tr class="text-white">
-                                <h2 class="text-2xl font-bold mb-5 text-white font-serif">Tidak ada lagu terunduh.</h2>
-                            </tr>
-                        {% endif %}
-                    </table>
+    <body class="h-screen flex justify-center bg-[#151829] text-white">
+        <div class="py-10 bg-[#151829]">
+            <div class="max-w-4xl mx-auto">
+                {% if songs %}
+                <h2 class="text-4xl font-bold mb-5 text-white font-serif">Daftar Lagu</h2>
+                {% endif %}
+                <div class="-mx-4">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-[#151829] rounded-lg overflow-hidden">
+                            <thead class="bg-[#9e60d1] text-white">
+                                {% if songs %}
+                                <tr>
+                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Judul Lagu</th>
+                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Oleh</th>
+                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-gray-400 bg-[#382e47]">
+                                
+                                {% for song in songs %}
+                                <tr class="text-white" data-id="{{ song.id_song }}">
+                                    <td class="py-3 px-4">{{ song.judul }}</td>
+                                    <td class="py-3 px-4">{{ song.nama_artist }}</td>
+                                    <td class="actions">
+                                        <a href="/play-song/?song_id={{ song.id_song }}" style="background-color: #9E60D1; border: none; border-radius: 5px; padding: 8px 12px; color: white; text-decoration: none;">Lihat</a>
+                                        <button class="btn-delete" data-id="{{ song.id_song }}" data-title="{{ song.judul }}" style="background-color: #B17BC9; border: none; border-radius: 5px; padding: 8px 12px; color: white; text-decoration: none; margin-left: 5px;">Hapus</button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            {% else %}
+                                <tr class="text-white">
+                                    <h2 class="text-2xl font-bold mb-5 text-white font-serif">Tidak ada lagu terunduh.</h2>
+                                </tr>
+                            {% endif %}
+                        </table>
+                    </div>
+                    <p style="text-align: left; margin-top: 20px;"><a href="{% url 'premium_search:cek_langganan' %}" style="background-color: #9E60D1; border: none; border-radius: 5px; padding: 8px 12px; color: white; text-decoration: none;">Kembali</a></p>
                 </div>
-                <p style="text-align: left; margin-top: 20px;"><a href="{% url 'premium_search:cek_langganan' %}" style="background-color: #9E60D1; border: none; border-radius: 5px; padding: 8px 12px; color: white; text-decoration: none;">Kembali</a></p>
             </div>
         </div>
-    </div>
-    <!-- Modal -->
-    <div id="deleteModal" style="display:none; position: fixed; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
-        <div style="background: white; padding: 20px; border-radius: 10px; width: 300px; text-align: center;">
-            <p id="modalText"></p>
-            <button onclick="closeModal()" class="modal-button">Kembali</button>
+        <!-- Modal -->
+        <div id="deleteModal" style="display:none; position: fixed; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+            <div style="background: white; padding: 20px; border-radius: 10px; width: 300px; text-align: center;">
+                <p id="modalText"></p>
+                <button onclick="closeModal()" class="modal-button">Kembali</button>
+            </div>
         </div>
-    </div>
 
-    <script>
-        document.querySelectorAll('.btn-delete').forEach(button => {
-            button.addEventListener('click', function() {
-                const songId = this.getAttribute('data-id');
-                const songTitle = this.getAttribute('data-title');
-                fetch(`{% url 'premium_search:delete' %}?id_song=${songId}`, {
-                    method: 'GET',
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if(data.message === 'Song deleted successfully') {
-                        document.getElementById('modalText').innerText = `Berhasil menghapus Lagu dengan judul '${songTitle}' dari daftar unduhan!`;
-                        document.getElementById('deleteModal').style.display = 'flex';
-                        // Optionally remove the row from the table
-                        this.closest('tr').remove();
-                    }
-                })
-                .catch(error => console.error('Error:', error)); 
+        <script>
+            document.querySelectorAll('.btn-delete').forEach(button => {
+                button.addEventListener('click', function() {
+                    const songId = this.getAttribute('data-id');
+                    const songTitle = this.getAttribute('data-title');
+                    fetch(`{% url 'premium_search:delete' %}?id_song=${songId}`, {
+                        method: 'GET',
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if(data.message === 'Song deleted successfully') {
+                            document.getElementById('modalText').innerText = `Berhasil menghapus Lagu dengan judul '${songTitle}' dari daftar unduhan!`;
+                            document.getElementById('deleteModal').style.display = 'flex';
+                            
+                            this.closest('tr').remove();
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+                });
             });
-        }); 
 
-        function closeModal() {
-            document.getElementById('deleteModal').style.display = 'none';
-        }
-    </script>
-</body>
-{% endblock content %}
+            function closeModal() {
+                document.getElementById('deleteModal').style.display = 'none';
+            }
+        </script>
+    </body>
+    {% endblock content %}

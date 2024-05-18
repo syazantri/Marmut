@@ -1,18 +1,32 @@
 {% extends 'base_biasa.html' %}
 
 {% block meta %}
-    <title>Hasil Pencarian</title>
+    <title>Hasil Pencarian "{{ query }}"</title>
 {% endblock meta %}
 
 {% block content %}
+<style>
+    .modal-button {
+        padding: 8px 12px;
+        border-radius: 5px;
+        margin-top: 10px;
+        background-color: #9E60D1;
+        border: none;
+        color: white;
+        cursor: pointer;
+    }
+
+    .modal-button:hover {
+        background-color: #B17BC9;
+    }
+</style>
+
 <body class="h-screen flex justify-center bg-[#151829] text-white">
     <div class="py-10 bg-[#151829]">
         <div class="max-w-4xl mx-auto">
-            {% if results %}
             <h2 class="text-2xl font-bold mb-5 text-white font-serif">Hasil Pencarian "{{ query }}"</h2>
             <div class="-mx-4">
                 <div class="overflow-x-auto">
-                    
                     <table class="min-w-full bg-[#151829] rounded-lg overflow-hidden">
                         <thead class="bg-[#9e60d1] text-white">
                             <tr>
@@ -23,20 +37,20 @@
                             </tr>
                         </thead>
                         <tbody class="text-gray-400 bg-[#382e47]">
-                            
+                            {% if results %}
                                 {% for result in results %}
                                 <tr class="text-white">
                                     <td class="py-3 px-4">{{ result.type }}</td>
                                     <td class="py-3 px-4">{{ result.title }}</td>
                                     <td class="py-3 px-4">{{ result.by }}</td>
                                     <td class="actions">
-                                        <a href="{% url 'playlist_player:play_song' %}" style="background-color: #9E60D1; border: none; border-radius: 5px; padding: 8px 12px; color: white; text-decoration: none;">Lihat</a>
+                                        <button class="btn-view" data-type="{{ result.type }}" data-id="{{ result.id }}" style="background-color: #9E60D1; border: none; border-radius: 5px; padding: 8px 12px; color: white;">Lihat</button>
                                     </td>
                                 </tr>
                                 {% endfor %}
                             {% else %}
                                 <tr class="text-white">
-                                    <h2 class="text-2xl font-bold mb-5 text-white font-serif">Maaf, pencarian untuk "{{ query }}" tidak ditemukan</h2>
+                                    <td colspan="4" class="py-3 px-4 text-center">No results found for "{{ query }}"</td>
                                 </tr>
                             {% endif %}
                         </tbody>
@@ -45,5 +59,25 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function handleViewButtonClick(type, id) {
+            if (type === 'PODCAST') {
+                window.location.href = `/list-episode/?podcast_id=${id}`;
+            } else if (type === 'SONG') {
+                window.location.href = `/play-song/?song_id=${id}`;
+            }else if (type === 'USER PLAYLIST') {
+                window.location.href = `/detail-playlist/?playlist_id=${id}`;
+            }
+        }
+
+        document.querySelectorAll('.btn-view').forEach(button => {
+            button.addEventListener('click', function() {
+                const type = this.getAttribute('data-type');
+                const id = this.getAttribute('data-id');
+                handleViewButtonClick(type, id);
+            });
+        });
+    </script>
 </body>
 {% endblock content %}
