@@ -93,6 +93,14 @@ def detail_playlist(request):
                 if f'play_song_{song_id}' in request.POST:
                     current_timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     cursor.execute(
+                        f'select total_play from song where id_konten = \'{song_id}\'')
+                    total = cursor.fetchall()
+                    total_play = total[0][0] + 1
+
+                    cursor.execute(
+                        f'update song set total_play = \'{total_play}\' where id_konten = \'{song_id}\''
+                    )
+                    cursor.execute(
                         f'INSERT INTO akun_play_song (email_pemain, id_song, waktu) '
                         f'VALUES (\'{email}\', \'{song_id}\', \'{current_timestamp}\')')
 
@@ -229,10 +237,6 @@ def play_song(request):
 
             if len(sudah) > 0:
                 return render(request, 'song_telah_download.html')
-            
-            cursor.execute(
-                f'update song set total_download = \'{total_download}\' where id_konten = \'{song_id}\''
-            )
 
             cursor.execute(
                 f'insert into downloaded_song values( \'{song_id}\', \'{email}\' )'
@@ -394,6 +398,14 @@ def play_user_playlist(request):
                 song_id = song[0]
                 if f'play_song_{song_id}' in request.POST:
                     current_timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                    cursor.execute(
+                        f'select total_play from song where id_konten = \'{song_id}\'')
+                    total = cursor.fetchall()
+                    total_play = total[0][0] + 1
+
+                    cursor.execute(
+                        f'update song set total_play = \'{total_play}\' where id_konten = \'{song_id}\''
+                    )
                     cursor.execute(
                         f'INSERT INTO akun_play_song (email_pemain, id_song, waktu) '
                         f'VALUES (\'{email}\', \'{song_id}\', \'{current_timestamp}\')')
