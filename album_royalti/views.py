@@ -329,7 +329,7 @@ def create_song(request):
         for songwriter in songwriters:
             cursor.execute(
                 f'select id_pemilik_hak_cipta from songwriter where id = \'{songwriter}\'')
-            id_pemilik_hak_cipta_songwriter = cursor.fetchone();
+            id_pemilik_hak_cipta_songwriter = cursor.fetchone()
             cursor.execute(
                 f'insert into royalti values (\'{id_pemilik_hak_cipta_songwriter[0]}\', \'{id_song}\', 0)')
             cursor.execute(
@@ -541,11 +541,15 @@ def list_song(request):
         cursor.execute(
             f'SELECT judul, tanggal_rilis, tahun, durasi from konten where id = \'{records_song[i][0]}\'')
         records_song[i] = records_song[i] + cursor.fetchone()
+    cursor.execute(
+        f'SELECT judul from album where id = \'{album_id}\'')
+    judul_album = cursor.fetchone()[0]
 
     context = {
         'status': 'success',
         'records_song': records_song,
         'album_id': album_id,
+        'judul_album': judul_album
     }
     response = render(request, 'list_song.html', context)
     return response

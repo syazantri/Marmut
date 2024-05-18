@@ -1,4 +1,4 @@
-{% extends 'base_biasa.html' %} 
+{% extends 'base_biasa.html' %}
 {% load static %}
 
 {% block meta %}
@@ -9,12 +9,14 @@
 
 {% block content %}
 <body class="h-screen flex justify-center bg-[#151829] text-white">
-
     <div class="py-10 bg-[#151829]">
         <div class="max-w-4xl mx-auto">
-            <center><h2 class="text-4xl font-bold mb-5 text-white font-serif">Daftar Episode Rintik Sendu</h2></center> 
+            <center>
+                <h2 class="text-4xl font-bold mb-5 text-white font-serif">Daftar Episode {{ podcast.judul }}</h2>
+            </center>
             <div class="-mx-4">
                 <div class="overflow-x-auto">
+                    {% if episodes %}
                     <table class="min-w-full bg-[#151829] rounded-lg overflow-hidden">
                         <thead class="bg-[#9e60d1] text-white">
                             <tr>
@@ -26,39 +28,32 @@
                             </tr>
                         </thead>
                         <tbody class="text-gray-400 bg-[#382e47]">
+                            {% for episode in episodes %}
                             <tr class="text-white">
-                                <td class="py-3 px-4">Tinggal Kenangan</td>
-                                <td class="py-3 px-4">Ku kira kamu rumah, ternyata orang</td>
-                                <td class="py-3 px-4">10 menit</td>
-                                <td class="py-3 px-4">28/04/2024</td>
+                                <td class="py-3 px-4">{{ episode.title }}</td>
+                                <td class="py-3 px-4">{{ episode.description }}</td>
+                                <td class="py-3 px-4">{{ episode.duration }}</td>
+                                <td class="py-3 px-4">{{ episode.date }}</td>
                                 <td class="py-3 px-4">
-                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Hapus</button>
+                                    <form action="{% url 'podcast_chart:delete_episode' %}" method="GET">
+                                        <input type="hidden" name="episode_id" value="{{ episode.episode_id }}">
+                                        <input type="hidden" name="podcast_id" value="{{ podcast.id }}">
+                                        <button type="submit" class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Hapus</button>
+                                    </form>
                                 </td>
                             </tr>
-                            <tr class="text-white">
-                                <td class="py-3 px-4">Ya begitulah DIA</td>
-                                <td class="py-3 px-4">Awalnya shock, sisanya shick shack shock</td>
-                                <td class="py-3 px-4">15 menit</td>
-                                <td class="py-3 px-4">29/04/2024</td>
-                                <td class="py-3 px-4">
-                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Hapus</button>
-                                </td>
-                            </tr>
-                            <tr class="text-white">
-                                <td class="py-3 px-4">...</td>
-                                <td class="py-3 px-4">...</td>
-                                <td class="py-3 px-4">...</td>
-                                <td class="py-3 px-4">...</td>
-                                <td class="py-3 px-4">...</td>
-                            </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
+                    {% else %}
+                    <p class="text-center text-white">Belum ada episode.</p>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
-
+    <div class="py-3">
+        <center><a href="{% url 'podcast_chart:list_podcast' %}" class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Kembali</a></center>
+    </div>
 </body>
-</html>
-
 {% endblock content %}

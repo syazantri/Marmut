@@ -4,7 +4,7 @@
 <div class="flex flex-col items-center justify-center font-sans">
     <div class="bg-gray-900 rounded-lg p-8">
         <h2 class="text-3xl font-semibold text-white mb-4 text-center font-serif font-serif">Register</h2>
-        <form method="POST" class="space-y-4">
+        <form method="POST" class="space-y-4" onsubmit="return validateForm()">
             {% csrf_token %}
             <div>
                 <label for="email" class="text-white">Email</label>
@@ -58,4 +58,48 @@
         </form>
     </div>
 </div>
+
+<script>
+    function validateForm() {
+        var namaInput = document.getElementById('nama');
+        var nama = namaInput.value.trim();
+
+        if (nama.length > 100) {
+            alert("Nama tidak boleh lebih dari 100 karakter.");
+            return false;
+        }
+
+        var emailInput = document.getElementById('email');
+        var email = emailInput.value.trim();
+
+        if (email.length > 50) {
+            alert("Email tidak boleh lebih dari 50 karakter.");
+            return false;
+        }
+
+        var kotaAsalInput = document.getElementById('kota_asal');
+        var kotaAsal = kotaAsalInput.value.trim();
+
+        if (kotaAsal.length > 50) {
+            alert("Kota Asal tidak boleh lebih dari 50 karakter.");
+            return false;
+        }
+
+        var tempatLahirInput = document.getElementById('tempat_lahir');
+        var tempatLahir = tempatLahirInput.value.trim();
+
+        if (tempatLahir.length > 50) {
+            alert("Tempat Lahir tidak boleh lebih dari 50 karakter.");
+            return false;
+        }
+
+        var passwordInput = document.getElementById('password');
+        var password = passwordInput.value.trim();
+
+        if (password.length > 50) {
+            alert("Password tidak boleh lebih dari 50 karakter.");
+            return false;
+        }
+    }
+</script>
 {% endblock content %}
