@@ -84,6 +84,13 @@ def tambah_lagu(request):
         lagu = request.POST.get('lagu')
         try:
             cursor.execute(
+                f'select * from playlist_song where id_playlist = \'{playlist_id}\' AND id_song = \'{lagu}\''
+            )
+            ada = cursor.fetchone()
+            if len(ada) > 0:
+                return render(request, 'song_telah_ditambahkan.html')
+            
+            cursor.execute(
                 f'insert into playlist_song values (\'{playlist_id}\', \'{lagu}\')')
             
             connection.commit()
@@ -92,13 +99,8 @@ def tambah_lagu(request):
             return redirect(url_with_params)
         
         except Exception as e:
-            print("Oops! An exception has occured:", e)
-            print("Exception TYPE:", type(e))
-            context = {
-                'playlist_id': playlist_id
-            }
-            response = render(request, 'user_playlist.html', context)
-            return response
+            print(f"Error: {e}")
+            return HttpResponse(f"Error: {e}", status=500)
     
         # return redirect('playlist_player:detail_playlist')
 
@@ -174,32 +176,37 @@ def play_song(request):
                 f'select total_download from song where id_konten = \'{song_id}\'')
             total = cursor.fetchall()
             total_download = total[0][0] + 1
-            try:
-                cursor.execute(
-                    f'update song set total_download = \'{total_download}\' where id_konten = \'{song_id}\''
-                )
+            # try:
+            sudah = []
+            cursor.execute(
+                f'select id_song from downloaded_song where id_song = \'{song_id}\' AND email_downloader = \'{email}\'')
+            print(len(sudah))
+            sudah = cursor.fetchall()
+            # print(sudah[0][0])
 
-                cursor.execute(
-                    f'insert into downloaded_song values( \'{song_id}\', \'{email}\' )'
-                )
+            if len(sudah) > 0:
+                return render(request, 'song_telah_download.html')
+            
+            cursor.execute(
+                f'update song set total_download = \'{total_download}\' where id_konten = \'{song_id}\''
+            )
 
-                connection.commit()
-                url = reverse('playlist_player:pesan_download_song')
-                url_param = f"{url}?song_id={song_id}"
+            cursor.execute(
+                f'insert into downloaded_song values( \'{song_id}\', \'{email}\' )'
+            )
 
-                context = {
-                    'email': email,
-                }
-                return redirect(url_param, context)
-            except Exception as e:
-                print("Oops! An exception has occured:", e)
-                print("Exception TYPE:", type(e))
-                context = {
-                    'song_id': song_id,
-                    'email': email
-                }
-                response = render(request, 'user_playlist.html', context)
-                return response
+            connection.commit()
+            url = reverse('playlist_player:pesan_download_song')
+            url_param = f"{url}?song_id={song_id}"
+
+            context = {
+                'email': email,
+            }
+            return redirect(url_param, context)
+            
+            # except Exception as e:
+                # print(f"Error: {e}")
+                # return HttpResponse(f"Error: {e}", status=500)
                 # return HttpResponse(f"Error: {e}", status=500)
 
 
@@ -236,6 +243,13 @@ def add_song_to_user_playlist(request):
 
         try:
             cursor.execute(
+                f'select * from playlist_song where id_playlist = \'{playlist_id}\' AND id_song = \'{song_id}\''
+            )
+            ada = cursor.fetchone()
+            if len(ada) > 0:
+                return render(request, 'song_telah_ditambahkan.html')
+            
+            cursor.execute(
                 "INSERT INTO playlist_song (id_playlist, id_song) VALUES (%s, %s)", [playlist_id, song_id]
             )
             connection.commit()
@@ -244,12 +258,8 @@ def add_song_to_user_playlist(request):
             return redirect(url_with_params)
         
         except Exception as e:
-            print("Oops! An exception has occured:", e)
-            print("Exception TYPE:", type(e))
-            context = {
-                'song_id': song_id
-            }
-            return HttpResponseRedirect(reverse('playlist_player:user_playlist') + f'?song_id={song_id}')
+            print(f"Error: {e}")
+            return HttpResponse(f"Error: {e}", status=500)
             # return response
             # return render(request, 'add_song_to_user_playlist.html', context)
 
