@@ -15,18 +15,28 @@
             <h2 class="text-4xl font-bold mb-3 text-white font-serif">User Playlist Detail</h2>
             <div class="bg-gray-800 rounded-lg p-6 mb-2">
                 <div class="grid gap-1 text-white">
-                    <h3 class="text-1xl font-bold mb-1 text-white font-serif">Judul: Playlist1</h3>
-                    <h3 class="text-1xl font-bold mb-1 text-white font-serif">Pembuat: Pembuat1</h3>
-                    <h3 class="text-1xl font-bold mb-1 text-white font-serif">Jumlah Lagu: 12</h3>
-                    <h3 class="text-1xl font-bold mb-1 text-white font-serif">Total Durasi: 8 jam 20 menit</h3>
-                    <h3 class="text-1xl font-bold mb-1 text-white font-serif">Tanggal Dibuat: 18/03/24</h3>
-                    <h3 class="text-1xl font-bold mb-1 text-white font-serif">Deskripsi: Lorem Ipsum ...</h3>
+                    {% for record in records_playlist %} 
+                        <h3 class="text-1xl font-bold mb-1 text-white font-serif">Judul: {{record.2}}</h3>
+                        <h3 class="text-1xl font-bold mb-1 text-white font-serif">Pembuat: {{record.0}}</h3>
+                        <h3 class="text-1xl font-bold mb-1 text-white font-serif">Jumlah Lagu: {{record.4}}</h3>
+                        <h3 class="text-1xl font-bold mb-1 text-white font-serif">Total Durasi: {{total_durasi_format}}</h3>
+                        <h3 class="text-1xl font-bold mb-1 text-white font-serif">Tanggal Dibuat: {{record.5}}</h3>
+                        <h3 class="text-1xl font-bold mb-1 text-white font-serif">Deskripsi: {{record.3}}</h3>
+                    {% endfor %}
                 </div>
             </div>
             <div>
-                <button type="submit" class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg mb-2 font-semibold">Shuffle Play</button>
-                <button type="submit" class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold">Kembali</button>
+                <form action="{% url 'playlist_player:play_user_playlist' %}?playlist_id={{ playlist_id }}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="playlist_id" value="{{ playlist_id }}">
+                    <button type="submit" name="shuffle_play" class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold mb-2">Shuffle Play</button>
+                </form>
+    
+                <a href="{% url 'dashboard:dashboard' %}">
+                    <button class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold mb-2">Kembali</button>
+                </a>
             </div>
+            
             <h2>DAFTAR LAGU</h2>
             <div class="-mx-4">
                 <div class="overflow-x-auto">
@@ -40,33 +50,25 @@
                             </tr>
                         </thead>
                         <tbody class="text-gray-400 bg-[#382e47]">
-                            <tr class="text-white">
-                                <td class="py-3 px-4">Song1</td>
-                                <td class="py-3 px-4">Artist1</td>
-                                <td class="py-3 px-4">2 menit</td>
-                                <td class="py-3 px-4">
-                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Lihat</button>
-                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Play</button>
-                                </td>
-                            </tr>
-                            <tr class="text-white">
-                                <td class="py-3 px-4">Song2</td>
-                                <td class="py-3 px-4">Artist2</td>
-                                <td class="py-3 px-4">3 menit</td>
-                                <td class="py-3 px-4">
-                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Lihat</button>
-                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Play</button>
-                                </td>
-                            </tr>
-                            <tr class="text-white">
-                                <td class="py-3 px-4">...</td>
-                                <td class="py-3 px-4">...</td>
-                                <td class="py-3 px-4">...</td>
-                                <td class="py-3 px-4">
-                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Lihat</button>
-                                    <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Play</button>
-                                </td>
-                            </tr>
+                            {% for record in records_song %}
+                                <tr class="text-white">
+                                    <td class="py-3 px-4">{{record.1}}</td>
+                                    <td class="py-3 px-4">{{record.2}}</td>
+                                    <td class="py-3 px-4">{{record.3}}</td>
+                                    <td class="py-3 px-4">
+                                        <a href="{% url 'playlist_player:play_song' %}?song_id={{ record.4 }}">
+                                            <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Lihat</button>
+                                        </a>
+                                        <form method="POST" style="display:inline;">
+                                            {% csrf_token %}
+                                            <button name="play_song_{{ record.0 }}" type="submit" class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9]">Play</button>
+                                        </form>
+                                        <a href="{% url 'playlist_player:hapus_song' %}?song_id={{ record.4 }}&playlist_id={{ playlist_id }}">
+                                            <button class="bg-[#9e60d1] text-white px-3 py-1 rounded-full font-semibold hover:bg-[#b17bc9] ml-2">Hapus</button>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
@@ -78,3 +80,27 @@
 </html>
 
 {% endblock content %}
+
+<script>
+    document.getElementById("shuffle-play-btn").addEventListener("click", function() {
+        var playlistId = "{{ playlist_id }}";
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "{% url 'playlist_player:play_user_playlist' %}?playlist_id=" + playlistId, true);
+        xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    // Response received successfully, handle it as needed
+                    // For example, you can update the page content with the received data
+                    console.log(xhr.responseText);
+                } else {
+                    // Error handling
+                    console.error("Error:", xhr.statusText);
+                }
+            }
+        };
+        xhr.send("shuffle_play=true");
+    });
+    </script>
+

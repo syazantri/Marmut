@@ -6,22 +6,52 @@
 <div class="flex flex-col items-center justify-center font-sans">
     <div class="bg-gray-900 rounded-lg p-8">
         <h2 class="text-3xl font-semibold text-white mb-4 text-center font-serif">Add Song to User Playlist</h2>
-        <form class="space-y-4">
+        {% for record in records_song %}
+                <h3 class="text-1xl font-bold mb-1 text-white font-serif">Judul: {{record.1}}</h3>
+                <h3 class="text-1xl font-bold mb-1 text-white font-serif">Artist: {{record.2}}</h3>
+        {% endfor %}
+        <form class="space-y-4" method="POST">
+            {% csrf_token %}
             <div>
-                <h3 class="text-1xl font-bold mb-1 text-white font-serif">Judul: Song1</h3>
-                <h3 class="text-1xl font-bold mb-5 text-white font-serif">Artist: Artist1</h3>
-                <label for="email" class="text-white">Playlist</label>
-                <select id="playlist" name="playlist" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
-                    <option value="playlist1">Playlist 1</option>
-                    <option value="playlist2">Playlist 2</option>
-                    <option value="playlist3">Playlist 3</option>
-                </select>
+                <label for="Playlist" class="text-white">Playlist</label>
+                <select id="playlist_id" name="playlist_id" class="bg-[#f0e3ff] w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]" required>
+                    <option value="">Select Playlist</option>
+                    {% for playlist in list_playlist %}
+                    <option value="{{ playlist.0 }}">{{ playlist.1 }}</option>
+                    {% endfor %}
+                 </select>
             </div>
             <div>
-                <button type="submit" class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold mb-2">TAMBAH</button>
-                <button type="submit" class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold">KEMBALI</button>
+                <button type="submit" class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold">Submit</button>
             </div>
         </form>
     </div>
 </div>
+{% if error_message %}
+<!-- Modal -->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Error</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {{ error_message }}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#errorModal').modal('show');
+    });
+</script>
+{% endif %}
 {% endblock content %}

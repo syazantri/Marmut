@@ -15,33 +15,52 @@
             <h2 class="text-4xl font-bold mb-3 text-white font-serif">Song Detail</h2>
             <div class="bg-gray-800 rounded-lg p-6">
                 <div class="grid gap-1 text-white">
-                    <h3 class="text-1xl font-semibold mb-1 text-white font-serif">Judul: Song1</h3>
-                    <h3 class="text-1xl font-semibold mb-1 text-white font-serif">Genre(s):</h3>
-                    <h3 class="text-1xl font-semibold mb-1 text-white font-serif px-4">Genre1</h3>
-                    <h3 class="text-1xl font-semibold mb-1 text-white font-serif px-4">Genre2</h3>
-                    <h3 class="text-1xl font-semibold mb-1 text-white font-serif">Artist: Artist1</h3>
-                    <h3 class="text-1xl font-semibold mb-1 text-white font-serif">Songwriter(s):</h3>
-                    <h3 class="text-1xl font-semibold mb-1 text-white font-serif px-4">Songwriter1</h3>
-                    <h3 class="text-1xl font-semibold mb-1 text-white font-serif px-4">Songwriter2</h3>
-                    <h3 class="text-1xl font-semibold mb-1 text-white font-serif">Durasi: 3 menit</h3>
-                    <h3 class="text-1xl font-semibold mb-1 text-white font-serif">Tanggal Rilis: 18/03/24</h3>
-                    <h3 class="text-1xl font-semibold mb-1 text-white font-serif">Tahun: 2024</h3>
-                    <h3 class="text-1xl font-semibold mb-1 text-white font-serif">Total Play: 0</h3>
-                    <h3 class="text-1xl font-semibold mb-1 text-white font-serif">Total Downloads: 0</h3>
-                    <h3 class="text-1xl font-semibold mb-1 text-white font-serif">Album: Album1</h3>
+                    {% for record in records_song %}
+                        <h3 class="text-1xl font-semibold mb-1 text-white font-serif">Judul: {{record.1}}</h3>
+                        <h3 class="text-1xl font-semibold mb-1 text-white font-serif">Genre(s): </h3>
+                        {% for genre in records_genre %}
+                            <h3 class="text-1xl font-semibold mb-1 text-white font-serif px-4">{{ genre }}</h3>
+                        {% endfor %}
+                        <h3 class="text-1xl font-semibold mb-1 text-white font-serif">Artist: {{record.5}}</h3>
+                        <h3 class="text-1xl font-semibold mb-1 text-white font-serif">Songwriter(s):</h3>
+                        {% for songwriter in records_songwriter %}
+                            <h3 class="text-1xl font-semibold mb-1 text-white font-serif px-4">{{songwriter}}</h3>
+                        {% endfor %}
+                        <h3 class="text-1xl font-semibold mb-1 text-white font-serif">Durasi: {{record.4}} menit</h3>
+                        <h3 class="text-1xl font-semibold mb-1 text-white font-serif">Tanggal Rilis: {{record.2}}</h3>
+                        <h3 class="text-1xl font-semibold mb-1 text-white font-serif">Tahun: {{record.3}}</h3>
+                        <h3 class="text-1xl font-semibold mb-1 text-white font-serif">Total Play: {{record.6}}</h3>
+                        <h3 class="text-1xl font-semibold mb-1 text-white font-serif">Total Downloads: {{record.7}}</h3>
+                        <h3 class="text-1xl font-semibold mb-1 text-white font-serif">Album: {{record.8}}</h3>
+                    {% endfor %}
                 </div>
             </div>
             
             <div class="-mx-4">
-                <div class="mt-4">
-                    <label for="progressSlider" class="block">Progress Lagu (Slider):</label>
-                    <input type="range" id="progressSlider" name="progressSlider" min="0" max="100" value="0" class="w-full">
-                    <span id="sliderValue" class="block text-center">0%</span>
-                </div>
                 <div>
-                    <button class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold mb-2">Add to Playlist</button>
-                    <button class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold mb-2">Download</button>
-                    <button class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold">Kembali</button>
+                    <div class="mt-4">
+                        <label for="progressSlider" class="block">Progress Lagu (Slider):</label>
+                        <input type="range" id="progressSlider" name="progressSlider" min="0" max="100" value="0" class="w-full">
+                        <span id="sliderValue" class="block text-center">0%</span>
+                    </div>
+                    <form action="{% url 'playlist_player:play_song' %}?song_id={{ song_id }}" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="song_id" value="{{ song_id }}">
+                        <button type="submit" name="play" class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold mb-2">Play</button>
+                    </form>
+                    <a href="{% url 'playlist_player:add_song_to_user_playlist' %}?song_id={{ song_id }}">
+                        <button class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold mb-2">Add to Playlist</button>
+                    </a>
+                    {% if isPremium == "Premium" %}
+                    <form action="{% url 'playlist_player:play_song' %}?song_id={{ song_id }}" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="song_id" value="{{ song_id }}">
+                        <button type="submit" name="download" class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold mb-2">Download</button>
+                    </form>
+                    {% endif %}
+                    <a href="{% url 'dashboard:dashboard' %}">
+                        <button class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold">Kembali</button>
+                    </a>
                 </div>
             </div>
         </div>
@@ -51,3 +70,4 @@
 </html>
 
 {% endblock content %}
+

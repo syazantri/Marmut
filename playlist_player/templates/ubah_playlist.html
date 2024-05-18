@@ -1,0 +1,29 @@
+{% extends 'base_biasa.html' %}
+{% block meta %}
+<title>Ubah Playlist</title>
+{% endblock meta %}
+{% block content %}
+<div class="flex flex-col items-center justify-center font-sans">
+    <div class="bg-gray-900 rounded-lg p-8">
+        <h2 class="text-3xl font-semibold text-white mb-4 text-center font-serif">Ubah Playlist</h2>
+            <div class="flex justify-center">
+                <div class="bg-gray/20 rounded-3xl shadow-inner p-10" style="width: 40rem;">
+                    <form class="space-y-4" method="POST">
+                        {% csrf_token %}
+                        <div class="flex flex-col mb-4">
+                            <label for="judul" class="bg-[#f0e3ff] w-full font-bold border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]">Judul</label>
+                            <input type="text" id="judul" name="judul" class="bg-white w-full rounded-lg px-4 py-3 focus:outline-none text-lg" placeholder="Radio ground everyone" value="{{ judul }}" required>
+                        </div>
+                        <div class="flex flex-col mb-4">
+                            <label for="deskripsi" class="bg-[#f0e3ff] w-full font-bold border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-[#b17bc9]">Deskripsi</label>
+                            <textarea id="deskripsi" name="deskripsi" class="bg-white w-full rounded-lg px-4 py-3 focus:outline-none text-lg mb-2" rows="4" placeholder="Choose positive whatever understand short choice girl finish." required>{{ deskripsi }}</textarea>
+                        </div>
+                        <div class="flex justify-center">
+                            <button type="submit" class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold">Update</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+    </div>
+</div>
+{% endblock content %}
