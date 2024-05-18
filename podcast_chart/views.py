@@ -90,7 +90,7 @@ def create_podcast(request):
         with connection.cursor() as cursor:
             cursor.execute(
                 'INSERT INTO konten (id, judul, tanggal_rilis, tahun, durasi) VALUES (%s, %s, %s, %s, %s)',
-                (id_podcast, judul, date_now, current_year, 1)  
+                (id_podcast, judul, date_now, current_year, 0)  
             )
 
             cursor.execute(

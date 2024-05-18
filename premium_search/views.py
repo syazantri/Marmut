@@ -89,13 +89,6 @@ def process_payment(request):
             return HttpResponse("Error: No email found in cookies.", status=400)
         
         try:
-            with connection.cursor() as cursor:
-                cursor.execute("SET SEARCH_PATH TO A5")
-                cursor.execute("SELECT COUNT(*) FROM TRANSACTION WHERE email = %s AND timestamp_berakhir > CURRENT_TIMESTAMP", [email])
-                active_subscription_count = cursor.fetchone()[0]
-                
-                if active_subscription_count > 0:
-                    return render(request, 'already_subscribed.html')
             
             package_durations = {
                 '1 bulan': 1,
@@ -114,6 +107,7 @@ def process_payment(request):
             transaction_id = str(uuid.uuid4())
 
             with connection.cursor() as cursor:
+                cursor.execute("SET SEARCH_PATH TO A5")
                 # Insert into TRANSACTION table
                 cursor.execute("""
                     INSERT INTO TRANSACTION (id, jenis_paket, email, timestamp_dimulai, timestamp_berakhir, metode_bayar, nominal)
@@ -121,22 +115,26 @@ def process_payment(request):
                 """, [transaction_id, jenis_paket, email, start_date, end_date, metode_bayar, harga])
 
                 # Check if the user is in the PREMIUM table
-                cursor.execute("SELECT COUNT(*) FROM PREMIUM WHERE email = %s", [email])
+                cursor.execute("SELECT 1 FROM PREMIUM WHERE email = %s", [email])
+                found = cursor.fetchone()
+                print(found[0])
+                print(email)
                 
-                if not cursor.fetchone():
-                    # cursor.execute("INSERT INTO PREMIUM (email) VALUES (%s);", [email])
-                    # print(email)
-
-                    # # Delete the user from NONPREMIUM table
+                if not found[0]:
                     cursor.execute("DELETE FROM NONPREMIUM WHERE email = %s;", [email])
-                    connection.commit()
+                    cursor.execute("INSERT INTO PREMIUM (email) VALUES (%s);", [email])
+
+                    # Delete the user from NONPREMIUM table
+                    
+                connection.commit()
                     
                     
             return redirect('dashboard:dashboard')
 
         except Exception as e:
             print(f"Error: {e}")
-            return HttpResponse(f"Error: {e}", status=500)
+            return render(request, 'already_subscribed.html')
+            
     
     return HttpResponse("Invalid request.", status=400)
 
@@ -196,7 +194,8 @@ def search_bar(request):
             cursor.execute("""
                 SELECT 'PODCAST' AS type,
                 k.judul AS judul,
-                a.nama AS oleh
+                a.nama AS oleh,
+                k.id AS id
                 FROM podcast p
                 JOIN konten k ON p.id_konten = k.id
                 JOIN podcaster pod ON p.email_podcaster = pod.email
@@ -209,7 +208,8 @@ def search_bar(request):
             cursor.execute("""
                 SELECT 'SONG' AS type,
                 k.judul AS judul,
-                a.nama AS oleh
+                a.nama AS oleh,
+                k.id AS id
                 FROM song s
                 JOIN konten k ON s.id_konten = k.id
                 JOIN artist ar ON s.id_artist = ar.id
@@ -222,7 +222,8 @@ def search_bar(request):
             cursor.execute("""
                 SELECT 'USER PLAYLIST' AS type,
                 up.judul AS judul,
-                    a.nama AS oleh
+                a.nama AS oleh,
+                up.id_user_playlist  AS id       
                 FROM user_playlist up
                 JOIN akun a ON up.email_pembuat = a.email
                 WHERE LOWER(up.judul) LIKE %s
@@ -235,11 +236,7 @@ def search_bar(request):
                 'type': result[0],
                 'title': result[1],
                 'by': result[2],
-                'url': '#'  # Placeholder for the URL. Update this as needed.
+                'id' : result[3],
             } for result in results]
         }
         return render(request, 'search.html', context)
-    else:
-        return render(request, 'not_found.html', {'query': query})
-def not_found(request):
-    return render(request, 'not_found.html')
