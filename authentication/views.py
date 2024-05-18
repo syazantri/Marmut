@@ -48,17 +48,6 @@ def register_pengguna(request):
                 'message': 'Data yang diisikan belum lengkap, silahkan lengkapi data terlebih dahulu',
             }
             return render(request, 'register_biasa.html', context)
-
-        # check email is already registered or not
-        cursor.execute(f'select * from akun where email = \'{email}\'')
-        records = cursor.fetchmany()
-        if len(records) > 0:
-            form = RegisterFormPengguna(request.POST or None)
-            context = {
-                'form': form,
-                'message': 'Email sudah terdaftar',
-            }
-            return render(request, 'register_biasa.html', context)
         
         # Mengecek badge verified user
         if len(role) == 0:
@@ -68,55 +57,44 @@ def register_pengguna(request):
 
         # insert data to database
         try:
-            cursor.execute(
-                f'insert into akun values (\'{email}\', \'{password}\', \'{nama}\', \'{gender}\', \'{tempat_lahir}\', \'{tanggal_lahir}\', \'{is_verified}\', \'{kota_asal}\')')
-            # cursor.execute(    tidak jadii karena sudah di trigger
-            #     f'insert into nonpremium values (\'{email}\')')
-            if('Artist' in role):
-                id_artist = str(uuid.uuid4())
-                id_pemilik_hak_cipta = str(uuid.uuid4())
-                list_rate_royalti = [100,200,300,400,500,600,700,800,900,1000]
-                rate_royalti = random.choice(list_rate_royalti)
+            with connection.cursor() as cursor:
+                cursor.execute("SET search_path TO A5")
                 cursor.execute(
-                    f'insert into pemilik_hak_cipta values (\'{id_pemilik_hak_cipta}\', \'{rate_royalti}\')')
-                cursor.execute(
-                    f'insert into artist values (\'{id_artist}\', \'{email}\', \'{id_pemilik_hak_cipta}\')')
-            if('Podcaster' in role):
-                cursor.execute(   
-                    f'insert into podcaster values (\'{email}\')')
-            if('Songwriter' in role):
-                id_songwriter = str(uuid.uuid4())
-                id_pemilik_hak_cipta = str(uuid.uuid4())
-                list_rate_royalti = [100,200,300,400,500,600,700,800,900,1000]
-                rate_royalti = random.choice(list_rate_royalti)
-                cursor.execute(
-                    f'insert into pemilik_hak_cipta values (\'{id_pemilik_hak_cipta}\', \'{rate_royalti}\')')
-                cursor.execute(
-                    f'insert into songwriter values (\'{id_songwriter}\', \'{email}\', \'{id_pemilik_hak_cipta}\')')
+                    f'insert into akun values (\'{email}\', \'{password}\', \'{nama}\', \'{gender}\', \'{tempat_lahir}\', \'{tanggal_lahir}\', \'{is_verified}\', \'{kota_asal}\')')
 
-            connection.commit()
+                if('Artist' in role):
+                    id_artist = str(uuid.uuid4())
+                    id_pemilik_hak_cipta = str(uuid.uuid4())
+                    list_rate_royalti = [100,200,300,400,500,600,700,800,900,1000]
+                    rate_royalti = random.choice(list_rate_royalti)
+                    cursor.execute(
+                        f'insert into pemilik_hak_cipta values (\'{id_pemilik_hak_cipta}\', \'{rate_royalti}\')')
+                    cursor.execute(
+                        f'insert into artist values (\'{id_artist}\', \'{email}\', \'{id_pemilik_hak_cipta}\')')
+                if('Podcaster' in role):
+                    cursor.execute(   
+                        f'insert into podcaster values (\'{email}\')')
+                if('Songwriter' in role):
+                    id_songwriter = str(uuid.uuid4())
+                    id_pemilik_hak_cipta = str(uuid.uuid4())
+                    list_rate_royalti = [100,200,300,400,500,600,700,800,900,1000]
+                    rate_royalti = random.choice(list_rate_royalti)
+                    cursor.execute(
+                        f'insert into pemilik_hak_cipta values (\'{id_pemilik_hak_cipta}\', \'{rate_royalti}\')')
+                    cursor.execute(
+                        f'insert into songwriter values (\'{id_songwriter}\', \'{email}\', \'{id_pemilik_hak_cipta}\')')
 
-            # set cookie and redirect to dashboard
-            # response = HttpResponseRedirect(reverse('authentication:show_main'))
-            # if('Artist' in role):
-            #     response.set_cookie('isArtist', True)
-            #     response.set_cookie('idArtist', id_artist)
-            # if('Podcaster' in role):
-            #     response.set_cookie('isPodcaster', True)
-            # if('Songwriter' in role):
-            #     response.set_cookie('isSongwriter', True)
-            #     response.set_cookie('idSongwriter', id_songwriter)
-            # if(len(role) == 0):
-            #     response.set_cookie('isVerified', False)
-            # response.set_cookie('email', email)
-            # response.set_cookie('isPremium', False)
-            # return response
-            return redirect('authentication:login')
+                connection.commit()
+
+                return redirect('authentication:login')
 
         except Exception as err:
             connection.rollback()
             print("Oops! An exception has occured:", err)
             print("Exception TYPE:", type(err))
+            with connection.cursor() as cursor:
+                cursor.execute("SET search_path TO A5")
+
             form = RegisterFormPengguna(request.POST or None)
             # err slice to get only error message
             err = str(err).split('CONTEXT')[0]
@@ -345,7 +323,9 @@ def login(request):
                         id_podcast = podcast[0]
                         cursor.execute(
                             f'SELECT k.id, k.judul, COUNT(*) AS jumlah_episode, k.durasi FROM KONTEN AS k JOIN EPISODE AS e ON e.id_konten_podcast = k.id where k.id = \'{podcast[0]}\' GROUP BY k.id')
-                        records_podcast.append(cursor.fetchone())
+                        record_podcast = cursor.fetchone()
+                        if record_podcast is not None:
+                            records_podcast.append(record_podcast)
 
             # Semua pengguna pasti pengguna biasa juga yang bisa punya userplaylist
             cursor.execute(

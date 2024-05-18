@@ -115,9 +115,10 @@ def process_payment(request):
                 """, [transaction_id, jenis_paket, email, start_date, end_date, metode_bayar, harga])
 
                 # Check if the user is in the PREMIUM table
-                cursor.execute("SELECT COUNT(*) FROM PREMIUM WHERE email = %s", [email])
+                cursor.execute("SELECT 1 FROM PREMIUM WHERE email = %s", [email])
                 found = cursor.fetchone()
                 print(found[0])
+                print(email)
                 
                 if not found[0]:
                     cursor.execute("DELETE FROM NONPREMIUM WHERE email = %s;", [email])
@@ -125,7 +126,7 @@ def process_payment(request):
 
                     # Delete the user from NONPREMIUM table
                     
-                    connection.commit()
+                connection.commit()
                     
                     
             return redirect('dashboard:dashboard')
