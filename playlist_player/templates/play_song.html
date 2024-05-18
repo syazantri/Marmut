@@ -1,4 +1,4 @@
-{% extends 'base_biasa.html' %} 
+{% extends 'base_biasa.html' %}
 {% load static %}
 
 {% block meta %}
@@ -29,24 +29,24 @@
                         <h3 class="text-1xl font-semibold mb-1 text-white font-serif">Durasi: {{record.4}} menit</h3>
                         <h3 class="text-1xl font-semibold mb-1 text-white font-serif">Tanggal Rilis: {{record.2}}</h3>
                         <h3 class="text-1xl font-semibold mb-1 text-white font-serif">Tahun: {{record.3}}</h3>
-                        <h3 class="text-1xl font-semibold mb-1 text-white font-serif">Total Play: {{record.6}}</h3>
+                        <h3 class="text-1xl font-semibold mb-1 text-white font-serif">Total Play: <span id="totalPlay">{{record.6}}</span></h3>
                         <h3 class="text-1xl font-semibold mb-1 text-white font-serif">Total Downloads: {{record.7}}</h3>
                         <h3 class="text-1xl font-semibold mb-1 text-white font-serif">Album: {{record.8}}</h3>
                     {% endfor %}
                 </div>
             </div>
-            
+
             <div class="-mx-4">
                 <div>
                     <div class="mt-4">
-                        <label for="progressSlider" class="block">Progress Lagu (Slider):</label>
-                        <input type="range" id="progressSlider" name="progressSlider" min="0" max="100" value="0" class="w-full">
-                        <span id="sliderValue" class="block text-center">0%</span>
+                        <label for="progressSlider" class="block text-white">Progress Lagu (Slider):</label>
+                        <input type="range" id="progressSlider" name="progressSlider" min="0" max="{{ durasi }}" value="0" class="w-full">
+                        <span id="sliderValue" class="block text-center text-white">0:00</span>
                     </div>
-                    <form action="{% url 'playlist_player:play_song' %}?song_id={{ song_id }}" method="POST">
+                    <form id="playForm" action="{% url 'playlist_player:play_song' %}?song_id={{ song_id }}" method="POST">
                         {% csrf_token %}
                         <input type="hidden" name="song_id" value="{{ song_id }}">
-                        <button type="submit" name="play" class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold mb-2">Play</button>
+                        <button type="submit" name="play" id="playButton" class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold mb-2">Play</button>
                     </form>
                     <a href="{% url 'playlist_player:add_song_to_user_playlist' %}?song_id={{ song_id }}">
                         <button class="p-8 w-full bg-[#b17bc9] text-white py-2 rounded-lg font-semibold mb-2">Add to Playlist</button>
@@ -66,8 +66,89 @@
         </div>
     </div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const progressSlider = document.getElementById('progressSlider');
+            const sliderValue = document.getElementById('sliderValue');
+            const playButton = document.getElementById('playButton');
+            const playForm = document.getElementById('playForm');
+            const songDuration = parseFloat(progressSlider.max);
+            const totalPlayElement = document.getElementById('totalPlay');
+            let isPlaying = false;
+            let currentTime = 0;
+            let intervalId;
+            let hasIncremented = false; 
+    
+            const updateSlider = () => {
+                if (isPlaying && currentTime < songDuration) {
+                    currentTime += 1;
+                    progressSlider.value = currentTime;
+                    const minutes = Math.floor(currentTime / 60);
+                    const seconds = currentTime % 60;
+                    sliderValue.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    
+                    if (currentTime >= songDuration * 0.7 && !hasIncremented) {
+                        incrementTotalPlay();
+                        hasIncremented = true; 
+                    }
+                }
+            };
+    
+            const incrementTotalPlay = () => {
+                let totalPlay = parseInt(totalPlayElement.textContent);
+                totalPlay += 1;
+                totalPlayElement.textContent = totalPlay;
+    
+                updateTotalPlayInDatabase();
+            };
+    
+            const startPlayback = () => {
+                isPlaying = true;
+                intervalId = setInterval(updateSlider, 1000);
+                playButton.textContent = 'Pause';
+            };
+    
+            const pausePlayback = () => {
+                isPlaying = false;
+                clearInterval(intervalId);
+                playButton.textContent = 'Play';
+            };
+    
+            playForm.addEventListener('submit', (event) => {
+                event.preventDefault();
+                if (isPlaying) {
+                    pausePlayback();
+                } else {
+                    startPlayback();
+                }
+            });
+    
+        
+            const updateTotalPlayInDatabase = () => {
+                const songId = '{{ song_id }}'; 
+                fetch('/increment_play_count/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}', 
+                    },
+                    body: JSON.stringify({
+                        song_id: songId,
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                
+                    console.log(data);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            };
+        });
+    </script>
+    
 </body>
 </html>
 
 {% endblock content %}
-

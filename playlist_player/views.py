@@ -1,3 +1,4 @@
+import json
 import uuid
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
@@ -70,7 +71,7 @@ def detail_playlist(request):
                 f'VALUES (\'{email}\', \'{records_playlist[0][1]}\', \'{records_playlist[0][0]}\', \'{current_timestamp}\')')
 
             connection.commit()
-            print("cek")
+   
             # Insert ke tabel AKUN_PLAY_SONG untuk setiap lagu dalam playlist 
             test = 0
             for i in range((len(records_song)//2)-1):
@@ -82,7 +83,7 @@ def detail_playlist(request):
                 test += 1
                 if test > (len(records_song)//2):
                     break
-            print("testes")
+        
             connection.commit()
             
             return redirect(reverse("playlist_player:play_user_playlist") + f'?playlist_id={playlist_id}')
@@ -164,7 +165,6 @@ def play_song(request):
     records_songwriter = []
     email = request.COOKIES.get('email')
     isPremium = request.COOKIES.get('statusLangganan')
-    print(isPremium)
 
     cursor.execute(
         f'SELECT * from konten where id = \'{song_id}\'')
@@ -190,42 +190,23 @@ def play_song(request):
         f'SELECT akun.nama from songwriter_write_song, songwriter, akun where songwriter_write_song.id_song = \'{song_id}\' AND songwriter.id = songwriter_write_song.id_songwriter AND songwriter.email_akun = akun.email')
     records_songwriter = cursor.fetchone()
 
+    durasi = int(records_song[0][4]) * 60
+
+
     if request.method == 'POST':
-        if 'play' in request.POST:
-            timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
-            cursor.execute(
-                f'select total_play from song where id_konten = \'{song_id}\'')
-            total = cursor.fetchall()
-            total_play = total[0][0] + 1
-
-            cursor.execute(
-                f'update song set total_play = \'{total_play}\' where id_konten = \'{song_id}\''
-            )
-        
-            cursor.execute(
-                f'insert into akun_play_song values(\'{email}\', \'{song_id}\',  \'{timestamp}\' )'
-            )
-
-            connection.commit()
-            url = reverse('playlist_player:play_song')
-            url_with_params = f"{url}?song_id={song_id}"
-            return redirect(url_with_params)
-        
-        elif 'download' in request.POST:
+        if 'download' in request.POST:
+            # Handling the download button click
             timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
             cursor.execute(
                 f'select total_download from song where id_konten = \'{song_id}\'')
             total = cursor.fetchall()
             total_download = total[0][0] + 1
-            # try:
+
             sudah = []
             cursor.execute(
                 f'select id_song from downloaded_song where id_song = \'{song_id}\' AND email_downloader = \'{email}\'')
-            print(len(sudah))
             sudah = cursor.fetchall()
-            # print(sudah[0][0])
 
             if len(sudah) > 0:
                 return render(request, 'song_telah_download.html')
@@ -246,12 +227,6 @@ def play_song(request):
                 'email': email,
             }
             return redirect(url_param, context)
-            
-            # except Exception as e:
-                # print(f"Error: {e}")
-                # return HttpResponse(f"Error: {e}", status=500)
-                # return HttpResponse(f"Error: {e}", status=500)
-
 
     context = {
         'status': 'success',
@@ -260,11 +235,29 @@ def play_song(request):
         'records_songwriter': records_songwriter,
         'panjang': len(records_song),
         'song_id':song_id,
-        'isPremium': isPremium
+        'isPremium': isPremium,
+        'durasi': durasi
     }
-    response = render(request, 'play_song.html', context)
-    return response
+    return render(request, 'play_song.html', context)
 
+
+def increment_play_count(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        song_id = data.get('song_id')
+
+        if song_id:
+            cursor.execute(f'select total_play from song where id_konten = \'{song_id}\'')
+            total = cursor.fetchall()
+            total_play = total[0][0] + 1
+
+            cursor.execute(f'update song set total_play = \'{total_play}\' where id_konten = \'{song_id}\'')
+            connection.commit()
+
+            return JsonResponse({'status': 'success'})
+        else:
+            return JsonResponse({'status': 'error', 'message': 'Invalid song ID'})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 
 def add_song_to_user_playlist(request):
     song_id = request.GET.get('song_id')
@@ -337,7 +330,7 @@ def pesan_add_song_to_playlist(request):
 
 def play_user_playlist(request): 
     playlist_id = request.GET.get('playlist_id')
-    print(playlist_id)
+
     email = request.COOKIES.get('email')
     records_playlist = [] 
     records_song = []
@@ -345,7 +338,6 @@ def play_user_playlist(request):
     # Mengambil data playlist berdasarkan playlist_id
     cursor.execute(f'SELECT * FROM user_playlist WHERE id_playlist = \'{playlist_id}\'')
     records_playlist = cursor.fetchall()
-    print(records_playlist)
 
     cursor.execute(f'SELECT id_song FROM playlist_song WHERE id_playlist = %s', [playlist_id])
     records_song = cursor.fetchall()
@@ -356,10 +348,6 @@ def play_user_playlist(request):
             f'WHERE konten.id = \'{records_song[i][0]}\' AND konten.id = song.id_konten '
             f'AND song.id_artist = artist.id AND artist.email_akun = akun.email')
         records_song[i] = records_song[i] + cursor.fetchone() 
-
-    print(len(records_song))
-    for i in range(len(records_song)):
-        print(records_song[i][0])
 
 
     if request.method == 'POST':
@@ -372,7 +360,7 @@ def play_user_playlist(request):
                 f'VALUES (\'{email}\', \'{records_playlist[0][1]}\', \'{records_playlist[0][0]}\', \'{current_timestamp}\')')
 
             connection.commit()
-            print("cek")
+ 
             # Insert ke tabel AKUN_PLAY_SONG untuk setiap lagu dalam playlist 
             test = 0
             for i in range((len(records_song)//2)-1):
@@ -384,7 +372,7 @@ def play_user_playlist(request):
                 test += 1
                 if test > (len(records_song)//2):
                     break
-            print("testes")
+   
             connection.commit()
             
             return redirect(reverse("playlist_player:play_user_playlist") + f'?playlist_id={playlist_id}')
@@ -427,7 +415,7 @@ def ubah_playlist(request):
 
     # if not id_playlist:
     #     return redirect('playlist_player:user_playlist')  
-    print(id_playlist)
+  
 
     if request.method == 'POST':
 
