@@ -2,9 +2,38 @@ from django.shortcuts import render
 from utils.query import *
 
 def homepage(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
+
+    connection.commit()
+    cursor.close()
+    connection.close()
     return render(request, 'homepage.html')
 
 def dashboard(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
+
     email = request.COOKIES.get('email')
 
     cursor.execute(
@@ -138,20 +167,25 @@ def dashboard(request):
         'records_podcast': records_podcast,
     }
     response = render(request, 'dashboard_pengguna.html', context)
-    # response.set_cookie('role', 'pengguna')
-    # response.set_cookie('statusLangganan', status_langganan)
-    # response.set_cookie('isArtist', isArtist)
-    # response.set_cookie('isSongwriter', isSongwriter)
-    # response.set_cookie('isPodcaster', isPodcaster)
-    # response.set_cookie('email', email)
-    # response.set_cookie('idArtist', id_artist)
-    # response.set_cookie('idSongwriter', id_songwriter)
-    # response.set_cookie('idPemilikCiptaArtist', id_pemilik_hak_cipta_artist)
-    # response.set_cookie('idPemilikCiptaSongwriter', id_pemilik_hak_cipta_songwriter)
+    connection.commit()
+    cursor.close()
+    connection.close()
     return response
-    return render(request, 'dashboard_pengguna.html')
 
 def dashboard_label(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
+    
     email = request.COOKIES.get('email')
 
     cursor.execute(
@@ -174,10 +208,12 @@ def dashboard_label(request):
             'records_album': records_album,
         }
         response = render(request, 'dashboard_label.html', context)
-        # response.set_cookie('role', 'label')
-        # response.set_cookie('email', label[0][1])
-        # response.set_cookie('id', label[0][0])
-        # response.set_cookie('idPemilikCiptaLabel', label[0][5])
+        connection.commit()
+        cursor.close()
+        connection.close()
         return response
     
+    connection.commit()
+    cursor.close()
+    connection.close()
     return render(request, 'dashboard_label.html')

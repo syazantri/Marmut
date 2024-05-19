@@ -4,9 +4,24 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from utils.query import *
 from datetime import datetime
+import psycopg2, os
+from psycopg2 import Error
 
 # Create your views here.
 def play_podcast(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
+
     podcast_id = request.GET.get('podcast_id')
     data_podcast = {}
     data_episode = []
@@ -70,10 +85,24 @@ def play_podcast(request):
         'detail_podcast': data_podcast,
         'kumpulan_episode': data_episode
     }
-
+    connection.commit()
+    cursor.close()
+    connection.close()
     return render(request, 'play_podcast.html', context)
 
 def create_podcast(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
     records_genre = []
     
     if request.method == 'POST':
@@ -105,7 +134,9 @@ def create_podcast(request):
                     (id_podcast, genre)
                 )
 
-            connection.commit()
+        connection.commit()
+        cursor.close()
+        connection.close()
         return redirect('podcast_chart:list_podcast')  # Mengarahkan ke halaman daftar podcast
 
     # Untuk pilihan dropdown genre
@@ -116,11 +147,25 @@ def create_podcast(request):
     context = {
         'records_genre': records_genre
     }
-
+    connection.commit()
+    cursor.close()
+    connection.close()
     return render(request, 'create_podcast.html', context)
 
 
 def lihat_chart(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
     with connection.cursor() as cursor:
         cursor.execute("SELECT tipe FROM chart")
         charts = cursor.fetchall()
@@ -128,11 +173,25 @@ def lihat_chart(request):
     context = {
         'charts': [{'tipe': row[0]} for row in charts]
     }
-
+    connection.commit()
+    cursor.close()
+    connection.close()
     return render(request, 'lihat_chart.html', context)
 
 
 def detail_chart(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
     tipe_top = request.GET.get('tipe_top')
     with connection.cursor() as cursor:
         if tipe_top == "Daily Top 20":
@@ -176,6 +235,9 @@ def detail_chart(request):
                 LIMIT 20;
             """)
         else:
+            connection.commit()
+            cursor.close()
+            connection.close()
             return render(request, '404.html')
         song_favorit = cursor.fetchall()
     context = {
@@ -188,9 +250,24 @@ def detail_chart(request):
                 'release_date': row[3].strftime('%d/%m/%Y'), 
                 'total_plays': row[4]} for row in song_favorit]
     }
+    connection.commit()
+    cursor.close()
+    connection.close()
     return render(request, 'detail_chart.html', context)
 
 def list_podcast(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
     email = request.COOKIES.get("email")
     with connection.cursor() as cursor:
 
@@ -214,11 +291,25 @@ def list_podcast(request):
         ]
     
     }
-
+    connection.commit()
+    cursor.close()
+    connection.close()
     return render(request, 'list_podcast.html', context)
 
 
 def create_episode(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
     podcast_id = request.GET.get('podcast_id')
     if request.method == 'POST':
         # Mendapatkan data yang dikirimkan melalui form
@@ -238,6 +329,9 @@ def create_episode(request):
             """, [id_episode, podcast_id, judul, deskripsi, durasi, date_now])
         connection.commit()
         # Redirect ke halaman list episode setelah membuat episode
+        connection.commit()
+        cursor.close()
+        connection.close()
         return HttpResponseRedirect(reverse('podcast_chart:list_episode') + f'?podcast_id={podcast_id}')
 
     else:
@@ -251,11 +345,25 @@ def create_episode(request):
         context = {
             'podcast_title': podcast_title,
         }
-
+        connection.commit()
+        cursor.close()
+        connection.close()
         return render(request, 'create_episode.html', context)
 
 
 def list_episode(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
     podcast_id = request.GET.get('podcast_id')
     with connection.cursor() as cursor:
         cursor.execute("""
@@ -295,11 +403,25 @@ def list_episode(request):
             } for row in episodes
         ]
     }
-
+    connection.commit()
+    cursor.close()
+    connection.close()
     return render(request, 'list_episode.html', context)
 
 
 def delete_podcast(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
     podcast_id = request.GET.get('podcast_id')
     
     with connection.cursor() as cursor:
@@ -310,11 +432,25 @@ def delete_podcast(request):
             'DELETE FROM konten WHERE id = %s', [podcast_id]
         )
         connection.commit()
-    
+    connection.commit()
+    cursor.close()
+    connection.close()
     return HttpResponseRedirect(reverse('podcast_chart:list_podcast'))
 
 
 def delete_episode(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
     episode_id = request.GET.get('episode_id')
     podcast_id = request.GET.get('podcast_id')
     
@@ -323,5 +459,7 @@ def delete_episode(request):
             'DELETE FROM episode WHERE id_episode = %s', [episode_id]
         )
         connection.commit()
-    
+    connection.commit()
+    cursor.close()
+    connection.close()
     return HttpResponseRedirect(reverse('podcast_chart:list_episode') + f'?podcast_id={podcast_id}')

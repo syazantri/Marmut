@@ -6,8 +6,23 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from utils.query import *
 from datetime import datetime
+import psycopg2, os
+from psycopg2 import Error
 
 def user_playlist(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
+
     email = request.COOKIES.get('email')
     records_playlist = []
 
@@ -19,9 +34,25 @@ def user_playlist(request):
         'records_playlist': records_playlist
     }
     response = render(request, 'user_playlist.html', context)
+    connection.commit()
+    cursor.close()
+    connection.close()
     return response
 
 def tambah_playlist(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
+
     email = request.COOKIES.get('email')
     if request.method == 'POST' and not request.method == 'GET':
         judul = request.POST.get('judul')
@@ -39,11 +70,29 @@ def tambah_playlist(request):
             f'insert into user_playlist values (\'{email}\', \'{id_playlist}\', \'{judul}\', \'{deskripsi}\', 0, \'{date_now}\', \'{id_playlist}\', 0)')
         
         connection.commit()
+        cursor.close()
+        connection.close()
         return redirect('playlist_player:user_playlist')
-
+    
+    connection.commit()
+    cursor.close()
+    connection.close()
     return render(request, 'tambah_playlist.html')
 
 def detail_playlist(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
+
     playlist_id = request.GET.get('playlist_id')
     records_playlist = []
     records_song = []
@@ -85,6 +134,8 @@ def detail_playlist(request):
                     break
         
             connection.commit()
+            cursor.close()
+            connection.close()
             
             return redirect(reverse("playlist_player:play_user_playlist") + f'?playlist_id={playlist_id}')
         
@@ -108,6 +159,9 @@ def detail_playlist(request):
                     connection.commit()
                     url = reverse('playlist_player:play_song')
                     url_with_params = f"{url}?song_id={song_id}"
+                    connection.commit()
+                    cursor.close()
+                    connection.close()
                     return redirect(url_with_params)
 
     total_durasi_menit = records_playlist[0][7]
@@ -124,9 +178,25 @@ def detail_playlist(request):
     }
     response = render(request, 'detail_playlist.html', context)
     response.set_cookie('playlist_id', playlist_id)
+    connection.commit()
+    cursor.close()
+    connection.close()
     return response
 
 def tambah_lagu(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
+
     playlist_id = request.GET.get('playlist_id')
     list_lagu = []
     email = request.COOKIES.get('email')
@@ -140,6 +210,9 @@ def tambah_lagu(request):
             )
             ada = cursor.fetchall()
             if len(ada) > 0:
+                connection.commit()
+                cursor.close()
+                connection.close()
                 return render(request, 'song_telah_ditambahkan.html')
             
             cursor.execute(
@@ -148,10 +221,16 @@ def tambah_lagu(request):
             connection.commit()
             url = reverse('playlist_player:detail_playlist')
             url_with_params = f"{url}?playlist_id={playlist_id}"
+            connection.commit()
+            cursor.close()
+            connection.close()
             return redirect(url_with_params)
         
         except Exception as e:
             print(f"Error: {e}")
+            connection.commit()
+            cursor.close()
+            connection.close()
             return HttpResponse(f"Error: {e}", status=500)
     
         # return redirect('playlist_player:detail_playlist')
@@ -164,9 +243,25 @@ def tambah_lagu(request):
         'list_lagu': list_lagu,
         'playlist_id': playlist_id
     }
+    connection.commit()
+    cursor.close()
+    connection.close()
     return render(request, 'tambah_lagu.html', context)
 
 def play_song(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
+
     song_id = request.GET.get('song_id')
     records_song = []
     records_genre = []
@@ -217,6 +312,9 @@ def play_song(request):
             sudah = cursor.fetchall()
 
             if len(sudah) > 0:
+                connection.commit()
+                cursor.close()
+                connection.close()
                 return render(request, 'song_telah_download.html')
 
             cursor.execute(
@@ -230,6 +328,9 @@ def play_song(request):
             context = {
                 'email': email,
             }
+            connection.commit()
+            cursor.close()
+            connection.close()
             return redirect(url_param, context)
 
     context = {
@@ -242,10 +343,26 @@ def play_song(request):
         'isPremium': isPremium,
         'durasi': durasi
     }
+    connection.commit()
+    cursor.close()
+    connection.close()
     return render(request, 'play_song.html', context)
 
 
 def increment_play_count(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
+
     if request.method == 'POST':
         email = request.COOKIES.get('email')
         data = json.loads(request.body)
@@ -263,13 +380,34 @@ def increment_play_count(request):
             cursor.execute(f'update song set total_play = \'{total_play}\' where id_konten = \'{song_id}\'')
             
             connection.commit()
+            cursor.close()
+            connection.close()
 
             return JsonResponse({'status': 'success'})
         else:
+            connection.commit()
+            cursor.close()
+            connection.close()
             return JsonResponse({'status': 'error', 'message': 'Invalid song ID'})
+    connection.commit()
+    cursor.close()
+    connection.close()
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 
 def add_song_to_user_playlist(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
+
     song_id = request.GET.get('song_id')
     email = request.COOKIES.get('email')
     records_song = []
@@ -294,6 +432,9 @@ def add_song_to_user_playlist(request):
             )
             ada = cursor.fetchall()
             if len(ada) > 0:
+                connection.commit()
+                cursor.close()
+                connection.close()
                 return render(request, 'song_telah_ditambahkan.html')
             
             cursor.execute(
@@ -302,10 +443,16 @@ def add_song_to_user_playlist(request):
             connection.commit()
             url = reverse('playlist_player:pesan_add_song_to_playlist')
             url_with_params = f"{url}?song_id={song_id}"
+            connection.commit()
+            cursor.close()
+            connection.close()
             return redirect(url_with_params)
         
         except Exception as e:
             print(f"Error: {e}")
+            connection.commit()
+            cursor.close()
+            connection.close()
             return HttpResponse(f"Error: {e}", status=500)
             # return response
             # return render(request, 'add_song_to_user_playlist.html', context)
@@ -321,9 +468,25 @@ def add_song_to_user_playlist(request):
         'list_playlist': list_playlist,
 
     }
+    connection.commit()
+    cursor.close()
+    connection.close()
     return render(request, 'add_song_to_user_playlist.html', context)
 
 def pesan_add_song_to_playlist(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
+
     song_id = request.GET.get('song_id')
     # playlist_id = request.GET.get('playlist_id')
     records = []
@@ -335,11 +498,27 @@ def pesan_add_song_to_playlist(request):
         'records': records,
         'song_id': song_id
     }
+    connection.commit()
+    cursor.close()
+    connection.close()
     return render(request, 'pesan_add_song_to_playlist.html', context)
 
 
 
 def play_user_playlist(request): 
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
+
     playlist_id = request.GET.get('playlist_id')
 
     email = request.COOKIES.get('email')
@@ -385,6 +564,8 @@ def play_user_playlist(request):
                     break
    
             connection.commit()
+            cursor.close()
+            connection.close()
             
             return redirect(reverse("playlist_player:play_user_playlist") + f'?playlist_id={playlist_id}')
         
@@ -408,6 +589,9 @@ def play_user_playlist(request):
                     connection.commit()
                     url = reverse('playlist_player:play_song')
                     url_with_params = f"{url}?song_id={song_id}"
+                    connection.commit()
+                    cursor.close()
+                    connection.close()
                     return redirect(url_with_params)
 
     # Konversi durasi total playlist ke format _ jam _ menit
@@ -426,10 +610,26 @@ def play_user_playlist(request):
 
     response = render(request, 'play_user_playlist.html', context)
     response.set_cookie('playlist_id', playlist_id)
+    connection.commit()
+    cursor.close()
+    connection.close()
     return response
 
 
 def ubah_playlist(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
+
     id_playlist = request.GET.get('id_playlist')
 
     # if not id_playlist:
@@ -444,6 +644,8 @@ def ubah_playlist(request):
         cursor.execute(
             f'update user_playlist set judul = \'{judul}\', deskripsi = \'{deskripsi}\' where  id_user_playlist = \'{id_playlist}\'')
         connection.commit()
+        cursor.close()
+        connection.close()
         return redirect('playlist_player:user_playlist')
     
     judul_playlist = ''
@@ -459,13 +661,28 @@ def ubah_playlist(request):
 
     if result:
         judul_playlist, deskripsi_playlist = result
-
+    connection.commit()
+    cursor.close()
+    connection.close()
     return render(request, 'ubah_playlist.html', {
         'judul': judul_playlist,
         'deskripsi': deskripsi_playlist
     })  
 
 def hapus_playlist(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
+
     id_playlist = request.GET.get('id_playlist')
     cursor.execute(
         f'delete from user_playlist where id_user_playlist = \'{id_playlist}\''
@@ -474,10 +691,25 @@ def hapus_playlist(request):
         f'delete from playlist_song where id_playlist = \'{id_playlist}\''
     )
     connection.commit()
+    cursor.close()
+    connection.close()
     return HttpResponseRedirect(reverse("playlist_player:user_playlist"))
 
 
 def pesan_download_song(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
+
     song_id = request.GET.get('song_id')
     records = []
     cursor.execute(
@@ -488,13 +720,31 @@ def pesan_download_song(request):
         'records': records,
         'song_id': song_id
     }
+    connection.commit()
+    cursor.close()
+    connection.close()
     return render(request, 'pesan_download_song.html', context)
 
 def hapus_song(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
+
     id_song = request.GET.get('song_id')
     id_playlist = request.GET.get('playlist_id')
     cursor.execute(
         f'delete from playlist_song where id_song = \'{id_song}\' AND id_playlist = \'{id_playlist}\''
     )
     connection.commit()
+    cursor.close()
+    connection.close()
     return HttpResponseRedirect(reverse("playlist_player:detail_playlist") + f'?playlist_id={id_playlist}')

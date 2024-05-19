@@ -1,10 +1,24 @@
 from django.shortcuts import render, redirect
 from django.db import connection
+import psycopg2, os
+from psycopg2 import Error
 import uuid
 from datetime import datetime, timedelta
 from django.http import JsonResponse
 
 def riwayat(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
     email = request.COOKIES.get('email') 
 
     if request.method == 'GET':
@@ -24,9 +38,24 @@ def riwayat(request):
                 }
                 for row in rows
             ]
+        connection.commit()
+        cursor.close()
+        connection.close()
         return render(request, 'riwayat.html', {'transactions': transactions})
 
 def cek_langganan(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
     if request.method == 'POST':
         data = request.POST
         email = request.COOKIES.get('email') 
@@ -51,6 +80,9 @@ def cek_langganan(request):
             if result:
                 nominal = result[0]
             else:
+                connection.commit()
+                cursor.close()
+                connection.close()
                 return render(request, 'cek_langganan.html', {'error': 'Package type not found'})
 
         with connection.cursor() as cursor:
@@ -62,16 +94,45 @@ def cek_langganan(request):
 
             cursor.execute("SELECT * FROM PREMIUM WHERE email = %s;", [email])
             result = cursor.fetchone()
-        
+    connection.commit()
+    cursor.close()
+    connection.close()
     return render(request, 'cek_langganan.html')
 
 
 def payment(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
     jenis_paket = request.GET.get('jenis_paket')
     harga = request.GET.get('harga')
+    connection.commit()
+    cursor.close()
+    connection.close()
     return render(request, 'payment.html', {'jenis_paket': jenis_paket, 'harga': harga})
 
 def process_payment(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
     if request.method == 'POST':
         email = request.COOKIES.get('email')  
         jenis_paket = request.POST.get('jenis_paket').strip()
@@ -103,8 +164,12 @@ def process_payment(request):
                     
                 connection.commit()
                     
-                    
-            return redirect('dashboard:dashboard')
+            connection.commit()
+            cursor.close()
+            connection.close()
+            response = redirect('dashboard:dashboard')
+            response.set_cookie('statusLangganan', 'Premium')
+            return response
 
         except Exception as e:
             print(f"Error: {e}")
@@ -112,6 +177,18 @@ def process_payment(request):
             
 
 def downloaded_song(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
     email = request.COOKIES.get('email')
 
     with connection.cursor() as cursor:
@@ -134,10 +211,24 @@ def downloaded_song(request):
             }
             for row in rows
         ]
-
+    connection.commit()
+    cursor.close()
+    connection.close()
     return render(request, 'downloaded_song.html', {'songs': songs})
 
 def delete(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
     email = request.COOKIES.get('email')
     id_song = request.GET.get('id_song')
 
@@ -147,11 +238,25 @@ def delete(request):
             DELETE FROM DOWNLOADED_SONG
             WHERE id_song = %s AND email_downloader = %s
         """, [id_song, email])
-
+    connection.commit()
+    cursor.close()
+    connection.close()
     return JsonResponse({'message': 'Song deleted successfully', 'id_song': id_song})
 
 
 def search_bar(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
     query = request.GET.get('query', '').lower()  
     if not query:
         #Jika search bar kosong
@@ -211,4 +316,7 @@ def search_bar(request):
             'id' : result[3],
         } for result in results]
     }
+    connection.commit()
+    cursor.close()
+    connection.close()
     return render(request, 'search.html', context)
