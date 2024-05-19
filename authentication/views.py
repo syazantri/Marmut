@@ -3,21 +3,46 @@ from authentication.forms import RegisterFormPengguna, RegisterFormLabel
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from utils.query import *
+import psycopg2, os
+from psycopg2 import Error
 import random
 import uuid
 import re
-
-def main_auth(request):
-    return render(request, 'main_auth.html')
-
-# ------------------------ MULAI BENAR --------------------------------
-# def show_main(request):
-#     if request.COOKIES.get('role'):
         
 def main_register(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
+
+    connection.commit()
+    cursor.close()
+    connection.close()
+
     return render(request, 'main_register.html')
 
 def register_pengguna(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
+
     if request.method == 'POST' and not request.method == 'GET':
         email = request.POST.get('email')
         password = request.POST.get('password')
@@ -38,6 +63,9 @@ def register_pengguna(request):
                 'form': form,
                 'message': 'Email tidak valid',
             }
+            connection.commit()
+            cursor.close()
+            connection.close()
             return render(request, 'register_biasa.html', context)
 
         # if data is not complete
@@ -47,6 +75,10 @@ def register_pengguna(request):
                 'form': form,
                 'message': 'Data yang diisikan belum lengkap, silahkan lengkapi data terlebih dahulu',
             }
+
+            connection.commit()
+            cursor.close()
+            connection.close()
             return render(request, 'register_biasa.html', context)
         
         # Mengecek badge verified user
@@ -85,6 +117,8 @@ def register_pengguna(request):
                         f'insert into songwriter values (\'{id_songwriter}\', \'{email}\', \'{id_pemilik_hak_cipta}\')')
 
                 connection.commit()
+                cursor.close()
+                connection.close()
 
                 return redirect('authentication:login')
 
@@ -101,6 +135,9 @@ def register_pengguna(request):
             context = {
                 'message': err,
             }
+            connection.commit()
+            cursor.close()
+            connection.close()
 
             return render(request, 'register_biasa.html', context)
 
@@ -110,11 +147,25 @@ def register_pengguna(request):
         context = {
             'form': form
         }
-
+        connection.commit()
+        cursor.close()
+        connection.close()
         return render(request, 'register_biasa.html', context)
     
 def register_label(request):
-    
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
+
     if request.method == 'POST' and not request.method == 'GET':
         email = request.POST.get('email')
         password = request.POST.get('password')
@@ -131,6 +182,9 @@ def register_label(request):
                 'form': form,
                 'message': 'Email tidak valid',
             }
+            connection.commit()
+            cursor.close()
+            connection.close()
             return render(request, 'register_label.html', context)
 
         # if data is not complete
@@ -140,6 +194,9 @@ def register_label(request):
                 'form': form,
                 'message': 'Data yang diisikan belum lengkap, silahkan lengkapi data terlebih dahulu',
             }
+            connection.commit()
+            cursor.close()
+            connection.close()
             return render(request, 'register_label.html', context)
 
         # check email is already registered or not
@@ -165,12 +222,9 @@ def register_label(request):
                 f'insert into label values (\'{id_label}\', \'{nama}\', \'{email}\', \'{password}\', \'{kontak}\', \'{id_pemilik_hak_cipta}\')')
 
             connection.commit()
+            cursor.close()
+            connection.close()
 
-            # set cookie and redirect to dashboard
-            # response = HttpResponseRedirect(reverse('authentication:show_main'))
-            # response.set_cookie('isLabel', True)
-            # response.set_cookie('email', email)
-            # return response
             return redirect('authentication:login')
 
         except Exception as err:
@@ -184,7 +238,9 @@ def register_label(request):
                 'form': form,
                 'message': err,
             }
-
+            connection.commit()
+            cursor.close()
+            connection.close()
             return render(request, 'register_label.html', context)
 
     else:
@@ -193,13 +249,25 @@ def register_label(request):
         context = {
             'form': form
         }
+        connection.commit()
+        cursor.close()
+        connection.close()
 
         return render(request, 'register_label.html', context)
     
 def login(request):
-    # # if user is logged in, redirect to dashboard
-    # if request.COOKIES.get('email'):
-    #     return HttpResponseRedirect(reverse('authentication:show_main'))
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
 
     if request.method == "POST":
         email = request.POST.get('email')
@@ -239,6 +307,9 @@ def login(request):
                 response.set_cookie('email', email)
                 response.set_cookie('id', label[0][0])
                 response.set_cookie('idPemilikCiptaLabel', label[0][5])
+                connection.commit()
+                cursor.close()
+                connection.close()
                 return response
             
             else:
@@ -247,6 +318,9 @@ def login(request):
                 'status': 'error',
                 'role': None,
             }
+            connection.commit()
+            cursor.close()
+            connection.close()
             return render(request, 'login.html', context)
 
         elif len(user) == 1 and user[0][1] == password: #kalau email sesuai, password benar:
@@ -350,12 +424,6 @@ def login(request):
                 cursor.execute(f"INSERT INTO NONPREMIUM VALUES(\'{email}\')")
                 status_langganan = "NonPremium"
 
-            # cursor.execute(
-            #     f'select * from premium where email = \'{email}\'')
-            # premium = cursor.fetchall()
-            # if len(premium) != 0:
-            #     status_langganan = "Premium"
-
             # Assign role verified
             role_verified_list = []
             if(isArtist == True):
@@ -400,14 +468,36 @@ def login(request):
             response.set_cookie('idSongwriter', id_songwriter)
             response.set_cookie('idPemilikCiptaArtist', id_pemilik_hak_cipta_artist)
             response.set_cookie('idPemilikCiptaSongwriter', id_pemilik_hak_cipta_songwriter)
+            connection.commit()
+            cursor.close()
+            connection.close()
             return response
             
     context = {}
+    connection.commit()
+    cursor.close()
+    connection.close()
     return render(request, 'login.html', context)
 
 def logout_user(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
     
     response = HttpResponseRedirect(reverse('dashboard:homepage'))
     for cookie in request.COOKIES:
         response.delete_cookie(cookie)
+
+    connection.commit()
+    cursor.close()
+    connection.close()
     return response

@@ -1,4 +1,6 @@
 import uuid
+import psycopg2, os
+from psycopg2 import Error
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -6,6 +8,19 @@ from utils.query import *
 from datetime import datetime
 
 def cek_royalti(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
+
     role = request.COOKIES.get('role')
     isArtist = ""
     isSongwriter = ""
@@ -50,7 +65,6 @@ def cek_royalti(request):
                 tuple_royalti_label = (int(records_royalti_label[i][3]) * int(rate_royalti_label[0]),)
                 records_royalti_label[i] = records_royalti_label[i] + tuple_royalti_label
 
-            connection.commit()
     else:
         isArtist = request.COOKIES.get('isArtist')
         isSongwriter = request.COOKIES.get('isSongwriter')
@@ -128,8 +142,6 @@ def cek_royalti(request):
                     tuple_royalti_songwriter = (int(records_royalti_songwriter[i][3]) * int(rate_royalti_songwriter[0]),)
                     records_royalti_songwriter[i] = records_royalti_songwriter[i] + tuple_royalti_songwriter
 
-        connection.commit()
-
     context = {
         'status': 'success',
         'role': role,
@@ -140,10 +152,27 @@ def cek_royalti(request):
         'records_royalti_songwriter': records_royalti_songwriter,
     }
     response = render(request, 'cek_royalti.html', context)
+
+    connection.commit()
+    cursor.close()
+    connection.close()
     return response
 
 
 def create_album(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
+
     isArtist = request.COOKIES.get('isArtist')
     isSongwriter = request.COOKIES.get('isSongwriter')
     idArtist = request.COOKIES.get('idArtist')
@@ -222,6 +251,8 @@ def create_album(request):
             f'insert into royalti values (\'{id_pemilik_hak_cipta_label[0]}\', \'{id_song}\', 0)')
         
         connection.commit()
+        cursor.close()
+        connection.close()
         return redirect('album_royalti:list_edit_album')
 
     # untuk pilihan dropdown artist
@@ -282,10 +313,26 @@ def create_album(request):
         'nama_songwriter': nama_songwriter,
         'list_label': list_label
     }
+    connection.commit()
+    cursor.close()
+    connection.close()
     return render(request, 'create_album.html', context)
 
 
 def create_song(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
+
     isArtist = request.COOKIES.get('isArtist')
     isSongwriter = request.COOKIES.get('isSongwriter')
     idArtist = request.COOKIES.get('idArtist')
@@ -358,16 +405,9 @@ def create_song(request):
         cursor.execute(
             f'insert into royalti values (\'{id_pemilik_hak_cipta_label[0]}\', \'{id_song}\', 0)')
         
-        # update album
-        # cursor.execute(
-        #     f'select jumlah_lagu, total_durasi from album where id = \'{album_id}\'')
-        # album_saat_ini = cursor.fetchone()
-        # new_total_durasi = int(album_saat_ini[1]) + int(durasi)
-        # new_jumlah_lagu = int(album_saat_ini[0]) + 1
-        # cursor.execute(
-        #     f'UPDATE album SET jumlah_lagu = {new_jumlah_lagu}, total_durasi = {new_total_durasi} WHERE id = \'{album_id}\'')
-        
         connection.commit()
+        cursor.close()
+        connection.close()
         return redirect('album_royalti:list_edit_album')
 
     # untuk pilihan dropdown artist
@@ -428,10 +468,26 @@ def create_song(request):
         'nama_artist': nama_artist,
         'nama_songwriter': nama_songwriter,
     }
+    connection.commit()
+    cursor.close()
+    connection.close()
     return render(request, 'create_song.html', context)
 
 
 def list_album(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
+
     email = request.COOKIES.get('email')
 
     cursor.execute(
@@ -458,11 +514,30 @@ def list_album(request):
         response.set_cookie('email', email)
         response.set_cookie('id', label[0][0])
         response.set_cookie('idPemilikCiptaLabel', label[0][5])
+        connection.commit()
+        cursor.close()
+        connection.close()
         return response
+    connection.commit()
+    cursor.close()
+    connection.close()
     return render(request, 'list_album.html')
 
 
 def list_edit_album(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
+
     isArtist = request.COOKIES.get('isArtist')
     isSongwriter = request.COOKIES.get('isSongwriter')
     records_album_artist = []
@@ -527,10 +602,26 @@ def list_edit_album(request):
         'records_album_songwriter': records_album_songwriter,
     }
     response = render(request, 'list_edit_album.html', context)
+    connection.commit()
+    cursor.close()
+    connection.close()
     return response
 
 
 def list_song(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
+
     album_id = request.GET.get('album_id')
     records_song = []
 
@@ -552,11 +643,38 @@ def list_song(request):
         'judul_album': judul_album
     }
     response = render(request, 'list_song.html', context)
+
+    connection.commit()
+    cursor.close()
+    connection.close()
     return response
 
 def delete_song(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
+
     id_song = request.GET.get('song_id')
     album_id = request.GET.get('album_id')
+    
+    cursor.execute(
+        f'select jumlah_lagu from album where id = \'{album_id}\'')
+    jumlah_lagu = cursor.fetchone()
+
+    if(int(jumlah_lagu[0]) == 1) :
+        connection.commit()
+        cursor.close()
+        connection.close()
+        return HttpResponseRedirect(reverse('album_royalti:delete_album') + f'?album_id={album_id}')
     
     cursor.execute(
         f'delete from song where id_konten = \'{id_song}\'')
@@ -564,9 +682,24 @@ def delete_song(request):
         f'delete from konten where id = \'{id_song}\'')
     
     connection.commit()
+    cursor.close()
+    connection.close()
     return HttpResponseRedirect(reverse('album_royalti:list_song') + f'?album_id={album_id}')
 
 def delete_album(request):
+    # Connect ke db
+    connection = psycopg2.connect(user='postgres.coxvdmwovhpyalowubwg',
+                                  password='basdatbagus',
+                                  host='aws-0-ap-southeast-1.pooler.supabase.com',
+                                  port=5432,
+                                  database='postgres')
+
+    # Buat cursor buat operasiin db
+    cursor = connection.cursor()
+
+    # Masuk ke schema A5
+    cursor.execute("SET search_path TO A5")
+
     album_id = request.GET.get('album_id')
     role = request.COOKIES.get('role')
     records_song = []
@@ -583,6 +716,8 @@ def delete_album(request):
         f'delete from album where id = \'{album_id}\'')
     
     connection.commit()
+    cursor.close()
+    connection.close()
     if role == "pengguna":
         return HttpResponseRedirect(reverse('album_royalti:list_edit_album'))
     else:
